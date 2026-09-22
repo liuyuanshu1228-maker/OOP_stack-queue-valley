@@ -95,4 +95,18 @@ public abstract class WaterCropAction extends Action {
     public String menuDescription(Actor actor) {
         return actor + " waters the " + crop;
     }
+
+    /**
+     * Removes the crop being watered from the ground, turning its tile back
+     * into dirt.
+     * <p>
+     * {@link Crop#removeCrop(Location)} is protected and {@code crop} is only
+     * known to be a {@link Crop} here, so concrete crop-specific subclasses
+     * (which live in their own crop packages, not in {@code game}) go through
+     * this inherited method rather than needing package-level access to
+     * {@link Crop} themselves.
+     */
+    protected final void destroyCrop() {
+        crop.removeCrop(cropLocation);
+    }
 }
