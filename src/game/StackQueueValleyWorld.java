@@ -5,6 +5,7 @@ import edu.monash.fit2099.engine.positions.DefaultGroundCreator;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.positions.World;
+import game.cauliflower.Cauliflower;
 import game.parsnip.Parsnip;
 import game.strawberry.Strawberry;
 
@@ -19,6 +20,7 @@ public class StackQueueValleyWorld extends World {
 
     private static final int PARSNIP_COUNT = 5;
     private static final int STRAWBERRY_COUNT = 5;
+    private static final int CAULIFLOWER_COUNT = 5;
 
     /**
      * Constructor.
@@ -34,6 +36,7 @@ public class StackQueueValleyWorld extends World {
         groundCreator.registerGround('.', Dirt::new);
         groundCreator.registerGround('p', Parsnip::new);
         groundCreator.registerGround('S', Strawberry::new);
+        groundCreator.registerGround('C', Cauliflower::new);
 
         List<String> inheritedFarm = Arrays.asList(
                 "..........",
@@ -57,6 +60,7 @@ public class StackQueueValleyWorld extends World {
         occupiedLocations.add(farmerStart);
         scatterCrop(inheritedFarmMap, occupiedLocations, PARSNIP_COUNT, Parsnip::new);
         scatterCrop(inheritedFarmMap, occupiedLocations, STRAWBERRY_COUNT, Strawberry::new);
+        scatterCrop(inheritedFarmMap, occupiedLocations, CAULIFLOWER_COUNT, Cauliflower::new);
     }
 
     /**
