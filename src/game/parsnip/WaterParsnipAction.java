@@ -3,9 +3,8 @@ package game.parsnip;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.Chance;
 import game.WaterCropAction;
-
-import java.util.Random;
 
 /**
  * The action of watering a {@link Parsnip}.
@@ -14,13 +13,11 @@ import java.util.Random;
  * ruining the plant: the more the parsnip has already been watered, the more
  * likely it is to be destroyed.
  */
-public class WaterParsnipAction extends WaterCropAction {
+class WaterParsnipAction extends WaterCropAction {
 
     private static final int STAMINA_COST = 1;
     private static final int HEAL_AMOUNT = 20;
     private static final int BASE_DAMAGE_CHANCE = 10;
-
-    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -28,7 +25,7 @@ public class WaterParsnipAction extends WaterCropAction {
      * @param crop the parsnip to be watered
      * @param cropLocation the location of the parsnip to be watered
      */
-    public WaterParsnipAction(Parsnip crop, Location cropLocation) {
+    WaterParsnipAction(Parsnip crop, Location cropLocation) {
         super(crop, cropLocation);
     }
 
@@ -56,7 +53,7 @@ public class WaterParsnipAction extends WaterCropAction {
         String message = actor + " waters the " + crop + " and is healed for " + HEAL_AMOUNT + " points.";
 
         int damageChancePercent = BASE_DAMAGE_CHANCE + crop.getWateringCount();
-        if (random.nextInt(100) < damageChancePercent) {
+        if (Chance.rollPercent(damageChancePercent)) {
             destroyCrop();
             message += " The " + crop + " couldn't take it and was destroyed.";
         }

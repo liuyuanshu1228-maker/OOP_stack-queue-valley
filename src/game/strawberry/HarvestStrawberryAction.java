@@ -3,9 +3,8 @@ package game.strawberry;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.Chance;
 import game.HarvestCropAction;
-
-import java.util.Random;
 
 /**
  * The action of harvesting a {@link Strawberry}.
@@ -19,8 +18,6 @@ class HarvestStrawberryAction extends HarvestCropAction {
     private static final int STAMINA_COST = 1;
     private static final int STRAWBERRIES_PER_HARVEST = 2;
     private static final int BASE_DESTRUCTION_CHANCE_PERCENT = 50;
-
-    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -58,7 +55,7 @@ class HarvestStrawberryAction extends HarvestCropAction {
         String message = actor + " harvests the " + crop + " and picks up 2 strawberries.";
 
         int destructionChancePercent = BASE_DESTRUCTION_CHANCE_PERCENT - crop.getWateringCount();
-        if (random.nextInt(100) < destructionChancePercent) {
+        if (Chance.rollPercent(destructionChancePercent)) {
             destroyCrop();
             message += " The " + crop + " couldn't withstand the harvest and was destroyed.";
         }
