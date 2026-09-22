@@ -1,21 +1,18 @@
 package game.strawberry;
 
-import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
-
-import java.util.Random;
+import game.Chance;
+import game.ConsumableItem;
 
 /**
  * A strawberry, produced by watering or harvesting a {@link Strawberry}
  * crop. It can be eaten: a rotten strawberry poisons the farmer, while a
  * fresh one heals them over time.
  */
-class StrawberryItem extends Item {
+class StrawberryItem extends ConsumableItem {
 
     private static final int ROTTEN_CHANCE_PERCENT = 50;
-    private static final Random RANDOM = new Random();
 
     private final boolean rotten;
 
@@ -27,7 +24,6 @@ class StrawberryItem extends Item {
     StrawberryItem(boolean rotten) {
         super(rotten ? "Rotten Strawberry" : "Strawberry", 's');
         this.rotten = rotten;
-        makePortable();
     }
 
     /**
@@ -37,29 +33,25 @@ class StrawberryItem extends Item {
      * @return a new, randomly rotten or fresh strawberry
      */
     static StrawberryItem createRandom() {
-        return new StrawberryItem(RANDOM.nextInt(100) < ROTTEN_CHANCE_PERCENT);
+        return new StrawberryItem(Chance.rollPercent(ROTTEN_CHANCE_PERCENT));
     }
 
     /**
-     * @return true if this strawberry is rotten
-     */
-    boolean isRotten() {
-        return rotten;
-    }
-
-    /**
-     * Offers an action to eat this strawberry to whichever actor is
-     * carrying it.
+     * Poisons the actor if this strawberry is rotten, otherwise heals them
+     * over time.
      *
-     * @see Item#allowableActions(Actor, GameMap)
-     * @param owner the actor carrying this strawberry
+     * @param actor the actor eating this strawberry
      * @param map the map the actor is on
-     * @return the allowable actions for this strawberry
+     * @return a description of what happened
      */
     @Override
-    public ActionList allowableActions(Actor owner, GameMap map) {
-        ActionList actions = super.allowableActions(owner, map);
-        actions.add(new ConsumeStrawberryAction(this));
-        return actions;
+    protected String consume(Actor actor, GameMap map) {
+        if (rotten) {
+            actor.addStatus(new StrawberryPoisonStatus(actor));
+            return actor + " eats a rotten strawberry and feels a poison take hold.";
+        }
+
+        actor.addStatus(new StrawberryHealStatus(actor));
+        return actor + " eats a fresh strawberry and feels a soothing warmth.";
     }
 }
