@@ -34,9 +34,31 @@ public abstract class HarvestCropAction extends CropAction {
     protected abstract String applyHarvestEffect(Actor actor, GameMap map);
 
     /**
-     * Harvests the crop: requires the actor to have enough stamina for the
-     * crop-specific cost. On success, the stamina is deducted and the
-     * crop-specific effect is applied.
+     * Whether the crop is currently allowed to be harvested. Defaults to
+     * true; override for crops that impose a precondition, such as
+     * requiring a minimum number of waterings first.
+     *
+     * @return true if the crop can be harvested right now
+     */
+    protected boolean canHarvest() {
+        return true;
+    }
+
+    /**
+     * The message returned when {@link #canHarvest()} is false. Override
+     * alongside {@link #canHarvest()} to give a more specific reason.
+     *
+     * @param actor the actor attempting to harvest the crop
+     * @return a description of why the harvest failed
+     */
+    protected String cannotHarvestMessage(Actor actor) {
+        return actor + " cannot harvest the " + crop + " yet.";
+    }
+
+    /**
+     * Harvests the crop: requires {@link #canHarvest()} to hold and the
+     * actor to have enough stamina for the crop-specific cost. On success,
+     * the stamina is deducted and the crop-specific effect is applied.
      *
      * @see edu.monash.fit2099.engine.actions.Action#execute(Actor, GameMap)
      * @param actor the actor harvesting the crop
@@ -45,6 +67,10 @@ public abstract class HarvestCropAction extends CropAction {
      */
     @Override
     public String execute(Actor actor, GameMap map) {
+        if (!canHarvest()) {
+            return cannotHarvestMessage(actor);
+        }
+
         if (!hasEnoughStamina(actor)) {
             return actor + " is too tired to harvest the " + crop + ".";
         }
