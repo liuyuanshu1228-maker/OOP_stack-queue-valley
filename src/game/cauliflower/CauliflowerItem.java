@@ -1,9 +1,8 @@
 package game.cauliflower;
 
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.positions.GameMap;
 import game.Chance;
-import game.ConsumableItem;
+import game.items.ConsumableItem;
 
 /**
  * A cauliflower, produced by harvesting a {@link Cauliflower} crop. It can
@@ -26,19 +25,13 @@ class CauliflowerItem extends ConsumableItem {
      * appear in their inventory.
      *
      * @param actor the actor eating this cauliflower
-     * @param map the map the actor is on
-     * @return a description of what happened
      */
     @Override
-    protected String consume(Actor actor, GameMap map) {
+    public void consume(Actor actor) {
         actor.heal(HEAL_AMOUNT);
-        String message = actor + " eats the cauliflower and is healed for " + HEAL_AMOUNT + " points.";
 
         if (Chance.rollPercent(BONUS_CHANCE_PERCENT)) {
             actor.getInventory().add(new CauliflowerItem());
-            message += " Somehow, another cauliflower appears.";
         }
-
-        return message;
     }
 }

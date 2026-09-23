@@ -5,6 +5,7 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.Chance;
 import game.Crop;
+import game.Puddle;
 import game.WaterCropAction;
 
 /**

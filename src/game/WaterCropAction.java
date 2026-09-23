@@ -1,8 +1,12 @@
 package game;
 
+import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import edu.monash.fit2099.engine.statistics.StatisticOperations;
+import game.items.WateringTool;
 
 /**
  * Abstract base class for actions that water a {@link Crop}.
@@ -12,8 +16,22 @@ import edu.monash.fit2099.engine.positions.Location;
  * for a watering tool, checking/deducting stamina, and recording the
  * watering) and delegates the crop-specific effect of watering to
  * subclasses.
+ * <p>
+ * This is unrelated to A1's ground-level {@link game.actions.WaterAction},
+ * which turns raw Dirt into a Puddle; this class nurtures an already-mature
+ * crop in place.
  */
-public abstract class WaterCropAction extends CropAction {
+public abstract class WaterCropAction extends Action {
+
+    /**
+     * The crop being watered.
+     */
+    protected final Crop crop;
+
+    /**
+     * The location of the crop being watered.
+     */
+    protected final Location cropLocation;
 
     /**
      * Constructor.
@@ -22,8 +40,16 @@ public abstract class WaterCropAction extends CropAction {
      * @param cropLocation the location of the crop to be watered
      */
     public WaterCropAction(Crop crop, Location cropLocation) {
-        super(crop, cropLocation);
+        this.crop = crop;
+        this.cropLocation = cropLocation;
     }
+
+    /**
+     * The amount of stamina it costs to water this crop.
+     *
+     * @return the stamina cost of watering this crop
+     */
+    protected abstract int getStaminaCost();
 
     /**
      * Applies the crop-specific effect of being watered. Called only after
@@ -42,7 +68,7 @@ public abstract class WaterCropAction extends CropAction {
      * stamina is deducted, the watering is recorded on the crop, and the
      * crop-specific effect is applied.
      *
-     * @see edu.monash.fit2099.engine.actions.Action#execute(Actor, GameMap)
+     * @see Action#execute(Actor, GameMap)
      * @param actor the actor watering the crop
      * @param map the map the actor is on
      * @return a description of what happened
@@ -53,11 +79,11 @@ public abstract class WaterCropAction extends CropAction {
             return actor + " has no watering tool to water the " + crop + ".";
         }
 
-        if (!hasEnoughStamina(actor)) {
+        if (actor.getStatistic(ActorStatistics.STAMINA) < getStaminaCost()) {
             return actor + " is too tired to water the " + crop + ".";
         }
 
-        deductStamina(actor);
+        actor.modifyStatistic(ActorStatistics.STAMINA, StatisticOperations.DECREASE, getStaminaCost());
         crop.recordWatering();
 
         return applyWateringEffect(actor, map);
@@ -66,12 +92,26 @@ public abstract class WaterCropAction extends CropAction {
     /**
      * Describes this action in a format suitable for displaying in the menu.
      *
-     * @see edu.monash.fit2099.engine.actions.Action#menuDescription(Actor)
+     * @see Action#menuDescription(Actor)
      * @param actor the actor performing the action
      * @return a string, e.g. "Farmer Bob waters the Parsnip"
      */
     @Override
     public String menuDescription(Actor actor) {
         return actor + " waters the " + crop;
+    }
+
+    /**
+     * Removes the crop being watered from the ground, turning its tile back
+     * into dirt.
+     * <p>
+     * {@link Crop#removeCrop(Location)} is protected and {@code crop} is only
+     * known to be a {@link Crop} here, so concrete crop-specific subclasses
+     * (which live in their own crop packages, not in {@code game}) go through
+     * this inherited method rather than needing package-level access to
+     * {@link Crop} themselves.
+     */
+    protected final void destroyCrop() {
+        crop.removeCrop(cropLocation);
     }
 }

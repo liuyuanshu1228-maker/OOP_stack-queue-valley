@@ -5,7 +5,7 @@ import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.Chance;
-import game.Stats;
+import game.StatisticUtils;
 import game.WaterCropAction;
 
 /**
@@ -50,7 +50,7 @@ class WaterMelonAction extends WaterCropAction {
         String message = actor + " waters the " + crop + ".";
 
         if (Chance.rollPercent(MAX_STAMINA_INCREASE_CHANCE_PERCENT)) {
-            Stats.increaseMaximumWithoutRestoring(actor, ActorStatistics.STAMINA, MAX_STAMINA_INCREASE_AMOUNT);
+            StatisticUtils.increaseMaximumWithoutRestoring(actor, ActorStatistics.STAMINA, MAX_STAMINA_INCREASE_AMOUNT);
             message += " Its maximum stamina increases by " + MAX_STAMINA_INCREASE_AMOUNT + ".";
         }
 

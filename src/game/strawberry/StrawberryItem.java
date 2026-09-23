@@ -1,9 +1,8 @@
 package game.strawberry;
 
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.positions.GameMap;
 import game.Chance;
-import game.ConsumableItem;
+import game.items.ConsumableItem;
 
 /**
  * A strawberry, produced by watering or harvesting a {@link Strawberry}
@@ -41,17 +40,14 @@ class StrawberryItem extends ConsumableItem {
      * over time.
      *
      * @param actor the actor eating this strawberry
-     * @param map the map the actor is on
-     * @return a description of what happened
      */
     @Override
-    protected String consume(Actor actor, GameMap map) {
+    public void consume(Actor actor) {
         if (rotten) {
             actor.addStatus(new StrawberryPoisonStatus(actor));
-            return actor + " eats a rotten strawberry and feels a poison take hold.";
+            return;
         }
 
         actor.addStatus(new StrawberryHealStatus(actor));
-        return actor + " eats a fresh strawberry and feels a soothing warmth.";
     }
 }

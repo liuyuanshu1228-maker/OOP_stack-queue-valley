@@ -3,7 +3,11 @@ package game.melon;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
+import game.Chance;
 import game.Crop;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A melon crop. Watering it may raise the farmer's maximum stamina, and it
@@ -11,9 +15,17 @@ import game.Crop;
  * damages everyone nearby.
  *
  * @see WaterMelonAction
- * @see HarvestMelonAction
  */
 public class Melon extends Crop {
+
+    /** Stamina consumed by a successful Melon harvest. */
+    private static final int HARVEST_STAMINA_COST = 5;
+
+    /** Chance (out of 100) that harvesting causes the melon to explode. */
+    private static final int EXPLOSION_CHANCE_PERCENT = 50;
+
+    /** Base explosion damage before subtracting the watering count. */
+    private static final int BASE_EXPLOSION_DAMAGE = 20;
 
     /**
      * Constructor.
@@ -23,8 +35,8 @@ public class Melon extends Crop {
     }
 
     /**
-     * Offers watering and harvesting actions to an actor standing on or next
-     * to this crop.
+     * Offers a watering action, on top of the harvesting action inherited
+     * from {@link Crop}, to an actor standing on or next to this crop.
      *
      * @see Crop#allowableActions(Actor, Location, String)
      * @param actor the actor acting
@@ -36,7 +48,55 @@ public class Melon extends Crop {
     public ActionList allowableActions(Actor actor, Location location, String direction) {
         ActionList actions = super.allowableActions(actor, location, direction);
         actions.add(new WaterMelonAction(this, location));
-        actions.add(new HarvestMelonAction(this, location));
         return actions;
+    }
+
+    /**
+     * @return the stamina cost of harvesting a melon
+     */
+    @Override
+    public int getHarvestStaminaCost() {
+        return HARVEST_STAMINA_COST;
+    }
+
+    /**
+     * Destroys the melon, then rolls the chance for it to explode. The
+     * explosion's damage shrinks by one point for every time the melon has
+     * been watered, down to a minimum of no damage at all.
+     *
+     * @param actor the actor performing the harvest
+     * @param location the location of the crop being harvested
+     * @return a description of the outcome
+     */
+    @Override
+    public String harvest(Actor actor, Location location) {
+        removeCrop(location);
+
+        if (Chance.rollPercent(EXPLOSION_CHANCE_PERCENT)) {
+            int damage = Math.max(0, BASE_EXPLOSION_DAMAGE - getWateringCount());
+            explode(location, damage);
+            return actor + " harvests the " + this + ". It explodes, dealing " + damage + " damage to everyone nearby!";
+        }
+
+        actor.getInventory().add(new MelonItem());
+        return actor + " harvests the " + this + " and picks up a melon.";
+    }
+
+    /**
+     * Damages every actor on this crop's own tile and on the tiles adjacent
+     * to it.
+     *
+     * @param location the location this crop was harvested from
+     * @param damage the damage to deal to each actor caught in the blast
+     */
+    private void explode(Location location, int damage) {
+        List<Location> blastLocations = new ArrayList<>(location.getNearbyLocations(1));
+        blastLocations.add(location);
+
+        for (Location blastLocation : blastLocations) {
+            if (blastLocation.containsAnActor()) {
+                blastLocation.getActor().hurt(damage);
+            }
+        }
     }
 }

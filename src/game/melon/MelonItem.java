@@ -2,9 +2,8 @@ package game.melon;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
-import edu.monash.fit2099.engine.positions.GameMap;
-import game.ConsumableItem;
-import game.Stats;
+import game.StatisticUtils;
+import game.items.ConsumableItem;
 
 /**
  * A melon, produced by harvesting a {@link Melon} crop. It can be eaten to
@@ -26,12 +25,9 @@ class MelonItem extends ConsumableItem {
      * match.
      *
      * @param actor the actor eating this melon
-     * @param map the map the actor is on
-     * @return a description of what happened
      */
     @Override
-    protected String consume(Actor actor, GameMap map) {
-        Stats.increaseMaximumWithoutRestoring(actor, ActorStatistics.HEALTH, MAX_HEALTH_INCREASE_AMOUNT);
-        return actor + " eats the melon. Their maximum HP increases by " + MAX_HEALTH_INCREASE_AMOUNT + ".";
+    public void consume(Actor actor) {
+        StatisticUtils.increaseMaximumWithoutRestoring(actor, ActorStatistics.HEALTH, MAX_HEALTH_INCREASE_AMOUNT);
     }
 }
