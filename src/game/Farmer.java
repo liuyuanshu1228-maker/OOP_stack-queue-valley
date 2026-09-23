@@ -51,7 +51,7 @@ public class Farmer extends Actor {
         if (lastAction.getNextAction() != null)
             return lastAction.getNextAction();
 
-        printInventory(display);
+        printStatus(display);
 
         // return/print the console menu
         Menu menu = new Menu(actions);
@@ -59,13 +59,15 @@ public class Farmer extends Actor {
     }
 
     /**
-     * Prints what this farmer is currently carrying.
+     * Prints this farmer's current stamina and what they're carrying.
      *
-     * @param display the I/O object to which the inventory is printed
+     * @param display the I/O object to which the status is printed
      */
-    private void printInventory(Display display) {
-        List<Item> items = this.getInventory().getItems();
+    private void printStatus(Display display) {
+        display.println(this + " has " + this.getStatistic(ActorStatistics.STAMINA)
+                + "/" + this.getMaximumStatistic(ActorStatistics.STAMINA) + " stamina.");
 
+        List<Item> items = this.getInventory().getItems();
         if (items.isEmpty()) {
             display.println(this + " is carrying nothing.");
         } else {
