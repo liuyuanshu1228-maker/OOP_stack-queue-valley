@@ -1,9 +1,12 @@
 package game;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 /**
- * Utility for rolling percentage-based random outcomes.
+ * Utility for rolling percentage-based random outcomes and for making random
+ * picks.
  */
 public final class Chance {
 
@@ -21,5 +24,19 @@ public final class Chance {
      */
     public static boolean rollPercent(int percentChance) {
         return RANDOM.nextInt(100) < percentChance;
+    }
+
+    /**
+     * Picks one of the given options uniformly at random.
+     *
+     * @param options the options to pick from
+     * @param <T> the type of the options
+     * @return one randomly chosen option, or empty if there are no options
+     */
+    public static <T> Optional<T> pickOne(List<T> options) {
+        if (options.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(options.get(RANDOM.nextInt(options.size())));
     }
 }
