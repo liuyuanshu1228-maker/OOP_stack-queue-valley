@@ -16,6 +16,7 @@ import game.parsnip.Parsnip;
 import game.strawberry.Strawberry;
 import game.tomato.Tomato;
 import game.travel.Ladder;
+import game.travel.TeleportationCircle;
 import game.travel.TravelGround;
 
 import java.util.Arrays;
@@ -63,6 +64,11 @@ public class StackQueueValleyWorld extends World {
     private static final List<Link> LADDER_LINKS = List.of(
             new Link(new Spot(0, 0), new Spot(0, 0)),
             new Link(new Spot(9, 6), new Spot(11, 7)));
+
+    /** Each farm teleportation circle and the mines circle it is paired with. */
+    private static final List<Link> CIRCLE_LINKS = List.of(
+            new Link(new Spot(9, 0), new Spot(11, 0)),
+            new Link(new Spot(0, 6), new Spot(0, 7)));
 
     private final Random random = new Random();
 
@@ -113,6 +119,8 @@ public class StackQueueValleyWorld extends World {
         Set<Location> minesOccupiedLocations = new HashSet<>();
 
         linkMaps(inheritedFarmMap, minesMap, occupiedLocations, minesOccupiedLocations, Ladder::new, LADDER_LINKS);
+        linkMaps(inheritedFarmMap, minesMap, occupiedLocations, minesOccupiedLocations,
+                TeleportationCircle::new, CIRCLE_LINKS);
 
         scatterGround(inheritedFarmMap, occupiedLocations, PARSNIP_COUNT, Parsnip::new);
         scatterGround(inheritedFarmMap, occupiedLocations, STRAWBERRY_COUNT, Strawberry::new);
