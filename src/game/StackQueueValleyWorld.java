@@ -96,22 +96,50 @@ public class StackQueueValleyWorld extends World {
      * @param groundFactory a supplier that creates a new instance of the Ground to place
      */
     private void scatterGround(GameMap map, Set<Location> occupiedLocations, int count, Supplier<? extends Ground> groundFactory) {
-        Random random = new Random();
-        int placed = 0;
-
-        while (placed < count) {
-            Location location = randomLocation(map, random);
-
-            if (occupiedLocations.contains(location)) {
-                continue;
-            }
-
-            location.setGround(groundFactory.get());
-            occupiedLocations.add(location);
-            placed++;
+        for (int placed = 0; placed < count; placed++) {
+            claimRandomFreeLocation(map, occupiedLocations).setGround(groundFactory.get());
         }
     }
 
+    private final Random random = new Random();
+    /**
+     * Places a single Actor on a random tile of the given map, avoiding any
+     * location already recorded in {@code occupiedLocations}.
+     *
+     * @param map the map to place the Actor on
+     * @param occupiedLocations locations that must not be used; updated with the newly used one
+     * @param actor the Actor to place
+     */
+    private void placeActor(GameMap map, Set<Location> occupiedLocations, Actor actor) throws Exception {
+        claimRandomFreeLocation(map, occupiedLocations).addActor(actor);
+    }
+
+    /**
+     * Picks a random location on the map that is not already recorded in
+     * {@code occupiedLocations}, and records it there.
+     *
+     * @param map the map to pick a location on
+     * @param occupiedLocations locations that must not be used; updated with the chosen one
+     * @return the chosen location
+     */
+    private Location claimRandomFreeLocation(GameMap map, Set<Location> occupiedLocations) {
+        Location location;
+        do {
+            location = randomLocation(map);
+        } while (occupiedLocations.contains(location));
+        occupiedLocations.add(location);
+        return location;
+    }
+
+    /**
+     * @param map the map to pick a location on
+     * @return a uniformly random location on the map
+     */
+    private Location randomLocation(GameMap map) {
+        int x = random.nextInt(map.getXRange().max() + 1);
+        int y = random.nextInt(map.getYRange().max() + 1);
+        return map.at(x, y);
+    }
     /**
      * Places a single Actor on a random tile of the given map, avoiding any
      * location already recorded in {@code occupiedLocations}.
