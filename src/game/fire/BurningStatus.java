@@ -1,8 +1,5 @@
 package game.fire;
 
-public class BurningStatus {
-}
-package game.fire;
 
 import edu.monash.fit2099.engine.GameEntity;
 import edu.monash.fit2099.engine.actors.Actor;
