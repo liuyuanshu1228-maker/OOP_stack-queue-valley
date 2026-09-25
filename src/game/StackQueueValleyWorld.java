@@ -8,7 +8,10 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.positions.World;
+import game.breaking.CopperNode;
+import game.breaking.Geode;
 import game.breaking.Pickaxe;
+import game.breaking.Rock;
 import game.cauliflower.Cauliflower;
 import game.items.Hoe;
 import game.items.WateringCan;
@@ -39,6 +42,9 @@ public class StackQueueValleyWorld extends World {
     private static final String MINES_MAP_NAME = "The Mines";
     private static final int MINES_WIDTH = 12;
     private static final int MINES_HEIGHT = 8;
+    private static final int ROCK_COUNT = 8;
+    private static final int COPPER_NODE_COUNT = 4;
+    private static final int GEODE_COUNT = 3;
 
     /** Destination names shown in the travel menus. */
     private static final String TO_FARM = "the farm";
@@ -145,6 +151,10 @@ public class StackQueueValleyWorld extends World {
         alienDevice.addDestination(TO_MINES, alienDeviceMinesDestination);
         minesOccupiedLocations.add(alienDeviceMinesDestination);
         scatterItems(inheritedFarmMap, occupiedLocations, 1, () -> alienDevice);
+
+        scatterGround(minesMap, minesOccupiedLocations, ROCK_COUNT, Rock::new);
+        scatterGround(minesMap, minesOccupiedLocations, COPPER_NODE_COUNT, CopperNode::new);
+        scatterItems(minesMap, minesOccupiedLocations, GEODE_COUNT, Geode::new);
     }
 
     /**
