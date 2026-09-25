@@ -15,6 +15,8 @@ import game.melon.Melon;
 import game.parsnip.Parsnip;
 import game.strawberry.Strawberry;
 import game.tomato.Tomato;
+import game.travel.Ladder;
+import game.travel.TravelGround;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -34,6 +36,33 @@ public class StackQueueValleyWorld extends World {
     private static final String MINES_MAP_NAME = "The Mines";
     private static final int MINES_WIDTH = 12;
     private static final int MINES_HEIGHT = 8;
+
+    /** Destination names shown in the travel menus. */
+    private static final String TO_FARM = "the farm";
+    private static final String TO_MINES = "the mines";
+
+    /**
+     * A fixed position on a map.
+     *
+     * @param x the x coordinate
+     * @param y the y coordinate
+     */
+    private record Spot(int x, int y) {
+    }
+
+    /**
+     * A two-way link between a position on the farm and a position in the mines.
+     *
+     * @param farm the position on the farm
+     * @param mines the position in the mines
+     */
+    private record Link(Spot farm, Spot mines) {
+    }
+
+    /** Each farm ladder and the mines ladder it is paired with. */
+    private static final List<Link> LADDER_LINKS = List.of(
+            new Link(new Spot(0, 0), new Spot(0, 0)),
+            new Link(new Spot(9, 6), new Spot(11, 7)));
 
     private final Random random = new Random();
 
@@ -81,6 +110,10 @@ public class StackQueueValleyWorld extends World {
 
         Set<Location> occupiedLocations = new HashSet<>();
         occupiedLocations.add(farmerStart);
+        Set<Location> minesOccupiedLocations = new HashSet<>();
+
+        linkMaps(inheritedFarmMap, minesMap, occupiedLocations, minesOccupiedLocations, Ladder::new, LADDER_LINKS);
+
         scatterGround(inheritedFarmMap, occupiedLocations, PARSNIP_COUNT, Parsnip::new);
         scatterGround(inheritedFarmMap, occupiedLocations, STRAWBERRY_COUNT, Strawberry::new);
         scatterGround(inheritedFarmMap, occupiedLocations, CAULIFLOWER_COUNT, Cauliflower::new);
@@ -91,6 +124,50 @@ public class StackQueueValleyWorld extends World {
 
         placeActor(inheritedFarmMap, occupiedLocations, new Chicken("Chicken"));
         placeActor(inheritedFarmMap, occupiedLocations, new Cow("Cow"));
+    }
+
+    /**
+     * Places a pair of two-way travel grounds (such as ladders) for each link:
+     * one on the farm and one in the mines, each leading to the other. The
+     * tiles around every placed ground are reserved as well, so that nothing
+     * placed at random afterwards can sit next to it. (A Cauliflower turns
+     * every adjacent non-crop ground into a puddle, which would otherwise wipe
+     * out a nearby ladder or circle; in the mines it also keeps rocks from
+     * walling in an arrival point.)
+     *
+     * @param farmMap the farm map
+     * @param minesMap the mines map
+     * @param farmOccupiedLocations farm locations that must not be used; updated with the newly used ones
+     * @param minesOccupiedLocations mines locations that must not be used; updated with the newly used ones
+     * @param groundFactory a supplier that creates a new instance of the travel ground to place
+     * @param links the positions of each pair
+     */
+    private void linkMaps(GameMap farmMap, GameMap minesMap, Set<Location> farmOccupiedLocations,
+                          Set<Location> minesOccupiedLocations, Supplier<? extends TravelGround> groundFactory,
+                          List<Link> links) {
+        for (Link link : links) {
+            Location farmLocation = locate(farmMap, link.farm());
+            Location minesLocation = locate(minesMap, link.mines());
+            TravelGround farmSide = groundFactory.get();
+            TravelGround minesSide = groundFactory.get();
+            farmLocation.setGround(farmSide);
+            minesLocation.setGround(minesSide);
+            farmSide.addDestination(TO_MINES, minesLocation);
+            minesSide.addDestination(TO_FARM, farmLocation);
+            reserveWithNeighbours(farmOccupiedLocations, farmLocation);
+            reserveWithNeighbours(minesOccupiedLocations, minesLocation);
+        }
+    }
+
+    /**
+     * Records the given location, and every location adjacent to it, as used.
+     *
+     * @param occupiedLocations the set of used locations to update
+     * @param location the location to reserve together with its neighbours
+     */
+    private void reserveWithNeighbours(Set<Location> occupiedLocations, Location location) {
+        occupiedLocations.add(location);
+        occupiedLocations.addAll(location.getNearbyLocations(1));
     }
 
     /**
@@ -148,5 +225,14 @@ public class StackQueueValleyWorld extends World {
         int x = random.nextInt(map.getXRange().max() + 1);
         int y = random.nextInt(map.getYRange().max() + 1);
         return map.at(x, y);
+    }
+
+    /**
+     * @param map the map the position is on
+     * @param spot the position
+     * @return the location at that position on the map
+     */
+    private Location locate(GameMap map, Spot spot) {
+        return map.at(spot.x(), spot.y());
     }
 }
