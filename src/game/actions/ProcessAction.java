@@ -4,7 +4,7 @@ import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
-import game.ground.ProcessingFacility;
+import game.positions.ProcessingFacility;
 
 /**
  * An Action that allows the Farmer to process a Processable Item they are carrying

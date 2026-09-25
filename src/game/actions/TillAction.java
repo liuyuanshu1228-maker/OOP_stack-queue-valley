@@ -6,9 +6,9 @@ import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
-import game.StatisticUtils;
-import game.ground.Tillable;
 import game.items.TillingTool;
+import game.positions.Tillable;
+import game.statistics.StatisticUtils;
 
 /**
  * An Action that allows an Actor to till the Ground at their current Location,

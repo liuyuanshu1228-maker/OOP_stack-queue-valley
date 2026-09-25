@@ -6,18 +6,18 @@ import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
-import game.StatisticUtils;
-import game.ground.Waterable;
 import game.items.WateringTool;
+import game.positions.Waterable;
+import game.statistics.StatisticUtils;
 
 /**
  * An Action that allows an Actor to water the Ground at their current Location,
  * provided they are carrying a Watering Can and have enough stamina.
  * The Ground must implement Waterable to define what it becomes once watered.
  * <p>
- * This is unrelated to watering a mature {@link game.Crop}: this action turns
+ * This is unrelated to watering a mature {@link game.positions.Crop}: this action turns
  * one type of Ground into another (e.g. Dirt into a Puddle), whereas watering a
- * crop nurtures it in place and is handled by {@link game.WaterCropAction}.
+ * crop nurtures it in place and is handled by {@link game.actions.WaterCropAction}.
  */
 public class WaterAction extends Action {
 

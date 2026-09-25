@@ -7,9 +7,9 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
-import game.StatisticUtils;
 import game.actors.Feedable;
 import game.items.Food;
+import game.statistics.StatisticUtils;
 
 /**
  * An Action that allows the Farmer to feed an adjacent animal using a specific food Item.
