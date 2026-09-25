@@ -2,6 +2,7 @@ package game;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.displays.Display;
+import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.DefaultGroundCreator;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Ground;
@@ -15,6 +16,7 @@ import game.melon.Melon;
 import game.parsnip.Parsnip;
 import game.strawberry.Strawberry;
 import game.tomato.Tomato;
+import game.travel.AlienDevice;
 import game.travel.Ladder;
 import game.travel.TeleportationCircle;
 import game.travel.TravelGround;
@@ -69,6 +71,9 @@ public class StackQueueValleyWorld extends World {
     private static final List<Link> CIRCLE_LINKS = List.of(
             new Link(new Spot(9, 0), new Spot(11, 0)),
             new Link(new Spot(0, 6), new Spot(0, 7)));
+
+    /** The fixed destinations of the alien device, on the farm and in the mines. */
+    private static final Link ALIEN_DEVICE_DESTINATIONS = new Link(new Spot(5, 3), new Spot(6, 4));
 
     private final Random random = new Random();
 
@@ -132,6 +137,14 @@ public class StackQueueValleyWorld extends World {
 
         placeActor(inheritedFarmMap, occupiedLocations, new Chicken("Chicken"));
         placeActor(inheritedFarmMap, occupiedLocations, new Cow("Cow"));
+
+        Location alienDeviceFarmDestination = locate(inheritedFarmMap, ALIEN_DEVICE_DESTINATIONS.farm());
+        Location alienDeviceMinesDestination = locate(minesMap, ALIEN_DEVICE_DESTINATIONS.mines());
+        AlienDevice alienDevice = new AlienDevice();
+        alienDevice.addDestination(TO_FARM, alienDeviceFarmDestination);
+        alienDevice.addDestination(TO_MINES, alienDeviceMinesDestination);
+        minesOccupiedLocations.add(alienDeviceMinesDestination);
+        scatterItems(inheritedFarmMap, occupiedLocations, 1, () -> alienDevice);
     }
 
     /**
@@ -193,6 +206,22 @@ public class StackQueueValleyWorld extends World {
     private void scatterGround(GameMap map, Set<Location> occupiedLocations, int count, Supplier<? extends Ground> groundFactory) {
         for (int placed = 0; placed < count; placed++) {
             claimRandomFreeLocation(map, occupiedLocations).setGround(groundFactory.get());
+        }
+    }
+
+    /**
+     * Places a number of Items on random, distinct tiles of the given map,
+     * avoiding any location already recorded in {@code occupiedLocations}.
+     * Every newly used location is added to {@code occupiedLocations}.
+     *
+     * @param map the map to place Items on
+     * @param occupiedLocations locations that must not be used; updated with the newly used ones
+     * @param count how many Items to place
+     * @param itemFactory a supplier that creates a new instance of the Item to place
+     */
+    private void scatterItems(GameMap map, Set<Location> occupiedLocations, int count, Supplier<? extends Item> itemFactory) {
+        for (int placed = 0; placed < count; placed++) {
+            claimRandomFreeLocation(map, occupiedLocations).addItem(itemFactory.get());
         }
     }
 
