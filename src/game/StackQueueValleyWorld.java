@@ -7,6 +7,7 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.positions.World;
+import game.breaking.Pickaxe;
 import game.cauliflower.Cauliflower;
 import game.items.Hoe;
 import game.items.WateringCan;
@@ -29,6 +30,10 @@ public class StackQueueValleyWorld extends World {
     private static final int CAULIFLOWER_COUNT = 5;
     private static final int MELON_COUNT = 5;
     private static final int TOMATO_COUNT = 5;
+
+    private static final String MINES_MAP_NAME = "The Mines";
+    private static final int MINES_WIDTH = 12;
+    private static final int MINES_HEIGHT = 8;
 
     private final Random random = new Random();
 
@@ -64,12 +69,15 @@ public class StackQueueValleyWorld extends World {
 
         GameMap inheritedFarmMap = new GameMap("Inherited Farm", groundCreator, inheritedFarm);
         this.addGameMap(inheritedFarmMap);
+        GameMap minesMap = new GameMap(MINES_MAP_NAME, groundCreator, '.', MINES_WIDTH, MINES_HEIGHT);
+        this.addGameMap(minesMap);
 
         Location farmerStart = inheritedFarmMap.at(5, 3);
         Farmer farmer = new Farmer("Bob");
         this.addPlayer(farmer, farmerStart);
         farmer.getInventory().add(new Hoe());
         farmer.getInventory().add(new WateringCan());
+        farmer.getInventory().add(new Pickaxe());
 
         Set<Location> occupiedLocations = new HashSet<>();
         occupiedLocations.add(farmerStart);
