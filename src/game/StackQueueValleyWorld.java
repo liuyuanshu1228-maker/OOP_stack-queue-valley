@@ -30,6 +30,8 @@ public class StackQueueValleyWorld extends World {
     private static final int MELON_COUNT = 5;
     private static final int TOMATO_COUNT = 5;
 
+    private final Random random = new Random();
+
     /**
      * Constructor.
      *
@@ -101,7 +103,6 @@ public class StackQueueValleyWorld extends World {
         }
     }
 
-    private final Random random = new Random();
     /**
      * Places a single Actor on a random tile of the given map, avoiding any
      * location already recorded in {@code occupiedLocations}.
@@ -136,36 +137,6 @@ public class StackQueueValleyWorld extends World {
      * @return a uniformly random location on the map
      */
     private Location randomLocation(GameMap map) {
-        int x = random.nextInt(map.getXRange().max() + 1);
-        int y = random.nextInt(map.getYRange().max() + 1);
-        return map.at(x, y);
-    }
-    /**
-     * Places a single Actor on a random tile of the given map, avoiding any
-     * location already recorded in {@code occupiedLocations}.
-     *
-     * @param map the map to place the Actor on
-     * @param occupiedLocations locations that must not be used; updated with the newly used one
-     * @param actor the Actor to place
-     */
-    private void placeActor(GameMap map, Set<Location> occupiedLocations, Actor actor) throws Exception {
-        Random random = new Random();
-        Location location;
-
-        do {
-            location = randomLocation(map, random);
-        } while (occupiedLocations.contains(location));
-
-        location.addActor(actor);
-        occupiedLocations.add(location);
-    }
-
-    /**
-     * @param map the map to pick a location on
-     * @param random the source of randomness to use
-     * @return a uniformly random location on the map
-     */
-    private Location randomLocation(GameMap map, Random random) {
         int x = random.nextInt(map.getXRange().max() + 1);
         int y = random.nextInt(map.getYRange().max() + 1);
         return map.at(x, y);
