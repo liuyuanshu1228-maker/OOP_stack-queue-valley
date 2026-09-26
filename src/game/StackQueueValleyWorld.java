@@ -11,6 +11,7 @@ import edu.monash.fit2099.engine.positions.World;
 import game.actors.Chicken;
 import game.actors.Cow;
 import game.actors.Farmer;
+import game.actors.Merchant;
 import game.items.AlienDevice;
 import game.items.Geode;
 import game.items.Hoe;
@@ -29,7 +30,6 @@ import game.positions.Strawberry;
 import game.positions.TeleportationCircle;
 import game.positions.Tomato;
 import game.positions.TravelGround;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +37,12 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Supplier;
 
+/**
+ * Represents the game world of StackQueue Valley, responsible for initializing
+ * the Inherited Farm and The Mines maps, linking travel grounds, and spawning
+ * grounds, items, and actors (including the Farmer, Animals, and Merchant).
+ *
+ */
 public class StackQueueValleyWorld extends World {
 
     private static final int PARSNIP_COUNT = 5;
@@ -98,6 +104,12 @@ public class StackQueueValleyWorld extends World {
         super(display);
     }
 
+    /**
+     * Initializes the game world by creating maps, registering grounds, placing the player,
+     * linking travel grounds, and scattering initial crops, stations, items, and actors.
+     *
+     * @throws Exception if an error occurs while placing actors or initializing the world
+     */
     public void initialise() throws Exception {
         DefaultGroundCreator groundCreator = new DefaultGroundCreator();
         groundCreator.registerGround('.', Dirt::new);
@@ -149,6 +161,7 @@ public class StackQueueValleyWorld extends World {
 
         placeActor(inheritedFarmMap, occupiedLocations, new Chicken("Chicken"));
         placeActor(inheritedFarmMap, occupiedLocations, new Cow("Cow"));
+        placeActor(inheritedFarmMap, occupiedLocations, new Merchant());
 
         Location alienDeviceFarmDestination = locate(inheritedFarmMap, ALIEN_DEVICE_DESTINATIONS.farm());
         Location alienDeviceMinesDestination = locate(minesMap, ALIEN_DEVICE_DESTINATIONS.mines());
