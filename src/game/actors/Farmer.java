@@ -7,16 +7,17 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.displays.Menu;
-import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
-
+import game.statistics.FarmerStatistics;
 import java.util.List;
 
 /**
- * The player character: a farmer who tends crops on the farm.
+ * The player character: a farmer who tends crops on the farm and trades with the Merchant.
  */
 public class Farmer extends Actor {
+
+    private static final int STARTING_COINS = 10000;
 
     /**
      * Constructor.
@@ -26,6 +27,7 @@ public class Farmer extends Actor {
     public Farmer(String name) {
         super("Farmer " + name, '@', 100);
         this.addNewStatistic(ActorStatistics.STAMINA, new BaseStatistic(100));
+        this.addNewStatistic(FarmerStatistics.COINS, new BaseStatistic(STARTING_COINS));
     }
 
     /**
@@ -34,10 +36,10 @@ public class Farmer extends Actor {
      * otherwise presents the player with a menu of the allowable actions.
      *
      * @see Actor#playTurn(ActionList, Action, GameMap, Display)
-     * @param actions collection of possible Actions for this Actor
+     * @param actions    collection of possible Actions for this Actor
      * @param lastAction the Action this Actor took last turn
-     * @param map the map containing the Actor
-     * @param display the I/O object to which messages may be written
+     * @param map        the map containing the Actor
+     * @param display    the I/O object to which messages may be written
      * @return the Action to be performed
      */
     @Override
@@ -59,15 +61,17 @@ public class Farmer extends Actor {
     }
 
     /**
-     * Prints this farmer's current stamina and what they're carrying.
+     * Prints this farmer's current stamina, coin balance, and what they're carrying.
      *
      * @param display the I/O object to which the status is printed
      */
     private void printStatus(Display display) {
         display.println(this + " has " + this.getStatistic(ActorStatistics.STAMINA)
                 + "/" + this.getMaximumStatistic(ActorStatistics.STAMINA) + " stamina.");
+        display.println(this + " has " + this.getStatistic(FarmerStatistics.COINS)
+                + "/" + this.getMaximumStatistic(FarmerStatistics.COINS) + " coins.");
 
-        List<Item> items = this.getInventory().getItems();
+        List items = this.getInventory().getItems();
         if (items.isEmpty()) {
             display.println(this + " is carrying nothing.");
         } else {
