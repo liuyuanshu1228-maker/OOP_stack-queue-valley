@@ -49,7 +49,7 @@ public class HarvestAction extends Action {
         boolean hasEnoughStamina = StatisticUtils.hasEnough(actor, ActorStatistics.STAMINA, cost);
 
         if (!hasEnoughStamina) {
-            return actor + " is too tired to harvest this crop.";
+            return actor + " is too tired to harvest the " + location.getGround() + ".";
         }
 
         actor.modifyStatistic(ActorStatistics.STAMINA, StatisticOperations.DECREASE, cost);
@@ -64,6 +64,6 @@ public class HarvestAction extends Action {
      */
     @Override
     public String menuDescription(Actor actor) {
-        return actor + " harvests the crop.";
+        return actor + " harvests the " + location.getGround() + ".";
     }
 }
