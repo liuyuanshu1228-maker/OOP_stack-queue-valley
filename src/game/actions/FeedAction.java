@@ -5,7 +5,6 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
-import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.actors.Feedable;
 import game.items.Food;
@@ -47,25 +46,38 @@ public class FeedAction extends Action {
      */
     @Override
     public String execute(Actor actor, GameMap map) {
-        boolean hasEnoughStamina = StatisticUtils.hasEnough(actor, ActorStatistics.STAMINA, STAMINA_COST);
-
-        if (!hasEnoughStamina) {
+        if (!StatisticUtils.hasEnough(actor, ActorStatistics.STAMINA, STAMINA_COST)) {
             return actor + " is too tired to feed this animal.";
         }
 
         actor.modifyStatistic(ActorStatistics.STAMINA, StatisticOperations.DECREASE, STAMINA_COST);
         actor.getInventory().remove(food);
 
-        Feedable feedable = animal.asCapability(Feedable.class).orElse(null);
-        Location farmerLocation = map.locationOf(actor);
-        String feedResult = feedable != null ? feedable.feed(actor, farmerLocation) : "";
-
-        Food foodCapability = food.asCapability(Food.class).orElse(null);
-        if (foodCapability != null) {
-            foodCapability.applyFeedingBonus(actor);
-        }
-
+        String feedResult = feedAnimal(actor, map);
+        applyFoodBonus(actor);
         return feedResult;
+    }
+
+    /**
+     * Applies the animal's Feedable effect, if it has one.
+     *
+     * @param actor the actor doing the feeding
+     * @param map the map the actor is on
+     * @return a description of the animal's reaction, or an empty string if it has none
+     */
+    private String feedAnimal(Actor actor, GameMap map) {
+        return animal.asCapability(Feedable.class)
+                .map(feedable -> feedable.feed(actor, map.locationOf(actor)))
+                .orElse("");
+    }
+
+    /**
+     * Applies the food's bonus effect to the actor, if it has one.
+     *
+     * @param actor the actor who did the feeding
+     */
+    private void applyFoodBonus(Actor actor) {
+        food.asCapability(Food.class).ifPresent(foodCapability -> foodCapability.applyFeedingBonus(actor));
     }
 
     /**

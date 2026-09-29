@@ -6,4 +6,11 @@ package game.items;
  * also allows the actor carrying it to water crops.
  */
 public interface WateringTool {
+
+    /**
+     * The stamina cost of using this tool to water something.
+     *
+     * @return the stamina cost of watering with this tool
+     */
+    int getStaminaCost();
 }

@@ -8,11 +8,22 @@ import edu.monash.fit2099.engine.items.Item;
  */
 public class WateringCan extends Item implements WateringTool {
 
+    /** Stamina cost of watering something with this can. */
+    private static final int STAMINA_COST = 2;
+
     /**
      * Constructor.
      */
     public WateringCan() {
         super("Watering Can", 'w');
         this.makePortable();
+    }
+
+    /**
+     * @return the stamina cost of watering with this can
+     */
+    @Override
+    public int getStaminaCost() {
+        return STAMINA_COST;
     }
 }

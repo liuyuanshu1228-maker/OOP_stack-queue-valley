@@ -10,6 +10,8 @@ import game.items.WateringTool;
 import game.positions.Waterable;
 import game.statistics.StatisticUtils;
 
+import java.util.List;
+
 /**
  * An Action that allows an Actor to water the Ground at their current Location,
  * provided they are carrying a Watering Can and have enough stamina.
@@ -20,9 +22,6 @@ import game.statistics.StatisticUtils;
  * crop nurtures it in place and is handled by {@link game.actions.WaterCropAction}.
  */
 public class WaterAction extends Action {
-
-    /** Stamina points consumed by a successful water action. */
-    private static final int STAMINA_COST = 2;
 
     private final Location location;
 
@@ -37,8 +36,8 @@ public class WaterAction extends Action {
 
     /**
      * Performs the watering attempt. If the Actor is carrying a watering tool
-     * and has enough stamina, waters the Ground and deducts stamina; otherwise,
-     * fails without any side effects.
+     * and has enough stamina for that tool's cost, waters the Ground and
+     * deducts stamina; otherwise, fails without any side effects.
      *
      * @param actor The actor performing the action.
      * @param map   The map the actor is on.
@@ -47,16 +46,19 @@ public class WaterAction extends Action {
     @Override
     public String execute(Actor actor, GameMap map) {
         Waterable waterable = location.getGroundAs(Waterable.class);
+        List<WateringTool> tools = actor.getInventory().getItemsAs(WateringTool.class);
 
-        boolean hasWateringCan = !actor.getInventory().getItemsAs(WateringTool.class).isEmpty();
-        boolean hasEnoughStamina = StatisticUtils.hasEnough(actor, ActorStatistics.STAMINA, STAMINA_COST);
+        if (waterable == null || tools.isEmpty()) {
+            return actor + " is either too tired to water the ground or don't have a Watering Can to water the ground.";
+        }
 
-        if (waterable == null || !hasWateringCan || !hasEnoughStamina) {
+        int staminaCost = tools.get(0).getStaminaCost();
+        if (!StatisticUtils.hasEnough(actor, ActorStatistics.STAMINA, staminaCost)) {
             return actor + " is either too tired to water the ground or don't have a Watering Can to water the ground.";
         }
 
         location.setGround(waterable.getWaterResult());
-        actor.modifyStatistic(ActorStatistics.STAMINA, StatisticOperations.DECREASE, STAMINA_COST);
+        actor.modifyStatistic(ActorStatistics.STAMINA, StatisticOperations.DECREASE, staminaCost);
         return actor + " waters the ground.";
     }
 

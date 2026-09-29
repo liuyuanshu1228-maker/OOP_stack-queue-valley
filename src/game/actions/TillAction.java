@@ -10,15 +10,14 @@ import game.items.TillingTool;
 import game.positions.Tillable;
 import game.statistics.StatisticUtils;
 
+import java.util.List;
+
 /**
  * An Action that allows an Actor to till the Ground at their current Location,
  * provided they are carrying a Hoe and have enough stamina.
  * The Ground must implement Tillable to define what it becomes once tilled.
  */
 public class TillAction extends Action {
-
-    /** Stamina points consumed by a successful till action. */
-    private static final int STAMINA_COST = 2;
 
     private final Location location;
 
@@ -33,8 +32,8 @@ public class TillAction extends Action {
 
     /**
      * Performs the tilling attempt. If the Actor is carrying a tilling tool
-     * and has enough stamina, tills the Ground and deducts stamina; otherwise,
-     * fails without any side effects.
+     * and has enough stamina for that tool's cost, tills the Ground and
+     * deducts stamina; otherwise, fails without any side effects.
      *
      * @param actor The actor performing the action.
      * @param map   The map the actor is on.
@@ -43,16 +42,19 @@ public class TillAction extends Action {
     @Override
     public String execute(Actor actor, GameMap map) {
         Tillable tillable = location.getGroundAs(Tillable.class);
+        List<TillingTool> tools = actor.getInventory().getItemsAs(TillingTool.class);
 
-        boolean hasHoe = !actor.getInventory().getItemsAs(TillingTool.class).isEmpty();
-        boolean hasEnoughStamina = StatisticUtils.hasEnough(actor, ActorStatistics.STAMINA, STAMINA_COST);
+        if (tillable == null || tools.isEmpty()) {
+            return actor + " is either too tired to till dirt or don't have a Hoe to till dirt.";
+        }
 
-        if (tillable == null || !hasHoe || !hasEnoughStamina) {
+        int staminaCost = tools.get(0).getStaminaCost();
+        if (!StatisticUtils.hasEnough(actor, ActorStatistics.STAMINA, staminaCost)) {
             return actor + " is either too tired to till dirt or don't have a Hoe to till dirt.";
         }
 
         location.setGround(tillable.getTillResult());
-        actor.modifyStatistic(ActorStatistics.STAMINA, StatisticOperations.DECREASE, STAMINA_COST);
+        actor.modifyStatistic(ActorStatistics.STAMINA, StatisticOperations.DECREASE, staminaCost);
         return actor + " tills the ground.";
     }
 
