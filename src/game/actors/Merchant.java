@@ -12,6 +12,7 @@ import game.trading.Purchasable;
 import game.trading.Sellable;
 import game.trading.SwordPurchase;
 import game.trading.TomatoPurchase;
+import java.util.Arrays;
 
 /**
  * Represents a wandering Merchant ('$') who offers buying and selling actions
@@ -22,18 +23,31 @@ public class Merchant extends WanderingActor {
 
     private static final int MAX_HP = 100;
 
-    private final Purchasable[] catalog = {
-        new ParsnipPurchase(),
-        new TomatoPurchase(),
-        new SwordPurchase()
-    };
+    private final Purchasable[] catalog;
 
     /**
-     * Constructor for Merchant. Initializes the Merchant with display character '$'
-     * and 100 hit points.
+     * Default constructor for Merchant.
+     * Initializes the Merchant with the standard catalog of purchasable offerings
+     * (Parsnip crop, Tomato crop, and Sword).
      */
     public Merchant() {
+        this(
+                new ParsnipPurchase(),
+                new TomatoPurchase(),
+                new SwordPurchase()
+        );
+    }
+
+    /**
+     * Overloaded constructor allowing custom purchasable offerings to be injected.
+     * Supports the Open/Closed Principle by enabling different Merchants to carry
+     * different product catalogs without modifying this class.
+     *
+     * @param offerings the purchasable products offered by this Merchant
+     */
+    public Merchant(Purchasable... offerings) {
         super("Merchant", '$', MAX_HP);
+        this.catalog = Arrays.copyOf(offerings, offerings.length);
     }
 
     /**
