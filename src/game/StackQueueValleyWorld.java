@@ -12,6 +12,7 @@ import game.actors.Chicken;
 import game.actors.Cow;
 import game.actors.Farmer;
 import game.actors.Merchant;
+import game.crow.Crow;
 import game.items.AlienDevice;
 import game.items.Geode;
 import game.items.Hoe;
@@ -162,6 +163,7 @@ public class StackQueueValleyWorld extends World {
         placeActor(inheritedFarmMap, occupiedLocations, new Chicken("Chicken"));
         placeActor(inheritedFarmMap, occupiedLocations, new Cow("Cow"));
         placeActor(inheritedFarmMap, occupiedLocations, new Merchant());
+        placeActor(inheritedFarmMap, occupiedLocations, new Crow("Crow"));
 
         Location alienDeviceFarmDestination = locate(inheritedFarmMap, ALIEN_DEVICE_DESTINATIONS.farm());
         Location alienDeviceMinesDestination = locate(minesMap, ALIEN_DEVICE_DESTINATIONS.mines());
