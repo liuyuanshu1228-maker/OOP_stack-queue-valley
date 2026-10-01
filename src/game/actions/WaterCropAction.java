@@ -8,69 +8,29 @@ import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.items.WateringTool;
 import game.positions.Crop;
+import game.positions.CropWaterable;
+import game.statistics.StatisticUtils;
 
 /**
- * Abstract base class for actions that water a {@link Crop}.
+ * An Action that allows an Actor to water a {@link Crop}, provided they are
+ * carrying a watering tool and have enough stamina for that crop's cost.
  * <p>
- * Every crop requires a watering tool and a crop-specific amount of stamina
- * to be watered. This class takes care of that common bookkeeping (checking
- * for a watering tool, checking/deducting stamina, and recording the
- * watering) and delegates the crop-specific effect of watering to
- * subclasses.
- * <p>
- * This is unrelated to A1's ground-level {@link game.actions.WaterAction},
- * which turns raw Dirt into a Puddle; this class nurtures an already-mature
- * crop in place.
+ * This is unrelated to A1's ground-level {@link WaterAction}, which turns
+ * raw Dirt into a Puddle; this class nurtures an already-mature crop in
+ * place.
  */
-public abstract class WaterCropAction extends Action {
+public class WaterCropAction extends Action {
 
-    /**
-     * The crop being watered.
-     */
-    protected final Crop crop;
-
-    /**
-     * The location of the crop being watered.
-     */
-    protected final Location cropLocation;
-
-    /**
-     * The amount of stamina it costs to water this crop.
-     */
-    private final int staminaCost;
+    private final Location cropLocation;
 
     /**
      * Constructor.
      *
-     * @param crop the crop to be watered
-     * @param cropLocation the location of the crop to be watered
-     * @param staminaCost the stamina cost of watering this crop
+     * @param cropLocation the Location of the crop to be watered
      */
-    public WaterCropAction(Crop crop, Location cropLocation, int staminaCost) {
-        this.crop = crop;
+    public WaterCropAction(Location cropLocation) {
         this.cropLocation = cropLocation;
-        this.staminaCost = staminaCost;
     }
-
-    /**
-     * The amount of stamina it costs to water this crop.
-     *
-     * @return the stamina cost of watering this crop
-     */
-    protected int getStaminaCost() {
-        return staminaCost;
-    }
-
-    /**
-     * Applies the crop-specific effect of being watered. Called only after
-     * the watering tool and stamina checks have passed, and after the
-     * stamina has been deducted and the watering has been recorded.
-     *
-     * @param actor the actor watering the crop
-     * @param map the map the actor is on
-     * @return a description of what happened
-     */
-    protected abstract String applyWateringEffect(Actor actor, GameMap map);
 
     /**
      * Waters the crop: requires the actor to carry a {@link WateringTool} and
@@ -85,18 +45,21 @@ public abstract class WaterCropAction extends Action {
      */
     @Override
     public String execute(Actor actor, GameMap map) {
+        CropWaterable waterable = cropLocation.getGroundAs(CropWaterable.class);
+
         if (actor.getInventory().getItemsAs(WateringTool.class).isEmpty()) {
-            return actor + " has no watering tool to water the " + crop + ".";
+            return actor + " has no watering tool to water the " + cropLocation.getGround() + ".";
         }
 
-        if (actor.getStatistic(ActorStatistics.STAMINA) < getStaminaCost()) {
-            return actor + " is too tired to water the " + crop + ".";
+        int cost = waterable.getWateringStaminaCost();
+        if (!StatisticUtils.hasEnough(actor, ActorStatistics.STAMINA, cost)) {
+            return actor + " is too tired to water the " + cropLocation.getGround() + ".";
         }
 
-        actor.modifyStatistic(ActorStatistics.STAMINA, StatisticOperations.DECREASE, getStaminaCost());
-        crop.recordWatering();
+        actor.modifyStatistic(ActorStatistics.STAMINA, StatisticOperations.DECREASE, cost);
+        cropLocation.getGroundAs(Crop.class).recordWatering();
 
-        return applyWateringEffect(actor, map);
+        return waterable.water(actor, cropLocation);
     }
 
     /**
@@ -108,6 +71,6 @@ public abstract class WaterCropAction extends Action {
      */
     @Override
     public String menuDescription(Actor actor) {
-        return actor + " waters the " + crop;
+        return actor + " waters the " + cropLocation.getGround();
     }
 }

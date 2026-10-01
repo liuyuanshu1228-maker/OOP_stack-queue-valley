@@ -2,8 +2,10 @@ package game.positions;
 
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.Location;
-import game.actions.WaterMelonAction;
+import edu.monash.fit2099.engine.statistics.StatisticOperations;
+import game.actions.WaterCropAction;
 import game.items.MelonItem;
 
 import java.util.ArrayList;
@@ -14,19 +16,26 @@ import java.util.Random;
  * A melon crop. Watering it may raise the farmer's maximum stamina, and it
  * can be harvested at any time, though harvesting risks an explosion that
  * damages everyone nearby.
- *
- * @see WaterMelonAction
  */
-public class Melon extends Crop {
+public class Melon extends Crop implements CropWaterable {
 
     /** Stamina consumed by a successful Melon harvest. */
     private static final int HARVEST_STAMINA_COST = 5;
+
+    /** Stamina consumed by a successful Melon watering. */
+    private static final int WATERING_STAMINA_COST = 1;
 
     /** Chance (out of 100) that harvesting causes the melon to explode. */
     private static final int EXPLOSION_CHANCE_PERCENT = 50;
 
     /** Base explosion damage before subtracting the watering count. */
     private static final int BASE_EXPLOSION_DAMAGE = 20;
+
+    /** Chance (out of 100) that watering raises the actor's maximum stamina. */
+    private static final int MAX_STAMINA_INCREASE_CHANCE_PERCENT = 50;
+
+    /** Amount by which watering raises the actor's maximum stamina, when it does. */
+    private static final int MAX_STAMINA_INCREASE_AMOUNT = 1;
 
     private final Random random = new Random();
 
@@ -50,7 +59,7 @@ public class Melon extends Crop {
     @Override
     public ActionList allowableActions(Actor actor, Location location, String direction) {
         ActionList actions = super.allowableActions(actor, location, direction);
-        actions.add(new WaterMelonAction(this, location));
+        actions.add(new WaterCropAction(location));
         return actions;
     }
 
@@ -83,6 +92,36 @@ public class Melon extends Crop {
 
         actor.getInventory().add(new MelonItem());
         return actor + " harvests the " + this + " and picks up a melon.";
+    }
+
+    /**
+     * @return the stamina cost of watering a melon
+     */
+    @Override
+    public int getWateringStaminaCost() {
+        return WATERING_STAMINA_COST;
+    }
+
+    /**
+     * Rolls the chance to raise the actor's maximum stamina.
+     *
+     * @param actor the actor watering the melon
+     * @param location the location of the melon being watered
+     * @return a description of what happened
+     */
+    @Override
+    public String water(Actor actor, Location location) {
+        String message = actor + " waters the " + this + ".";
+
+        if (random.nextInt(100) < MAX_STAMINA_INCREASE_CHANCE_PERCENT) {
+            int maxStaminaBefore = actor.getMaximumStatistic(ActorStatistics.STAMINA);
+            actor.modifyStatisticMaximum(ActorStatistics.STAMINA, StatisticOperations.INCREASE, MAX_STAMINA_INCREASE_AMOUNT);
+            int maxStaminaAfter = actor.getMaximumStatistic(ActorStatistics.STAMINA);
+            message += " Its maximum stamina increases by " + (maxStaminaAfter - maxStaminaBefore)
+                    + " (" + maxStaminaBefore + " -> " + maxStaminaAfter + ").";
+        }
+
+        return message;
     }
 
     /**

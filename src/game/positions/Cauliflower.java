@@ -3,7 +3,7 @@ package game.positions;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.actions.WaterCauliflowerAction;
+import game.actions.WaterCropAction;
 import game.items.CauliflowerItem;
 
 import java.util.Random;
@@ -12,19 +12,23 @@ import java.util.Random;
  * A cauliflower crop. Watering it may turn the surrounding ground into
  * puddles, and it can only be harvested once it has been watered enough
  * times.
- *
- * @see WaterCauliflowerAction
  */
-public class Cauliflower extends Crop {
+public class Cauliflower extends Crop implements CropWaterable {
 
     /** Stamina consumed by a successful Cauliflower harvest. */
     private static final int HARVEST_STAMINA_COST = 3;
+
+    /** Stamina consumed by a successful Cauliflower watering. */
+    private static final int WATERING_STAMINA_COST = 2;
 
     /** Number of waterings required before this crop can be harvested. */
     private static final int REQUIRED_WATERINGS = 5;
 
     /** Chance (out of 100) that a ready harvest actually yields a cauliflower. */
     private static final int SUCCESS_CHANCE_PERCENT = 50;
+
+    /** Chance (out of 100) that watering turns the surrounding ground into puddles. */
+    private static final int PUDDLE_CHANCE_PERCENT = 50;
 
     private final Random random = new Random();
 
@@ -48,7 +52,7 @@ public class Cauliflower extends Crop {
     @Override
     public ActionList allowableActions(Actor actor, Location location, String direction) {
         ActionList actions = super.allowableActions(actor, location, direction);
-        actions.add(new WaterCauliflowerAction(this, location));
+        actions.add(new WaterCropAction(location));
         return actions;
     }
 
@@ -96,5 +100,37 @@ public class Cauliflower extends Crop {
         }
 
         return actor + " harvests the " + this + ", but it crumbles apart.";
+    }
+
+    /**
+     * @return the stamina cost of watering a cauliflower
+     */
+    @Override
+    public int getWateringStaminaCost() {
+        return WATERING_STAMINA_COST;
+    }
+
+    /**
+     * Rolls the chance to turn the adjacent, non-crop ground tiles into
+     * puddles.
+     *
+     * @param actor the actor watering the cauliflower
+     * @param location the location of the cauliflower being watered
+     * @return a description of what happened
+     */
+    @Override
+    public String water(Actor actor, Location location) {
+        String message = actor + " waters the " + this + ".";
+
+        if (random.nextInt(100) < PUDDLE_CHANCE_PERCENT) {
+            for (Location adjacentLocation : location.getNearbyLocations(1)) {
+                if (adjacentLocation.getGroundAs(Crop.class) == null) {
+                    adjacentLocation.setGround(new Puddle());
+                }
+            }
+            message += " The surrounding ground turns into puddles.";
+        }
+
+        return message;
     }
 }

@@ -3,28 +3,33 @@ package game.positions;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.actions.WaterStrawberryAction;
+import game.actions.WaterCropAction;
 import game.items.StrawberryItem;
 
+import java.util.List;
 import java.util.Random;
 
 /**
  * A strawberry crop. It can be watered, which scatters strawberries onto
  * adjacent tiles, and it can be harvested at any time for strawberries,
  * though harvesting risks destroying the plant.
- *
- * @see WaterStrawberryAction
  */
-public class Strawberry extends Crop {
+public class Strawberry extends Crop implements CropWaterable {
 
     /** Stamina consumed by a successful Strawberry harvest. */
     private static final int HARVEST_STAMINA_COST = 1;
+
+    /** Stamina consumed by a successful Strawberry watering. */
+    private static final int WATERING_STAMINA_COST = 1;
 
     /** Number of strawberries produced by a harvest. */
     private static final int STRAWBERRIES_PER_HARVEST = 2;
 
     /** Base chance (out of 100) that harvesting destroys the plant, before subtracting the watering count. */
     private static final int BASE_DESTRUCTION_CHANCE_PERCENT = 50;
+
+    /** Number of strawberries dropped nearby by a single watering. */
+    private static final int STRAWBERRIES_PER_WATERING = 2;
 
     private final Random random = new Random();
 
@@ -48,7 +53,7 @@ public class Strawberry extends Crop {
     @Override
     public ActionList allowableActions(Actor actor, Location location, String direction) {
         ActionList actions = super.allowableActions(actor, location, direction);
-        actions.add(new WaterStrawberryAction(this, location));
+        actions.add(new WaterCropAction(location));
         return actions;
     }
 
@@ -84,5 +89,32 @@ public class Strawberry extends Crop {
         }
 
         return message;
+    }
+
+    /**
+     * @return the stamina cost of watering a strawberry
+     */
+    @Override
+    public int getWateringStaminaCost() {
+        return WATERING_STAMINA_COST;
+    }
+
+    /**
+     * Drops two strawberries onto random tiles adjacent to the crop.
+     *
+     * @param actor the actor watering the strawberry
+     * @param location the location of the strawberry being watered
+     * @return a description of what happened
+     */
+    @Override
+    public String water(Actor actor, Location location) {
+        List<Location> adjacentLocations = location.getNearbyLocations(1);
+
+        for (int i = 0; i < STRAWBERRIES_PER_WATERING; i++) {
+            Location target = adjacentLocations.get(random.nextInt(adjacentLocations.size()));
+            target.addItem(StrawberryItem.createRandom());
+        }
+
+        return actor + " waters the " + this + ". Strawberries appear on the nearby tiles.";
     }
 }
