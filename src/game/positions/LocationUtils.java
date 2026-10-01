@@ -4,7 +4,6 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import game.Chance;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +14,8 @@ import java.util.function.Supplier;
  * Utility methods for working with the tiles around a given Location.
  */
 public final class LocationUtils {
+
+    private static final Random RANDOM = new Random();
 
     private LocationUtils() {
         // Prevent instantiation; this class only provides static utility methods.
@@ -81,7 +82,7 @@ public final class LocationUtils {
                 candidates.add(nearby);
             }
         }
-        return Chance.pickOne(candidates);
+        return pickOne(candidates);
     }
 
     /**
@@ -102,6 +103,19 @@ public final class LocationUtils {
                 }
             }
         }
-        return Chance.pickOne(candidates);
+        return pickOne(candidates);
+    }
+
+    /**
+     * Picks one of the given options uniformly at random.
+     *
+     * @param options the options to pick from
+     * @return one randomly chosen option, or empty if there are no options
+     */
+    private static Optional<Location> pickOne(List<Location> options) {
+        if (options.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(options.get(RANDOM.nextInt(options.size())));
     }
 }

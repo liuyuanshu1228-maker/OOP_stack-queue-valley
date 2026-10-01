@@ -9,13 +9,17 @@ import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import game.Chance;
+
+import java.util.Optional;
+import java.util.Random;
 
 /**
  * Abstract base class for actors that wander randomly around the map each turn.
  *
  */
 public abstract class WanderingActor extends Actor {
+
+    private final Random random = new Random();
 
     /**
      * Constructor for WanderingActor.
@@ -51,7 +55,9 @@ public abstract class WanderingActor extends Actor {
                 .filter(exit -> exit.getDestination().canActorEnter(this))
                 .toList();
 
-        var chosenExit = Chance.pickOne(enterableExits);
+        Optional<Exit> chosenExit = enterableExits.isEmpty()
+                ? Optional.empty()
+                : Optional.of(enterableExits.get(random.nextInt(enterableExits.size())));
         if (chosenExit.isEmpty()) {
             return new DoNothingAction();
         }

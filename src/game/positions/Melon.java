@@ -3,12 +3,12 @@ package game.positions;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.Chance;
 import game.actions.WaterMelonAction;
 import game.items.MelonItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * A melon crop. Watering it may raise the farmer's maximum stamina, and it
@@ -27,6 +27,8 @@ public class Melon extends Crop {
 
     /** Base explosion damage before subtracting the watering count. */
     private static final int BASE_EXPLOSION_DAMAGE = 20;
+
+    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -73,7 +75,7 @@ public class Melon extends Crop {
     public String harvest(Actor actor, Location location) {
         removeCrop(location);
 
-        if (Chance.rollPercent(EXPLOSION_CHANCE_PERCENT)) {
+        if (random.nextInt(100) < EXPLOSION_CHANCE_PERCENT) {
             int damage = Math.max(0, BASE_EXPLOSION_DAMAGE - getWateringCount());
             explode(location, damage);
             return actor + " harvests the " + this + ". It explodes, dealing " + damage + " damage to everyone nearby!";

@@ -29,10 +29,18 @@ public class TomatoItem extends FoodItem {
      * which also fully restores the Actor's current HP to the new maximum.
      *
      * @param actor the Actor consuming this Tomato
+     * @return a description of the actual maximum HP change and the
+     * resulting current HP
      */
     @Override
-    public void consume(Actor actor) {
+    public String consume(Actor actor) {
+        int maxHealthBefore = actor.getMaximumStatistic(ActorStatistics.HEALTH);
         actor.modifyStatisticMaximum(ActorStatistics.HEALTH, StatisticOperations.INCREASE, MAX_HP_INCREASE);
+        int maxHealthAfter = actor.getMaximumStatistic(ActorStatistics.HEALTH);
+        int healthAfter = actor.getStatistic(ActorStatistics.HEALTH);
+
+        return actor + " eats the tomato. Maximum HP increases by " + (maxHealthAfter - maxHealthBefore)
+                + " (" + maxHealthBefore + " -> " + maxHealthAfter + "), and current HP is restored to " + healthAfter + ".";
     }
 
     /**

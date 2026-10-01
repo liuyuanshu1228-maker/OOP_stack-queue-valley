@@ -4,10 +4,13 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
-import game.Chance;
 import game.positions.Rock;
 import game.statistics.FarmerStatistics;
 import game.trading.Sellable;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 /**
  * Represents a Stone ('s') item that can be sold to the Merchant for 10 coins.
@@ -16,6 +19,8 @@ import game.trading.Sellable;
 public class Stone extends Item implements Sellable {
 
     private static final int SELL_PRICE = 10;
+
+    private final Random random = new Random();
 
     /**
      * Constructor for Stone. Initializes the portable Stone item with display character 's'.
@@ -47,9 +52,13 @@ public class Stone extends Item implements Sellable {
     @Override
     public String sell(Actor seller, Actor merchant, Location merchantLocation) {
         seller.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.INCREASE, SELL_PRICE);
-        boolean built = Chance.pickOne(merchantLocation.getNearbyLocations(1))
-                .map(target -> {
-                    target.setGround(new Rock());
+        List<Location> nearby = merchantLocation.getNearbyLocations(1);
+        Optional<Location> target = nearby.isEmpty()
+                ? Optional.empty()
+                : Optional.of(nearby.get(random.nextInt(nearby.size())));
+        boolean built = target
+                .map(location -> {
+                    location.setGround(new Rock());
                     return true;
                 })
                 .orElse(false);

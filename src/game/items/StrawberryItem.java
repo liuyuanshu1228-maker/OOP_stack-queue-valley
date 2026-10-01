@@ -1,10 +1,11 @@
 package game.items;
 
 import edu.monash.fit2099.engine.actors.Actor;
-import game.Chance;
 import game.capabilities.StrawberryHealStatus;
 import game.capabilities.StrawberryPoisonStatus;
 import game.positions.Strawberry;
+
+import java.util.Random;
 
 /**
  * A strawberry, produced by watering or harvesting a {@link Strawberry}
@@ -14,6 +15,8 @@ import game.positions.Strawberry;
 public class StrawberryItem extends ConsumableItem {
 
     private static final int ROTTEN_CHANCE_PERCENT = 50;
+
+    private static final Random RANDOM = new Random();
 
     private final boolean rotten;
 
@@ -34,7 +37,7 @@ public class StrawberryItem extends ConsumableItem {
      * @return a new, randomly rotten or fresh strawberry
      */
     public static StrawberryItem createRandom() {
-        return new StrawberryItem(Chance.rollPercent(ROTTEN_CHANCE_PERCENT));
+        return new StrawberryItem(RANDOM.nextInt(100) < ROTTEN_CHANCE_PERCENT);
     }
 
     /**
@@ -42,14 +45,20 @@ public class StrawberryItem extends ConsumableItem {
      * over time.
      *
      * @param actor the actor eating this strawberry
+     * @return a description of the effect that was applied
      */
     @Override
-    public void consume(Actor actor) {
+    public String consume(Actor actor) {
         if (rotten) {
             actor.addStatus(new StrawberryPoisonStatus(actor));
-            return;
+            return actor + " eats the rotten strawberry and is poisoned for "
+                    + StrawberryPoisonStatus.DAMAGE_PER_TURN + " damage per turn over "
+                    + StrawberryPoisonStatus.DURATION_TURNS + " turns.";
         }
 
         actor.addStatus(new StrawberryHealStatus(actor));
+        return actor + " eats the strawberry and is healed for "
+                + StrawberryHealStatus.HEAL_PER_TURN + " HP per turn over "
+                + StrawberryHealStatus.DURATION_TURNS + " turns.";
     }
 }

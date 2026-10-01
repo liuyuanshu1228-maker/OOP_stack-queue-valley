@@ -5,8 +5,9 @@ import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
-import game.Chance;
 import game.positions.Melon;
+
+import java.util.Random;
 
 /**
  * The action of watering a {@link Melon}.
@@ -19,6 +20,8 @@ public class WaterMelonAction extends WaterCropAction {
     private static final int STAMINA_COST = 1;
     private static final int MAX_STAMINA_INCREASE_CHANCE_PERCENT = 50;
     private static final int MAX_STAMINA_INCREASE_AMOUNT = 1;
+
+    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -49,9 +52,12 @@ public class WaterMelonAction extends WaterCropAction {
     protected String applyWateringEffect(Actor actor, GameMap map) {
         String message = actor + " waters the " + crop + ".";
 
-        if (Chance.rollPercent(MAX_STAMINA_INCREASE_CHANCE_PERCENT)) {
+        if (random.nextInt(100) < MAX_STAMINA_INCREASE_CHANCE_PERCENT) {
+            int maxStaminaBefore = actor.getMaximumStatistic(ActorStatistics.STAMINA);
             actor.modifyStatisticMaximum(ActorStatistics.STAMINA, StatisticOperations.INCREASE, MAX_STAMINA_INCREASE_AMOUNT);
-            message += " Its maximum stamina increases by " + MAX_STAMINA_INCREASE_AMOUNT + ".";
+            int maxStaminaAfter = actor.getMaximumStatistic(ActorStatistics.STAMINA);
+            message += " Its maximum stamina increases by " + (maxStaminaAfter - maxStaminaBefore)
+                    + " (" + maxStaminaBefore + " -> " + maxStaminaAfter + ").";
         }
 
         return message;

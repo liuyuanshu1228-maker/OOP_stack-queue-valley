@@ -5,11 +5,12 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
-import game.Chance;
 import game.actors.Chicken;
 import game.positions.LocationUtils;
 import game.statistics.FarmerStatistics;
 import game.trading.Sellable;
+
+import java.util.Random;
 
 /**
  * Represents an Egg ('0') item produced by a Chicken. Can be sold to the Merchant
@@ -19,6 +20,8 @@ public class Egg extends Item implements Sellable {
 
     private static final int SELL_PRICE = 40;
     private static final int CHICKEN_SPAWN_CHANCE_PERCENT = 50;
+
+    private final Random random = new Random();
 
     /**
      * Constructor for Egg. Initializes the portable Egg item with display character '0'.
@@ -53,7 +56,7 @@ public class Egg extends Item implements Sellable {
         StringBuilder message = new StringBuilder(
                 seller + " sells " + this + " to " + merchant + " for " + SELL_PRICE + " coins.");
 
-        if (Chance.rollPercent(CHICKEN_SPAWN_CHANCE_PERCENT)) {
+        if (random.nextInt(100) < CHICKEN_SPAWN_CHANCE_PERCENT) {
             Chicken chicken = new Chicken("Chicken");
             var spot = LocationUtils.randomEnterableNearby(merchantLocation, chicken);
             if (spot.isPresent()) {

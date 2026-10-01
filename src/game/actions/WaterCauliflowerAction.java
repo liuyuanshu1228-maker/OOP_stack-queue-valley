@@ -3,10 +3,11 @@ package game.actions;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import game.Chance;
 import game.positions.Cauliflower;
 import game.positions.Crop;
 import game.positions.Puddle;
+
+import java.util.Random;
 
 /**
  * The action of watering a {@link Cauliflower}.
@@ -18,6 +19,8 @@ public class WaterCauliflowerAction extends WaterCropAction {
 
     private static final int STAMINA_COST = 2;
     private static final int PUDDLE_CHANCE_PERCENT = 50;
+
+    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -49,7 +52,7 @@ public class WaterCauliflowerAction extends WaterCropAction {
     protected String applyWateringEffect(Actor actor, GameMap map) {
         String message = actor + " waters the " + crop + ".";
 
-        if (Chance.rollPercent(PUDDLE_CHANCE_PERCENT)) {
+        if (random.nextInt(100) < PUDDLE_CHANCE_PERCENT) {
             for (Location adjacentLocation : cropLocation.getNearbyLocations(1)) {
                 if (adjacentLocation.getGroundAs(Crop.class) == null) {
                     adjacentLocation.setGround(new Puddle());

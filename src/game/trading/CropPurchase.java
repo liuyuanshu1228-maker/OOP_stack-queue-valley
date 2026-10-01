@@ -3,9 +3,11 @@ package game.trading;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
-import game.Chance;
 import game.positions.Crop;
 import game.statistics.FarmerStatistics;
+
+import java.util.Optional;
+import java.util.Random;
 
 /**
  * Abstract base class for purchasing crops from a Merchant.
@@ -16,6 +18,7 @@ public abstract class CropPurchase implements Purchasable {
 
     private final String productName;
     private final int price;
+    private final Random random = new Random();
 
     /**
      * Constructor for CropPurchase.
@@ -69,7 +72,9 @@ public abstract class CropPurchase implements Purchasable {
                 .filter(adjacent -> adjacent.getGroundAs(Crop.class) == null)
                 .toList();
 
-        var target = Chance.pickOne(candidates);
+        Optional<Location> target = candidates.isEmpty()
+                ? Optional.empty()
+                : Optional.of(candidates.get(random.nextInt(candidates.size())));
         if (target.isEmpty()) {
             if (!waived) {
                 buyer.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.INCREASE, price);

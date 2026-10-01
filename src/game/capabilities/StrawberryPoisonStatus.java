@@ -11,8 +11,8 @@ import edu.monash.fit2099.engine.positions.Location;
  */
 public class StrawberryPoisonStatus implements Status {
 
-    private static final int DAMAGE_PER_TURN = 1;
-    private static final int DURATION_TURNS = 3;
+    public static final int DAMAGE_PER_TURN = 1;
+    public static final int DURATION_TURNS = 3;
 
     private final Actor poisonedActor;
     private int remainingTurns = DURATION_TURNS;

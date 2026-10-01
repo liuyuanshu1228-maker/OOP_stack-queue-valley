@@ -12,6 +12,8 @@ public interface Consumable {
      * Applies the effect of consuming this Item to the given Actor.
      *
      * @param actor the Actor consuming this Item
+     * @return a description of what the effect actually did (e.g. the
+     * before/after value of whatever it changed), to be displayed to the player
      */
-    void consume(Actor actor);
+    String consume(Actor actor);
 }

@@ -40,9 +40,9 @@ public class ConsumeAction extends Action {
             return actor + " cannot consume " + item + ".";
         }
 
-        consumable.get().consume(actor);
+        String message = consumable.get().consume(actor);
         actor.getInventory().remove(item);
-        return actor + " consumes the " + item + ".";
+        return message;
     }
 
     /**

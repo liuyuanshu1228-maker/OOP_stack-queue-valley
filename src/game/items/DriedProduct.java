@@ -31,9 +31,15 @@ public class DriedProduct extends ProcessedProduct {
      * Applies this layer's own effect: restores 2 stamina to the Actor.
      *
      * @param actor the Actor consuming this product
+     * @return a description of the actual stamina change
      */
     @Override
-    protected void applyProcessingEffect(Actor actor) {
+    protected String applyProcessingEffect(Actor actor) {
+        int staminaBefore = actor.getStatistic(ActorStatistics.STAMINA);
         actor.modifyStatistic(ActorStatistics.STAMINA, StatisticOperations.INCREASE, STAMINA_RESTORED);
+        int staminaAfter = actor.getStatistic(ActorStatistics.STAMINA);
+
+        return "The drying restores " + (staminaAfter - staminaBefore) + " stamina ("
+                + staminaBefore + " -> " + staminaAfter + ").";
     }
 }

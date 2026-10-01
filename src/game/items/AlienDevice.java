@@ -5,10 +5,11 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import game.Chance;
 import game.positions.DestinationList;
 import game.positions.LocationUtils;
 import game.positions.TravelMethod;
+
+import java.util.Random;
 
 /**
  * An unreliable alien device. While it is carried it offers a choice of
@@ -22,6 +23,7 @@ public class AlienDevice extends Item implements TravelMethod {
     private static final int MALFUNCTION_CHANCE_PERCENT = 50;
 
     private final DestinationList destinations = new DestinationList();
+    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -65,7 +67,7 @@ public class AlienDevice extends Item implements TravelMethod {
      */
     @Override
     public Location chooseLanding(Actor actor, GameMap map, Location intended) {
-        if (Chance.rollPercent(MALFUNCTION_CHANCE_PERCENT)) {
+        if (random.nextInt(100) < MALFUNCTION_CHANCE_PERCENT) {
             return LocationUtils.randomEnterableLocation(map, actor).orElse(intended);
         }
         return intended;

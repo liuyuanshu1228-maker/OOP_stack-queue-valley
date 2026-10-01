@@ -2,11 +2,11 @@ package game.trading;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.Chance;
 import game.items.ParsnipItem;
 import game.positions.Crop;
 import game.positions.Parsnip;
 import java.util.List;
+import java.util.Random;
 
 /** 
  * Buying a Parsnip crop: 250 coins, drops 3 Parsnips once planted. 
@@ -16,6 +16,8 @@ public class ParsnipPurchase extends CropPurchase {
 
     private static final int PRICE = 250;
     private static final int PARSNIPS_PRODUCED = 3;
+
+    private final Random random = new Random();
 
     /**
      * Constructor for ParsnipPurchase. Initializes the purchase option with a price of 250 coins.
@@ -46,7 +48,9 @@ public class ParsnipPurchase extends CropPurchase {
     protected String applyPlantingEffect(Actor buyer, Actor merchant, Location cropLocation) {
         List<Location> nearby = cropLocation.getNearbyLocations(1);
         for (int i = 0; i < PARSNIPS_PRODUCED; i++) {
-            Chance.pickOne(nearby).ifPresent(location -> location.addItem(new ParsnipItem()));
+            if (!nearby.isEmpty()) {
+                nearby.get(random.nextInt(nearby.size())).addItem(new ParsnipItem());
+            }
         }
         return buyer + " buys a Parsnip crop from " + merchant + ".";
     }

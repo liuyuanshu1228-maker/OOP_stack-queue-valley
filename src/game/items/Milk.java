@@ -4,9 +4,10 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
-import game.Chance;
 import game.statistics.FarmerStatistics;
 import game.trading.Sellable;
+
+import java.util.Random;
 
 /**
  * Represents a Milk ('K') item produced by a Cow. Can be sold to the Merchant
@@ -16,6 +17,8 @@ public class Milk extends Item implements Sellable {
 
     private static final int SELL_PRICE = 60;
     private static final int NO_PAYMENT_CHANCE_PERCENT = 50;
+
+    private final Random random = new Random();
 
     /**
      * Constructor for Milk. Initializes the portable Milk item with display character 'K'.
@@ -46,7 +49,7 @@ public class Milk extends Item implements Sellable {
      */
     @Override
     public String sell(Actor seller, Actor merchant, Location merchantLocation) {
-        if (Chance.rollPercent(NO_PAYMENT_CHANCE_PERCENT)) {
+        if (random.nextInt(100) < NO_PAYMENT_CHANCE_PERCENT) {
             return merchant + " takes the " + this + " from " + seller + " and pays nothing.";
         }
         seller.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.INCREASE, SELL_PRICE);

@@ -3,9 +3,10 @@ package game.positions;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.Chance;
 import game.actions.WaterCauliflowerAction;
 import game.items.CauliflowerItem;
+
+import java.util.Random;
 
 /**
  * A cauliflower crop. Watering it may turn the surrounding ground into
@@ -24,6 +25,8 @@ public class Cauliflower extends Crop {
 
     /** Chance (out of 100) that a ready harvest actually yields a cauliflower. */
     private static final int SUCCESS_CHANCE_PERCENT = 50;
+
+    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -87,7 +90,7 @@ public class Cauliflower extends Crop {
     public String harvest(Actor actor, Location location) {
         removeCrop(location);
 
-        if (Chance.rollPercent(SUCCESS_CHANCE_PERCENT)) {
+        if (random.nextInt(100) < SUCCESS_CHANCE_PERCENT) {
             actor.getInventory().add(new CauliflowerItem());
             return actor + " harvests the " + this + " and gets a cauliflower.";
         }

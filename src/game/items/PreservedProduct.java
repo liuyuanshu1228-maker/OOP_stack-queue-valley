@@ -31,9 +31,15 @@ public class PreservedProduct extends ProcessedProduct {
      * Applies this layer's own effect: restores 1 HP to the Actor.
      *
      * @param actor the Actor consuming this product
+     * @return a description of the actual HP change
      */
     @Override
-    protected void applyProcessingEffect(Actor actor) {
+    protected String applyProcessingEffect(Actor actor) {
+        int healthBefore = actor.getStatistic(ActorStatistics.HEALTH);
         actor.modifyStatistic(ActorStatistics.HEALTH, StatisticOperations.INCREASE, HP_RESTORED);
+        int healthAfter = actor.getStatistic(ActorStatistics.HEALTH);
+
+        return "The preserving restores " + (healthAfter - healthBefore) + " HP ("
+                + healthBefore + " -> " + healthAfter + ").";
     }
 }

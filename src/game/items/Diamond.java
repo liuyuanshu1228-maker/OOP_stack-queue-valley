@@ -4,9 +4,12 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
-import game.Chance;
 import game.statistics.FarmerStatistics;
 import game.trading.Sellable;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 /**
  * Represents a Diamond ('d') item that can be sold to the Merchant for 5000 coins,
@@ -16,6 +19,8 @@ public class Diamond extends Item implements Sellable {
 
     private static final int SELL_PRICE = 5000;
     private static final int THEFT_CHANCE_PERCENT = 50;
+
+    private final Random random = new Random();
 
     /**
      * Constructor for Diamond. Initializes the portable Diamond item with display character 'd'.
@@ -50,11 +55,14 @@ public class Diamond extends Item implements Sellable {
         StringBuilder message = new StringBuilder(
                 seller + " sells " + this + " to " + merchant + " for " + SELL_PRICE + " coins.");
 
-        if (Chance.rollPercent(THEFT_CHANCE_PERCENT)) {
-            var items = seller.getInventory().getItems();
-            Chance.pickOne(items).ifPresent(stolen -> {
-                seller.getInventory().remove(stolen);
-                message.append(" ").append(merchant).append(" also steals ").append(stolen).append(".");
+        if (random.nextInt(100) < THEFT_CHANCE_PERCENT) {
+            List<Item> items = seller.getInventory().getItems();
+            Optional<Item> stolen = items.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(items.get(random.nextInt(items.size())));
+            stolen.ifPresent(item -> {
+                seller.getInventory().remove(item);
+                message.append(" ").append(merchant).append(" also steals ").append(item).append(".");
             });
         }
         return message.toString();

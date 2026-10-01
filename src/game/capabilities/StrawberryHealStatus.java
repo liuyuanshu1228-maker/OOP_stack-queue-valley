@@ -11,8 +11,8 @@ import edu.monash.fit2099.engine.positions.Location;
  */
 public class StrawberryHealStatus implements Status {
 
-    private static final int HEAL_PER_TURN = 1;
-    private static final int DURATION_TURNS = 2;
+    public static final int HEAL_PER_TURN = 1;
+    public static final int DURATION_TURNS = 2;
 
     private final Actor healedActor;
     private int remainingTurns = DURATION_TURNS;

@@ -2,7 +2,8 @@ package game.positions;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.Chance;
+
+import java.util.Random;
 
 /**
  * A ladder linking one map to another. Climbing it risks a fall, but a fall
@@ -14,6 +15,8 @@ public class Ladder extends TravelGround {
     private static final int FALL_CHANCE_PERCENT = 50;
     /** Damage taken by an Actor who falls. */
     private static final int FALL_DAMAGE = 25;
+
+    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -31,7 +34,7 @@ public class Ladder extends TravelGround {
      */
     @Override
     public String onArrival(Actor actor, Location landing) {
-        if (!Chance.rollPercent(FALL_CHANCE_PERCENT)) {
+        if (random.nextInt(100) >= FALL_CHANCE_PERCENT) {
             return "";
         }
         actor.hurt(FALL_DAMAGE);

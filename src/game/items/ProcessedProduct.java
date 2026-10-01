@@ -31,11 +31,15 @@ public abstract class ProcessedProduct extends ConsumableItem implements Process
      * exactly once, then applies this layer's own effect.
      *
      * @param actor the Actor consuming this product
+     * @return the preceding product's message followed by this layer's own
      */
     @Override
-    public final void consume(Actor actor) {
-        precedingProduct.asCapability(Consumable.class).ifPresent(consumable -> consumable.consume(actor));
-        applyProcessingEffect(actor);
+    public final String consume(Actor actor) {
+        String precedingMessage = precedingProduct.asCapability(Consumable.class)
+                .map(consumable -> consumable.consume(actor))
+                .orElse("");
+        String ownMessage = applyProcessingEffect(actor);
+        return precedingMessage.isEmpty() ? ownMessage : precedingMessage + " " + ownMessage;
     }
 
     /**
@@ -44,6 +48,7 @@ public abstract class ProcessedProduct extends ConsumableItem implements Process
      * or placing an item on the ground).
      *
      * @param actor the Actor consuming this product
+     * @return a description of this layer's actual effect
      */
-    protected abstract void applyProcessingEffect(Actor actor);
+    protected abstract String applyProcessingEffect(Actor actor);
 }

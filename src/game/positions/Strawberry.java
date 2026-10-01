@@ -3,9 +3,10 @@ package game.positions;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.Chance;
 import game.actions.WaterStrawberryAction;
 import game.items.StrawberryItem;
+
+import java.util.Random;
 
 /**
  * A strawberry crop. It can be watered, which scatters strawberries onto
@@ -24,6 +25,8 @@ public class Strawberry extends Crop {
 
     /** Base chance (out of 100) that harvesting destroys the plant, before subtracting the watering count. */
     private static final int BASE_DESTRUCTION_CHANCE_PERCENT = 50;
+
+    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -75,7 +78,7 @@ public class Strawberry extends Crop {
         String message = actor + " harvests the " + this + " and picks up 2 strawberries.";
 
         int destructionChancePercent = BASE_DESTRUCTION_CHANCE_PERCENT - getWateringCount();
-        if (Chance.rollPercent(destructionChancePercent)) {
+        if (random.nextInt(100) < destructionChancePercent) {
             removeCrop(location);
             message += " The " + this + " couldn't withstand the harvest and was destroyed.";
         }

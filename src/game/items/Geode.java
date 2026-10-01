@@ -5,10 +5,11 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import game.Chance;
 import game.actions.BreakAction;
 import game.positions.Breakable;
 import game.positions.LocationUtils;
+
+import java.util.Random;
 
 /**
  * A geode. It can be picked up and carried, and can be broken either from the
@@ -34,6 +35,8 @@ public class Geode extends Item implements Breakable {
 
     private static final String IN_INVENTORY = "in inventory";
     private static final String ON_THE_GROUND = "on the ground";
+
+    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -80,7 +83,7 @@ public class Geode extends Item implements Breakable {
     public String breakUp(Actor actor, Location location) {
         actor.getInventory().remove(this);
         location.removeItem(this);
-        if (Chance.rollPercent(DIAMOND_CHANCE_PERCENT)) {
+        if (random.nextInt(100) < DIAMOND_CHANCE_PERCENT) {
             location.addItem(new Diamond());
             return actor + " breaks the " + this + ". It splits open, revealing a diamond!";
         }
