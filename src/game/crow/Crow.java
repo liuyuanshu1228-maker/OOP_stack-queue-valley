@@ -5,10 +5,15 @@ import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actions.DoNothingAction;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.displays.Display;
+import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import game.actions.CreatureStateAction;
 import game.actors.CreatureState;
+import game.actors.ItemCache;
 import game.actors.StatefulCreature;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A crow: a stateful creature that cycles between perching, foraging,
@@ -17,12 +22,16 @@ import game.actors.StatefulCreature;
  * Only {@link Perching} is wired up so far; Foraging, Mobbing and Fleeing
  * are added incrementally.
  */
-public class Crow extends Actor implements StatefulCreature {
+public class Crow extends Actor implements StatefulCreature, ItemCache {
 
     /** The crow's starting (and maximum) hit points. */
     private static final int STARTING_HP = 30;
 
+    /** How far (in tiles) the crow can sense items and actors around it. */
+    public static final int SENSING_RADIUS = 5;
+
     private CreatureState state = Perching.INSTANCE;
+    private final Set<Item> cachedItems = new HashSet<>();
 
     /**
      * Constructor.
@@ -51,6 +60,25 @@ public class Crow extends Actor implements StatefulCreature {
     @Override
     public void setState(CreatureState state) {
         this.state = state;
+    }
+
+    /**
+     * @param item the Item to check
+     * @return true if this crow remembers hiding this Item
+     */
+    @Override
+    public boolean remembers(Item item) {
+        return cachedItems.contains(item);
+    }
+
+    /**
+     * Records that this crow has hidden the given Item.
+     *
+     * @param item the Item that was hidden
+     */
+    @Override
+    public void remember(Item item) {
+        cachedItems.add(item);
     }
 
     /**

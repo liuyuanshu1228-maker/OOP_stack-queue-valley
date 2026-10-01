@@ -1,0 +1,194 @@
+package game.crow;
+
+import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.items.Item;
+import edu.monash.fit2099.engine.positions.GameMap;
+import edu.monash.fit2099.engine.positions.Location;
+import game.actors.CreatureState;
+import game.actors.ItemCache;
+import game.positions.LocationUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+
+/**
+ * The crow seeks out the nearest item lying on the ground and, once it
+ * reaches it, carries it off to a hidden spot instead of eating it on the
+ * spot.
+ */
+public final class Foraging implements CreatureState {
+
+    /** The single shared instance of this stateless state. */
+    public static final Foraging INSTANCE = new Foraging();
+
+    /** How far around a found item the crow searches for a hiding spot. */
+    private static final int CACHE_SEARCH_RADIUS = 4;
+
+    /** How far the hiding spot must be from where the item was found. */
+    private static final int MIN_CACHE_DISTANCE = 2;
+
+    private static final Random RANDOM = new Random();
+
+    private Foraging() {
+    }
+
+    /**
+     * If standing over an item, caches it; otherwise takes one step toward
+     * the nearest item within sensing range.
+     *
+     * @param creature the crow acting
+     * @param map the map the crow is on
+     * @return a description of what happened
+     */
+    @Override
+    public String act(Actor creature, GameMap map) {
+        Location here = map.locationOf(creature);
+
+        if (CrowSensing.hasForageableItems(here, creature)) {
+            return cache(creature, here);
+        }
+
+        Optional<Location> itemLocation = LocationUtils.nearestWhere(here, Crow.SENSING_RADIUS,
+                candidate -> CrowSensing.hasForageableItems(candidate, creature));
+        if (itemLocation.isEmpty()) {
+            return creature + " finds nothing worth foraging.";
+        }
+
+        Optional<Location> step = LocationUtils.stepToward(here, itemLocation.get(), creature);
+        if (step.isEmpty()) {
+            return creature + " can't find a way toward the food.";
+        }
+
+        map.moveActor(creature, step.get());
+        return creature + " hops toward some food.";
+    }
+
+    /**
+     * Picks up the item at here and hides it on an empty tile at least
+     * {@value #MIN_CACHE_DISTANCE} tiles away, if one can be found.
+     *
+     * @param creature the crow doing the caching
+     * @param here the Location the item is being picked up from
+     * @return a description of what happened
+     */
+    private String cache(Actor creature, Location here) {
+        Item item = pickForageableItem(here, creature);
+        List<Location> candidates = new ArrayList<>();
+        for (Location candidate : here.getNearbyLocations(CACHE_SEARCH_RADIUS)) {
+            if (!candidate.getItems().isEmpty()) {
+                continue;
+            }
+            if (LocationUtils.chebyshevDistance(here, candidate) < MIN_CACHE_DISTANCE) {
+                continue;
+            }
+            candidates.add(candidate);
+        }
+
+        if (candidates.isEmpty()) {
+            return creature + " picks up the " + item + ", but can't find anywhere to hide it.";
+        }
+
+        Location hidingSpot = candidates.get(RANDOM.nextInt(candidates.size()));
+        here.removeItem(item);
+        hidingSpot.addItem(item);
+        creature.asCapability(ItemCache.class).ifPresent(cache -> cache.remember(item));
+        return creature + " snatches the " + item + " and hides it away.";
+    }
+
+    /**
+     * Picks the first Item at here that the given creature hasn't already
+     * cached itself.
+     *
+     * @param here the Location to pick from
+     * @param creature the creature doing the picking
+     * @return the first forageable Item found
+     */
+    private Item pickForageableItem(Location here, Actor creature) {
+        ItemCache cache = creature.asCapability(ItemCache.class).orElse(null);
+        for (Item item : here.getItems()) {
+            if (cache == null || !cache.remembers(item)) {
+                return item;
+            }
+        }
+        throw new IllegalStateException("cache() called with nothing forageable at " + here);
+    }
+
+    /**
+     * Moves to Perching once there is nothing left to forage within sensing
+     * range. The conditions for moving to Mobbing/Fleeing are added once
+     * those states exist.
+     *
+     * @param creature the crow whose next state is being decided
+     * @param map the map the crow is on
+     * @return Perching if nothing is left to forage, otherwise this state
+     */
+    @Override
+    public CreatureState nextState(Actor creature, GameMap map) {
+        Location here = map.locationOf(creature);
+        boolean foodNearby = CrowSensing.hasForageableItems(here, creature)
+                || LocationUtils.nearestWhere(here, Crow.SENSING_RADIUS,
+                        candidate -> CrowSensing.hasForageableItems(candidate, creature)).isPresent();
+
+        if (!foodNearby) {
+            return Perching.INSTANCE;
+        }
+
+        return this;
+    }
+
+    /**
+     * The effect of swooping in on a found item: every other item within 1
+     * tile of it is scattered onto a random nearby tile, as if startled by
+     * the sudden arrival.
+     *
+     * @param creature the crow entering this state
+     * @param map the map the crow is on
+     * @return a description of the effect
+     */
+    @Override
+    public String onEnter(Actor creature, GameMap map) {
+        Location here = map.locationOf(creature);
+        Optional<Location> itemLocation = LocationUtils.nearestWhere(here, Crow.SENSING_RADIUS,
+                candidate -> CrowSensing.hasForageableItems(candidate, creature));
+
+        if (itemLocation.isEmpty()) {
+            return creature + " starts foraging.";
+        }
+
+        int scattered = scatterNearbyItems(itemLocation.get());
+        if (scattered == 0) {
+            return creature + " swoops down toward some food.";
+        }
+        return creature + " swoops down toward some food, scattering " + scattered + " other item(s) nearby.";
+    }
+
+    /**
+     * Relocates every item within 1 tile of centre onto a random tile
+     * within the same radius.
+     *
+     * @param centre the Location to scatter items around
+     * @return the number of items scattered
+     */
+    private int scatterNearbyItems(Location centre) {
+        List<Location> nearby = centre.getNearbyLocations(1);
+        int scattered = 0;
+
+        for (Location source : nearby) {
+            for (Item item : new ArrayList<>(source.getItems())) {
+                Location destination = nearby.get(RANDOM.nextInt(nearby.size()));
+                source.removeItem(item);
+                destination.addItem(item);
+                scattered++;
+            }
+        }
+
+        return scattered;
+    }
+
+    @Override
+    public String toString() {
+        return "Foraging";
+    }
+}

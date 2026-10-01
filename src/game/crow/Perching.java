@@ -4,6 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actors.CreatureState;
+import game.positions.Crop;
 import game.positions.LocationUtils;
 
 import java.util.Optional;
@@ -46,21 +47,31 @@ public final class Perching implements CreatureState {
     }
 
     /**
-     * Stays in Perching; the conditions for moving to another state are
-     * added once those states exist.
+     * Moves to Foraging once food becomes visible within sensing range.
+     * The conditions for moving to Mobbing/Fleeing are added once those
+     * states exist.
      *
      * @param creature the crow whose next state is being decided
      * @param map the map the crow is on
-     * @return this state
+     * @return Foraging if food is within sensing range, otherwise this state
      */
     @Override
     public CreatureState nextState(Actor creature, GameMap map) {
+        Location here = map.locationOf(creature);
+        boolean foodNearby = LocationUtils.nearestWhere(here, Crow.SENSING_RADIUS,
+                candidate -> CrowSensing.hasForageableItems(candidate, creature)).isPresent();
+
+        if (foodNearby) {
+            return Foraging.INSTANCE;
+        }
+
         return this;
     }
 
     /**
      * The effect of settling back into Perching after being in another
-     * state.
+     * state: if the crow happens to be standing over a crop, its droppings
+     * count as a free watering for it.
      *
      * @param creature the crow entering this state
      * @param map the map the crow is on
@@ -68,7 +79,15 @@ public final class Perching implements CreatureState {
      */
     @Override
     public String onEnter(Actor creature, GameMap map) {
-        return creature + " settles back onto a perch.";
+        Location here = map.locationOf(creature);
+        Crop crop = here.getGroundAs(Crop.class);
+
+        if (crop == null) {
+            return creature + " settles back onto a perch.";
+        }
+
+        crop.recordWatering();
+        return creature + " settles onto the " + crop + ", and its droppings count as a free watering.";
     }
 
     @Override
