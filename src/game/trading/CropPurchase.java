@@ -6,7 +6,6 @@ import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.positions.Crop;
 import game.statistics.FarmerStatistics;
 
-import java.util.Optional;
 import java.util.Random;
 
 /**
@@ -18,7 +17,7 @@ public abstract class CropPurchase implements Purchasable {
 
     private final String productName;
     private final int price;
-    private final Random random = new Random();
+    protected final Random random = new Random();
 
     /**
      * Constructor for CropPurchase.
@@ -52,9 +51,9 @@ public abstract class CropPurchase implements Purchasable {
     }
 
     /**
-     * Executes the crop purchase: charges the buyer (unless waived), selects a random
-     * adjacent non-crop tile near the Merchant to plant the crop (or refunds coins if
-     * no room is available), and triggers any crop-specific planting effect.
+     * Executes the crop purchase: finds a random adjacent non-crop tile near the
+     * Merchant to plant the crop (returning early if none exists), then charges
+     * the buyer (unless waived) and triggers any crop-specific planting effect.
      *
      * @param buyer            the Actor buying this crop
      * @param merchant         the Merchant selling it
@@ -63,28 +62,23 @@ public abstract class CropPurchase implements Purchasable {
      */
     @Override
     public final String purchase(Actor buyer, Actor merchant, Location merchantLocation) {
+        var candidates = merchantLocation.getNearbyLocations(1).stream()
+                .filter(adjacent -> adjacent.getGroundAs(Crop.class) == null)
+                .toList();
+
+        if (candidates.isEmpty()) {
+            return buyer + " tries to buy a " + productName
+                    + ", but " + merchant + " has no room to plant it nearby.";
+        }
+
+        Location plantedLocation = candidates.get(random.nextInt(candidates.size()));
+        plantedLocation.setGround(createCrop());
+
         boolean waived = rollPaymentWaiver();
         if (!waived) {
             buyer.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.DECREASE, price);
         }
 
-        var candidates = merchantLocation.getNearbyLocations(1).stream()
-                .filter(adjacent -> adjacent.getGroundAs(Crop.class) == null)
-                .toList();
-
-        Optional<Location> target = candidates.isEmpty()
-                ? Optional.empty()
-                : Optional.of(candidates.get(random.nextInt(candidates.size())));
-        if (target.isEmpty()) {
-            if (!waived) {
-                buyer.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.INCREASE, price);
-            }
-            return buyer + " tries to buy a " + productName
-                    + ", but " + merchant + " has no room to plant it nearby. Coins are refunded.";
-        }
-
-        Location plantedLocation = target.get();
-        plantedLocation.setGround(createCrop());
         String message = applyPlantingEffect(buyer, merchant, plantedLocation);
         return waived ? message + " " + merchant + " plants it for free, out of generosity." : message;
     }

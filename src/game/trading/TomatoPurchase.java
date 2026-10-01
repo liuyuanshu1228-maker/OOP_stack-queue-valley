@@ -5,15 +5,11 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.positions.Crop;
 import game.positions.Tomato;
 
-import java.util.Random;
-
 /** Buying a Tomato crop: 500 coins, 50% chance the merchant plants it free. */
 public class TomatoPurchase extends CropPurchase {
 
     private static final int PRICE = 500;
     private static final int WAIVE_CHANCE_PERCENT = 50;
-
-    private final Random random = new Random();
 
     /**
      * Constructor for TomatoPurchase. Initializes the purchase option with a price of 500 coins.

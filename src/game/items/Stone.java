@@ -9,7 +9,6 @@ import game.statistics.FarmerStatistics;
 import game.trading.Sellable;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 /**
@@ -53,17 +52,11 @@ public class Stone extends Item implements Sellable {
     public String sell(Actor seller, Actor merchant, Location merchantLocation) {
         seller.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.INCREASE, SELL_PRICE);
         List<Location> nearby = merchantLocation.getNearbyLocations(1);
-        Optional<Location> target = nearby.isEmpty()
-                ? Optional.empty()
-                : Optional.of(nearby.get(random.nextInt(nearby.size())));
-        boolean built = target
-                .map(location -> {
-                    location.setGround(new Rock());
-                    return true;
-                })
-                .orElse(false);
-
-        return seller + " sells " + this + " to " + merchant + " for " + SELL_PRICE + " coins."
-                + (built ? " " + merchant + " builds a Rock nearby." : "");
+        String message = seller + " sells " + this + " to " + merchant + " for " + SELL_PRICE + " coins.";
+        if (!nearby.isEmpty()) {
+            nearby.get(random.nextInt(nearby.size())).setGround(new Rock());
+            message += " " + merchant + " builds a Rock nearby.";
+        }
+        return message;
     }
 }

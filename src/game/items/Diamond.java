@@ -8,7 +8,6 @@ import game.statistics.FarmerStatistics;
 import game.trading.Sellable;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 /**
@@ -52,19 +51,15 @@ public class Diamond extends Item implements Sellable {
     @Override
     public String sell(Actor seller, Actor merchant, Location merchantLocation) {
         seller.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.INCREASE, SELL_PRICE);
-        StringBuilder message = new StringBuilder(
-                seller + " sells " + this + " to " + merchant + " for " + SELL_PRICE + " coins.");
-
+        String message = seller + " sells " + this + " to " + merchant + " for " + SELL_PRICE + " coins.";
         if (random.nextInt(100) < THEFT_CHANCE_PERCENT) {
             List<Item> items = seller.getInventory().getItems();
-            Optional<Item> stolen = items.isEmpty()
-                    ? Optional.empty()
-                    : Optional.of(items.get(random.nextInt(items.size())));
-            stolen.ifPresent(item -> {
-                seller.getInventory().remove(item);
-                message.append(" ").append(merchant).append(" also steals ").append(item).append(".");
-            });
+            if (!items.isEmpty()) {
+                Item stolen = items.get(random.nextInt(items.size()));
+                seller.getInventory().remove(stolen);
+                message += " " + merchant + " also steals " + stolen + ".";
+            }
         }
-        return message.toString();
+        return message;
     }
 }

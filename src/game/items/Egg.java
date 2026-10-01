@@ -53,21 +53,19 @@ public class Egg extends Item implements Sellable {
     @Override
     public String sell(Actor seller, Actor merchant, Location merchantLocation) {
         seller.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.INCREASE, SELL_PRICE);
-        StringBuilder message = new StringBuilder(
-                seller + " sells " + this + " to " + merchant + " for " + SELL_PRICE + " coins.");
-
+        String message = seller + " sells " + this + " to " + merchant + " for " + SELL_PRICE + " coins.";
         if (random.nextInt(100) < CHICKEN_SPAWN_CHANCE_PERCENT) {
             Chicken chicken = new Chicken("Chicken");
             var spot = LocationUtils.randomEnterableNearby(merchantLocation, chicken);
             if (spot.isPresent()) {
                 try {
                     spot.get().addActor(chicken);
-                    message.append(" A chicken appears nearby.");
+                    message += " A chicken appears nearby.";
                 } catch (GameEngineException e) {
-                    // Location was already verified as enterable and unoccupied
+                    // spot was verified as enterable but addActor failed
                 }
             }
         }
-        return message.toString();
+        return message;
     }
 }
