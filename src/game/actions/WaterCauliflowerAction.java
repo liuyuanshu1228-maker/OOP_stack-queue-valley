@@ -29,15 +29,7 @@ public class WaterCauliflowerAction extends WaterCropAction {
      * @param cropLocation the location of the cauliflower to be watered
      */
     public WaterCauliflowerAction(Cauliflower crop, Location cropLocation) {
-        super(crop, cropLocation);
-    }
-
-    /**
-     * @return the stamina cost of watering a cauliflower
-     */
-    @Override
-    protected int getStaminaCost() {
-        return STAMINA_COST;
+        super(crop, cropLocation, STAMINA_COST);
     }
 
     /**

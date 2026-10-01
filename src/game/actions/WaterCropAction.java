@@ -35,14 +35,21 @@ public abstract class WaterCropAction extends Action {
     protected final Location cropLocation;
 
     /**
+     * The amount of stamina it costs to water this crop.
+     */
+    private final int staminaCost;
+
+    /**
      * Constructor.
      *
      * @param crop the crop to be watered
      * @param cropLocation the location of the crop to be watered
+     * @param staminaCost the stamina cost of watering this crop
      */
-    public WaterCropAction(Crop crop, Location cropLocation) {
+    public WaterCropAction(Crop crop, Location cropLocation, int staminaCost) {
         this.crop = crop;
         this.cropLocation = cropLocation;
+        this.staminaCost = staminaCost;
     }
 
     /**
@@ -50,7 +57,9 @@ public abstract class WaterCropAction extends Action {
      *
      * @return the stamina cost of watering this crop
      */
-    protected abstract int getStaminaCost();
+    protected int getStaminaCost() {
+        return staminaCost;
+    }
 
     /**
      * Applies the crop-specific effect of being watered. Called only after

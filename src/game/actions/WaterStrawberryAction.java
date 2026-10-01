@@ -29,15 +29,7 @@ public class WaterStrawberryAction extends WaterCropAction {
      * @param cropLocation the location of the strawberry to be watered
      */
     public WaterStrawberryAction(Strawberry crop, Location cropLocation) {
-        super(crop, cropLocation);
-    }
-
-    /**
-     * @return the stamina cost of watering a strawberry
-     */
-    @Override
-    protected int getStaminaCost() {
-        return STAMINA_COST;
+        super(crop, cropLocation, STAMINA_COST);
     }
 
     /**

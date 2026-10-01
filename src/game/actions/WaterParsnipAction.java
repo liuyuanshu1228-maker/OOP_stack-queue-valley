@@ -30,15 +30,7 @@ public class WaterParsnipAction extends WaterCropAction {
      * @param cropLocation the location of the parsnip to be watered
      */
     public WaterParsnipAction(Parsnip crop, Location cropLocation) {
-        super(crop, cropLocation);
-    }
-
-    /**
-     * @return the stamina cost of watering a parsnip
-     */
-    @Override
-    protected int getStaminaCost() {
-        return STAMINA_COST;
+        super(crop, cropLocation, STAMINA_COST);
     }
 
     /**

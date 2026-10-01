@@ -30,15 +30,7 @@ public class WaterMelonAction extends WaterCropAction {
      * @param cropLocation the location of the melon to be watered
      */
     public WaterMelonAction(Melon crop, Location cropLocation) {
-        super(crop, cropLocation);
-    }
-
-    /**
-     * @return the stamina cost of watering a melon
-     */
-    @Override
-    protected int getStaminaCost() {
-        return STAMINA_COST;
+        super(crop, cropLocation, STAMINA_COST);
     }
 
     /**
