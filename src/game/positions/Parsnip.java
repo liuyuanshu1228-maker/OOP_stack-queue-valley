@@ -28,8 +28,8 @@ public class Parsnip extends Crop implements CropWaterable {
     /** Base chance (out of 100) that a watering damages and destroys the plant. */
     private static final int BASE_DAMAGE_CHANCE_PERCENT = 10;
 
-    /** Chance (0.0 to 1.0) that a second Parsnip spawns on an adjacent tile. */
-    private static final double BONUS_SPAWN_CHANCE = 0.5;
+    /** Chance (out of 100) that a second Parsnip spawns on an adjacent tile. */
+    private static final int BONUS_SPAWN_CHANCE_PERCENT = 50;
 
     private final Random random = new Random();
 
@@ -79,7 +79,7 @@ public class Parsnip extends Crop implements CropWaterable {
         actor.getInventory().add(new ParsnipItem());
         removeCrop(location);
 
-        if (random.nextDouble() < BONUS_SPAWN_CHANCE) {
+        if (random.nextInt(100) < BONUS_SPAWN_CHANCE_PERCENT) {
             LocationUtils.dropItemNearby(location, new ParsnipItem(), random);
         }
 

@@ -44,13 +44,16 @@ public class TillAction extends Action {
         Tillable tillable = location.getGroundAs(Tillable.class);
         List<TillingTool> tools = actor.getInventory().getItemsAs(TillingTool.class);
 
-        if (tillable == null || tools.isEmpty()) {
-            return actor + " is either too tired to till dirt or don't have a Hoe to till dirt.";
+        if (tools.isEmpty()) {
+            return actor + " has no hoe to till the ground.";
+        }
+        if (tillable == null) {
+            return actor + " cannot till this ground.";
         }
 
         int staminaCost = tools.get(0).getStaminaCost();
         if (!StatisticUtils.hasEnough(actor, ActorStatistics.STAMINA, staminaCost)) {
-            return actor + " is either too tired to till dirt or don't have a Hoe to till dirt.";
+            return actor + " is too tired to till the ground.";
         }
 
         location.setGround(tillable.getTillResult());

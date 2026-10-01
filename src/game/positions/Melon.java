@@ -7,9 +7,8 @@ import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.actions.WaterCropAction;
 import game.items.MelonItem;
+import game.positions.LocationUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -86,7 +85,7 @@ public class Melon extends Crop implements CropWaterable {
 
         if (random.nextInt(100) < EXPLOSION_CHANCE_PERCENT) {
             int damage = Math.max(0, BASE_EXPLOSION_DAMAGE - getWateringCount());
-            explode(location, damage);
+            LocationUtils.hurtActorsAround(location, damage);
             return actor + " harvests the " + this + ". It explodes, dealing " + damage + " damage to everyone nearby!";
         }
 
@@ -124,21 +123,4 @@ public class Melon extends Crop implements CropWaterable {
         return message;
     }
 
-    /**
-     * Damages every actor on this crop's own tile and on the tiles adjacent
-     * to it.
-     *
-     * @param location the location this crop was harvested from
-     * @param damage the damage to deal to each actor caught in the blast
-     */
-    private void explode(Location location, int damage) {
-        List<Location> blastLocations = new ArrayList<>(location.getNearbyLocations(1));
-        blastLocations.add(location);
-
-        for (Location blastLocation : blastLocations) {
-            if (blastLocation.containsAnActor()) {
-                blastLocation.getActor().hurt(damage);
-            }
-        }
-    }
 }

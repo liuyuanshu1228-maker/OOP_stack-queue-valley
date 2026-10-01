@@ -48,13 +48,16 @@ public class WaterAction extends Action {
         Waterable waterable = location.getGroundAs(Waterable.class);
         List<WateringTool> tools = actor.getInventory().getItemsAs(WateringTool.class);
 
-        if (waterable == null || tools.isEmpty()) {
-            return actor + " is either too tired to water the ground or don't have a Watering Can to water the ground.";
+        if (tools.isEmpty()) {
+            return actor + " has no watering can to water the ground.";
+        }
+        if (waterable == null) {
+            return actor + " cannot water this ground.";
         }
 
         int staminaCost = tools.get(0).getStaminaCost();
         if (!StatisticUtils.hasEnough(actor, ActorStatistics.STAMINA, staminaCost)) {
-            return actor + " is either too tired to water the ground or don't have a Watering Can to water the ground.";
+            return actor + " is too tired to water the ground.";
         }
 
         location.setGround(waterable.getWaterResult());
