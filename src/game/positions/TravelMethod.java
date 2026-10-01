@@ -5,8 +5,8 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 
 /**
- * A way of travelling to a {@link TravelDestination}: a ladder, a
- * teleportation circle, an alien device, or any mechanism added later.
+ * A way of travelling to a destination: a ladder, a teleportation circle,
+ * an alien device, or any mechanism added later.
  * <p>
  * Every method has a default, so a mechanism only overrides the part in which
  * it differs: where the Actor really ends up ({@link #chooseLanding}) and what

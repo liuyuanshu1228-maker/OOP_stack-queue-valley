@@ -3,8 +3,8 @@ package game.positions;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.TravelAction;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * The destinations reachable through one travel mechanism. It is shared by
@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class DestinationList {
 
-    private final List<TravelDestination> destinations = new ArrayList<>();
+    private final Map<String, Location> destinations = new LinkedHashMap<>();
 
     /**
      * Adds a destination.
@@ -23,7 +23,7 @@ public class DestinationList {
      * @param location the fixed Location to travel to
      */
     public void add(String name, Location location) {
-        destinations.add(new TravelDestination(name, location));
+        destinations.put(name, location);
     }
 
     /**
@@ -34,8 +34,8 @@ public class DestinationList {
      */
     public ActionList actionsFor(TravelMethod method) {
         ActionList actions = new ActionList();
-        for (TravelDestination destination : destinations) {
-            actions.add(new TravelAction(destination, method));
+        for (Map.Entry<String, Location> entry : destinations.entrySet()) {
+            actions.add(new TravelAction(entry.getKey(), entry.getValue(), method));
         }
         return actions;
     }
