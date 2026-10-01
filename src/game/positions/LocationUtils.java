@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -117,5 +118,73 @@ public final class LocationUtils {
             return Optional.empty();
         }
         return Optional.of(options.get(RANDOM.nextInt(options.size())));
+    }
+
+    /**
+     * The distance between two Locations on the same map, measured as the
+     * number of tile-steps a king would need on a chessboard (the same
+     * metric {@link Location#getNearbyLocations} uses for its square radius).
+     *
+     * @param a the first Location
+     * @param b the second Location
+     * @return the Chebyshev distance between a and b
+     */
+    public static int chebyshevDistance(Location a, Location b) {
+        return Math.max(Math.abs(a.x() - b.x()), Math.abs(a.y() - b.y()));
+    }
+
+    /**
+     * Finds the closest Location to referenceLocation, within the given
+     * radius, that satisfies the given condition.
+     *
+     * @param referenceLocation the Location to search outward from
+     * @param radius the maximum distance to search
+     * @param condition the condition a candidate Location must satisfy
+     * @return the closest matching Location, or empty if none match
+     */
+    public static Optional<Location> nearestWhere(Location referenceLocation, int radius, Predicate<Location> condition) {
+        Location nearest = null;
+        int nearestDistance = Integer.MAX_VALUE;
+
+        for (Location candidate : referenceLocation.getNearbyLocations(radius)) {
+            if (!condition.test(candidate)) {
+                continue;
+            }
+            int distance = chebyshevDistance(referenceLocation, candidate);
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearest = candidate;
+            }
+        }
+
+        return Optional.ofNullable(nearest);
+    }
+
+    /**
+     * Picks the tile adjacent to from (that actor could step onto) which
+     * brings actor closest to target, by Chebyshev distance.
+     *
+     * @param from the Location to step from
+     * @param target the Location being approached
+     * @param actor the Actor that would be doing the stepping
+     * @return the best adjacent Location to step to, or empty if no adjacent
+     * tile is enterable or gets any closer than staying put
+     */
+    public static Optional<Location> stepToward(Location from, Location target, Actor actor) {
+        Location best = null;
+        int bestDistance = chebyshevDistance(from, target);
+
+        for (Location candidate : from.getNearbyLocations(1)) {
+            if (!candidate.canActorEnter(actor)) {
+                continue;
+            }
+            int distance = chebyshevDistance(candidate, target);
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                best = candidate;
+            }
+        }
+
+        return Optional.ofNullable(best);
     }
 }
