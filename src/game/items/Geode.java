@@ -81,8 +81,11 @@ public class Geode extends Item implements Breakable {
      */
     @Override
     public String breakUp(Actor actor, Location location) {
-        actor.getInventory().remove(this);
-        location.removeItem(this);
+        if (actor.getInventory().getItems().contains(this)) {
+            actor.getInventory().remove(this);
+        } else {
+            location.removeItem(this);
+        }
         if (random.nextInt(100) < DIAMOND_CHANCE_PERCENT) {
             location.addItem(new Diamond());
             return actor + " breaks the " + this + ". It splits open, revealing a diamond!";

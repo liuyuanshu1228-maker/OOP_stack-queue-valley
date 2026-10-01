@@ -68,7 +68,7 @@ public abstract class BreakableGround extends Ground implements Breakable {
     /**
      * @return a new instance of the item dropped when this ground is broken
      */
-    abstract Item createDrop();
+    protected abstract Item createDrop();
 
     /**
      * Applies the effect specific to this kind of ground. Called once the
@@ -78,5 +78,5 @@ public abstract class BreakableGround extends Ground implements Breakable {
      * @param location the Location this ground occupied
      * @return a description of what happened
      */
-    abstract String afterBreaking(Actor actor, Location location);
+    protected abstract String afterBreaking(Actor actor, Location location);
 }

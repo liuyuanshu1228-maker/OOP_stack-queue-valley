@@ -44,7 +44,7 @@ public class BreakAction extends Action {
     public String execute(Actor actor, GameMap map) {
         boolean hasTool = !actor.getInventory().getItemsAs(BreakingTool.class).isEmpty();
         if (!hasTool) {
-            return actor + " needs a pickaxe to break the " + target + ".";
+            return actor + " needs a breaking tool to break the " + target + ".";
         }
         return target.breakUp(actor, location);
     }
