@@ -23,7 +23,7 @@ public class CopperNode extends BreakableGround {
      * @return a new CopperOre
      */
     @Override
-    Item createDrop() {
+    protected Item createDrop() {
         return new CopperOre();
     }
 
@@ -35,7 +35,7 @@ public class CopperNode extends BreakableGround {
      * @return a description of what happened
      */
     @Override
-    String afterBreaking(Actor actor, Location location) {
+    protected String afterBreaking(Actor actor, Location location) {
         int chargedCount = 0;
         for (Location nearby : location.getNearbyLocations(1)) {
             Chargeable chargeable = nearby.getGroundAs(Chargeable.class);
