@@ -38,6 +38,17 @@ public final class LocationUtils {
     }
 
     /**
+     * Places the given Item on a randomly selected tile adjacent to the given Location,
+     * using this class's own Random instance. Does nothing if no adjacent tile exists.
+     *
+     * @param referenceLocation the Location whose adjacent tiles are considered
+     * @param item the Item to place
+     */
+    public static void dropItemNearby(Location referenceLocation, Item item) {
+        dropItemNearby(referenceLocation, item, RANDOM);
+    }
+
+    /**
      * Places a new Item on every tile adjacent to the given Location (but not
      * on the Location itself). Each tile gets its own Item, created by the
      * given factory.

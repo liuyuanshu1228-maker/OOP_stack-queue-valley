@@ -7,8 +7,6 @@ import game.crops.Crop;
 import game.positions.LocationUtils;
 import game.crops.Parsnip;
 
-import java.util.Random;
-
 /** 
  * Buying a Parsnip crop: 250 coins, drops 3 Parsnips once planted. 
  * 
@@ -17,8 +15,6 @@ public class ParsnipPurchase extends CropPurchase {
 
     private static final int PRICE = 250;
     private static final int PARSNIPS_PRODUCED = 3;
-
-    private final Random random = new Random();
 
     /**
      * Constructor for ParsnipPurchase. Initializes the purchase option with a price of 250 coins.
@@ -48,7 +44,7 @@ public class ParsnipPurchase extends CropPurchase {
     @Override
     protected String applyPlantingEffect(Actor buyer, Actor merchant, Location cropLocation) {
         for (int i = 0; i < PARSNIPS_PRODUCED; i++) {
-            LocationUtils.dropItemNearby(cropLocation, new ParsnipItem(), random);
+            LocationUtils.dropItemNearby(cropLocation, new ParsnipItem());
         }
         return buyer + " buys a Parsnip crop from " + merchant + ".";
     }
