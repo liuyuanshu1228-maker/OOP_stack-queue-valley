@@ -3,7 +3,7 @@ package game.items;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
-import game.positions.Parsnip;
+import game.crops.Parsnip;
 import game.statistics.StatisticUtils;
 
 /**

@@ -5,9 +5,9 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import game.positions.DestinationList;
+import game.travel.DestinationList;
 import game.positions.LocationUtils;
-import game.positions.TravelMethod;
+import game.travel.TravelMethod;
 
 import java.util.Random;
 

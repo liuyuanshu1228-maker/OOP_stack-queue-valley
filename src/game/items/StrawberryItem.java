@@ -3,7 +3,7 @@ package game.items;
 import edu.monash.fit2099.engine.actors.Actor;
 import game.capabilities.StrawberryHealStatus;
 import game.capabilities.StrawberryPoisonStatus;
-import game.positions.Strawberry;
+import game.crops.Strawberry;
 
 import java.util.Random;
 

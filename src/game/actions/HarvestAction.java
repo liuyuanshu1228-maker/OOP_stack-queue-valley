@@ -6,7 +6,7 @@ import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
-import game.positions.Harvestable;
+import game.crops.Harvestable;
 import game.statistics.StatisticUtils;
 
 /**

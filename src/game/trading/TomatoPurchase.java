@@ -2,8 +2,8 @@ package game.trading;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.positions.Crop;
-import game.positions.Tomato;
+import game.crops.Crop;
+import game.crops.Tomato;
 
 /** Buying a Tomato crop: 500 coins, 50% chance the merchant plants it free. */
 public class TomatoPurchase extends CropPurchase {

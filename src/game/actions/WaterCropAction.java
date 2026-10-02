@@ -6,9 +6,9 @@ import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
-import game.items.WateringTool;
-import game.positions.Crop;
-import game.positions.CropWaterable;
+import game.items.tools.WateringTool;
+import game.crops.Crop;
+import game.crops.CropWaterable;
 import game.statistics.StatisticUtils;
 
 /**

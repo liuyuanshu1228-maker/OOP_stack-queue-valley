@@ -6,7 +6,7 @@ import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
-import game.items.TillingTool;
+import game.items.tools.TillingTool;
 import game.positions.Tillable;
 import game.statistics.StatisticUtils;
 

@@ -3,9 +3,9 @@ package game.trading;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.ParsnipItem;
-import game.positions.Crop;
+import game.crops.Crop;
 import game.positions.LocationUtils;
-import game.positions.Parsnip;
+import game.crops.Parsnip;
 
 /** 
  * Buying a Parsnip crop: 250 coins, drops 3 Parsnips once planted. 
