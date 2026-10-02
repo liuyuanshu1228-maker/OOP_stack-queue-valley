@@ -1,4 +1,4 @@
-package game.items;
+package game.items.food;
 
 /**
  * Marker capability interface for Items that can be processed by a ProcessingFacility.

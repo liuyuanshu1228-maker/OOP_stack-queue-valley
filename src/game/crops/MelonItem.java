@@ -3,7 +3,7 @@ package game.crops;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
-import game.items.ConsumableItem;
+import game.items.food.ConsumableItem;
 
 /**
  * A melon, produced by harvesting a {@link Melon} crop. It can be eaten to

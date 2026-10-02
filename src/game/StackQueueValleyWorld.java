@@ -14,7 +14,7 @@ import game.actors.Farmer;
 import game.actors.Merchant;
 import game.crow.Crow;
 import game.travel.AlienDevice;
-import game.items.Geode;
+import game.items.mine.Geode;
 import game.items.tools.Hoe;
 import game.items.tools.Pickaxe;
 import game.items.tools.WateringCan;

@@ -7,7 +7,7 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.actors.Feedable;
-import game.items.Food;
+import game.items.food.Food;
 import game.statistics.StatisticUtils;
 
 /**

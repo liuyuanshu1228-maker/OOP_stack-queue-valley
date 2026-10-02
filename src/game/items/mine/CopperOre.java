@@ -1,4 +1,4 @@
-package game.items;
+package game.items.mine;
 
 import edu.monash.fit2099.engine.items.Item;
 import game.positions.CopperNode;

@@ -1,7 +1,7 @@
 package game.positions;
 
 import edu.monash.fit2099.engine.items.Item;
-import game.items.PreservedProduct;
+import game.items.food.PreservedProduct;
 
 /**
  * A Preserves Jar facility. Processing a product with it adds one Preserved layer.

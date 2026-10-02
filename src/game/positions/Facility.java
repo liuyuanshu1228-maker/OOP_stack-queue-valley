@@ -6,7 +6,7 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.ProcessAction;
-import game.items.Processable;
+import game.items.food.Processable;
 
 /**
  * Abstract base class for processing facilities. While the Farmer is adjacent

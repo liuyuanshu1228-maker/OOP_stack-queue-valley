@@ -2,7 +2,7 @@ package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
-import game.items.ConsumableItem;
+import game.items.food.ConsumableItem;
 
 import java.util.Random;
 

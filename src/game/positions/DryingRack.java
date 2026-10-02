@@ -1,7 +1,7 @@
 package game.positions;
 
 import edu.monash.fit2099.engine.items.Item;
-import game.items.DriedProduct;
+import game.items.food.DriedProduct;
 
 /**
  * A Drying Rack facility. Processing a product with it adds one Dried layer.

@@ -3,7 +3,7 @@ package game.positions;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
-import game.items.CopperOre;
+import game.items.mine.CopperOre;
 
 /**
  * A copper node. It cannot be entered, so it has to be broken to clear the
