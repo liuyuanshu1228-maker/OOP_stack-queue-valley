@@ -25,7 +25,7 @@ public class TomatoPurchase extends CropPurchase {
      */
     @Override
     protected boolean rollPaymentWaiver() {
-        return random.nextInt(100) < WAIVE_CHANCE_PERCENT;
+        return rollPercent(WAIVE_CHANCE_PERCENT);
     }
 
     /**

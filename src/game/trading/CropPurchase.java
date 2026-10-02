@@ -17,7 +17,7 @@ public abstract class CropPurchase implements Purchasable {
 
     private final String productName;
     private final int price;
-    protected final Random random = new Random();
+    private final Random random = new Random();
 
     /**
      * Constructor for CropPurchase.
@@ -91,6 +91,16 @@ public abstract class CropPurchase implements Purchasable {
      */
     protected boolean rollPaymentWaiver() {
         return false;
+    }
+
+    /**
+     * Rolls a random chance, for subclasses that introduce chance-based behaviour.
+     *
+     * @param percent the chance of success, out of 100
+     * @return {@code true} if the roll succeeds, {@code false} otherwise
+     */
+    protected final boolean rollPercent(int percent) {
+        return random.nextInt(100) < percent;
     }
 
     /**
