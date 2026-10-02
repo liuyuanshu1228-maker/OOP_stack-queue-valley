@@ -31,6 +31,9 @@ import game.crops.Strawberry;
 import game.travel.TeleportationCircle;
 import game.crops.Tomato;
 import game.travel.TravelGround;
+import game.trading.ParsnipPurchase;
+import game.trading.SwordPurchase;
+import game.trading.TomatoPurchase;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -162,7 +165,8 @@ public class StackQueueValleyWorld extends World {
 
         placeActor(inheritedFarmMap, occupiedLocations, new Chicken("Chicken"));
         placeActor(inheritedFarmMap, occupiedLocations, new Cow("Cow"));
-        placeActor(inheritedFarmMap, occupiedLocations, new Merchant());
+        placeActor(inheritedFarmMap, occupiedLocations,
+                new Merchant(new ParsnipPurchase(), new TomatoPurchase(), new SwordPurchase()));
         placeActor(inheritedFarmMap, occupiedLocations, new Crow("Crow"));
 
         Location alienDeviceFarmDestination = locate(inheritedFarmMap, ALIEN_DEVICE_DESTINATIONS.farm());

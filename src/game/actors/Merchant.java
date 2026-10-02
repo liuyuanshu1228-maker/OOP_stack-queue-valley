@@ -7,11 +7,8 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.BuyAction;
 import game.actions.SellAction;
-import game.trading.ParsnipPurchase;
 import game.trading.Purchasable;
 import game.trading.Sellable;
-import game.trading.SwordPurchase;
-import game.trading.TomatoPurchase;
 import java.util.Arrays;
 
 /**
@@ -26,22 +23,10 @@ public class Merchant extends WanderingActor {
     private final Purchasable[] catalog;
 
     /**
-     * Default constructor for Merchant.
-     * Initializes the Merchant with the standard catalog of purchasable offerings
-     * (Parsnip crop, Tomato crop, and Sword).
-     */
-    public Merchant() {
-        this(
-                new ParsnipPurchase(),
-                new TomatoPurchase(),
-                new SwordPurchase()
-        );
-    }
-
-    /**
-     * Overloaded constructor allowing custom purchasable offerings to be injected.
-     * Supports the Open/Closed Principle by enabling different Merchants to carry
-     * different product catalogs without modifying this class.
+     * Constructor for Merchant. The purchasable offerings are injected by the caller,
+     * so Merchant depends only on the Purchasable abstraction rather than on concrete
+     * products (Dependency Inversion), and different Merchants can carry different
+     * catalogs without modifying this class (Open/Closed).
      *
      * @param offerings the purchasable products offered by this Merchant
      */
