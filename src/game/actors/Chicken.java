@@ -48,9 +48,9 @@ public class Chicken extends Animal {
     public String feed(Actor farmer, Location farmerLocation) {
         this.heal(HEAL_AMOUNT);
 
-        LocationUtils.dropItemNearby(farmerLocation, new Egg(), random);
+        LocationUtils.dropItemNearby(farmerLocation, new Egg(() -> new Chicken("Chicken")), random);
         if (random.nextDouble() < BONUS_EGG_CHANCE) {
-            LocationUtils.dropItemNearby(farmerLocation, new Egg(), random);
+            LocationUtils.dropItemNearby(farmerLocation, new Egg(() -> new Chicken("Chicken")), random);
         }
 
         return this + " clucks happily.";

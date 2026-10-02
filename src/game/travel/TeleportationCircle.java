@@ -1,8 +1,9 @@
-package game.positions;
+package game.travel;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.Fire;
+import game.positions.LocationUtils;
 
 /**
  * A teleportation circle. Arriving by one sets the ground alight on every tile
