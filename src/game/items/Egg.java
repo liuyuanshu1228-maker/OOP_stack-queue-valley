@@ -54,8 +54,7 @@ public class Egg extends SellableItem {
             spot.get().addActor(animal);
             return "A " + animal + " appears nearby.";
         } catch (GameEngineException e) {
-            // spot was verified as enterable but addActor failed
-            return "";
+            return "A " + animal + " tries to appear nearby, but there is no room for it.";
         }
     }
 }
