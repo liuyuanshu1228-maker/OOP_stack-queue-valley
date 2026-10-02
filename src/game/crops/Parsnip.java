@@ -5,7 +5,6 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.WaterCropAction;
-import game.items.ParsnipItem;
 import game.positions.LocationUtils;
 
 import java.util.Random;

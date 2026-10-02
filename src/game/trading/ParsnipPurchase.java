@@ -2,7 +2,7 @@ package game.trading;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.items.ParsnipItem;
+import game.crops.ParsnipItem;
 import game.crops.Crop;
 import game.positions.LocationUtils;
 import game.crops.Parsnip;

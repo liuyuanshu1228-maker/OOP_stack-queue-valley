@@ -13,7 +13,7 @@ import game.actors.Cow;
 import game.actors.Farmer;
 import game.actors.Merchant;
 import game.crow.Crow;
-import game.items.AlienDevice;
+import game.travel.AlienDevice;
 import game.items.Geode;
 import game.items.tools.Hoe;
 import game.items.tools.Pickaxe;
