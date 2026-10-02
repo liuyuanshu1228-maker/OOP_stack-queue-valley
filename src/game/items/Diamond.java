@@ -3,63 +3,42 @@ package game.items;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
-import edu.monash.fit2099.engine.statistics.StatisticOperations;
-import game.statistics.FarmerStatistics;
-import game.trading.Sellable;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * Represents a Diamond ('d') item that can be sold to the Merchant for 5000 coins,
  * with a 50% chance that the Merchant also steals a random item from the seller's inventory.
  */
-public class Diamond extends Item implements Sellable {
+public class Diamond extends SellableItem {
 
     private static final int SELL_PRICE = 5000;
     private static final int THEFT_CHANCE_PERCENT = 50;
-
-    private final Random random = new Random();
 
     /**
      * Constructor for Diamond. Initializes the portable Diamond item with display character 'd'.
      */
     public Diamond() {
-        super("Diamond", 'd');
-        this.makePortable();
+        super("Diamond", 'd', SELL_PRICE);
     }
 
     /**
-     * Returns the base selling price of the Diamond in coins.
-     *
-     * @return the selling price in coins
-     */
-    @Override
-    public int getSellPrice() {
-        return SELL_PRICE;
-    }
-
-    /**
-     * Completes the sale of this Diamond, awarding coins to the seller and rolling
-     * a 50% chance for the Merchant to steal a random item from the seller's inventory.
+     * Rolls a 50% chance for the Merchant to steal a random item from the seller's inventory.
+     * The stolen item is removed from the game.
      *
      * @param seller           the Actor selling this item
      * @param merchant         the Actor buying it
      * @param merchantLocation the Location of the merchant
-     * @return a description of the sale outcome
+     * @return a description of the theft, or an empty string if nothing was stolen
      */
     @Override
-    public String sell(Actor seller, Actor merchant, Location merchantLocation) {
-        seller.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.INCREASE, SELL_PRICE);
-        String message = seller + " sells " + this + " to " + merchant + " for " + SELL_PRICE + " coins.";
-        if (random.nextInt(100) < THEFT_CHANCE_PERCENT) {
-            List<Item> items = seller.getInventory().getItems();
-            if (!items.isEmpty()) {
-                Item stolen = items.get(random.nextInt(items.size()));
-                seller.getInventory().remove(stolen);
-                message += " " + merchant + " also steals " + stolen + ".";
-            }
+    protected String applySaleEffect(Actor seller, Actor merchant, Location merchantLocation) {
+        List<Item> items = seller.getInventory().getItems();
+        if (items.isEmpty() || !rollPercent(THEFT_CHANCE_PERCENT)) {
+            return "";
         }
-        return message;
+        Item stolen = pickRandom(items);
+        seller.getInventory().remove(stolen);
+        return merchant + " also steals " + stolen + ".";
     }
 }

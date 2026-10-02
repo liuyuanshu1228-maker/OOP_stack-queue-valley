@@ -2,14 +2,10 @@ package game.items;
 
 import edu.monash.fit2099.engine.GameEngineException;
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
-import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.positions.LocationUtils;
-import game.statistics.FarmerStatistics;
-import game.trading.Sellable;
 
-import java.util.Random;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -18,12 +14,11 @@ import java.util.function.Supplier;
  * The concrete Actor type that spawns is injected at construction time, so Egg
  * has no dependency on any specific Actor subclass.
  */
-public class Egg extends Item implements Sellable {
+public class Egg extends SellableItem {
 
     private static final int SELL_PRICE = 40;
     private static final int ANIMAL_SPAWN_CHANCE_PERCENT = 50;
 
-    private final Random random = new Random();
     private final Supplier<Actor> animalFactory;
 
     /**
@@ -32,46 +27,35 @@ public class Egg extends Item implements Sellable {
      * @param animalFactory a factory that produces the Actor spawned when this Egg is sold
      */
     public Egg(Supplier<Actor> animalFactory) {
-        super("Egg", '0');
-        this.makePortable();
+        super("Egg", '0', SELL_PRICE);
         this.animalFactory = animalFactory;
     }
 
     /**
-     * Returns the base selling price of the Egg in coins.
-     *
-     * @return the selling price in coins
-     */
-    @Override
-    public int getSellPrice() {
-        return SELL_PRICE;
-    }
-
-    /**
-     * Completes the sale of this Egg, awarding coins to the seller and rolling
-     * a 50% chance for an animal to spawn on an enterable tile near the Merchant.
+     * Rolls a 50% chance for an animal to spawn on an enterable tile adjacent to the Merchant.
+     * Nothing happens if there is no valid tile.
      *
      * @param seller           the Actor selling this item
      * @param merchant         the Actor buying it
      * @param merchantLocation the Location of the merchant
-     * @return a description of the sale outcome
+     * @return a description of the spawn, or an empty string if no animal appeared
      */
     @Override
-    public String sell(Actor seller, Actor merchant, Location merchantLocation) {
-        seller.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.INCREASE, SELL_PRICE);
-        String message = seller + " sells " + this + " to " + merchant + " for " + SELL_PRICE + " coins.";
-        if (random.nextInt(100) < ANIMAL_SPAWN_CHANCE_PERCENT) {
-            Actor animal = animalFactory.get();
-            var spot = LocationUtils.randomEnterableNearby(merchantLocation, animal);
-            if (spot.isPresent()) {
-                try {
-                    spot.get().addActor(animal);
-                    message += " A chicken appears nearby.";
-                } catch (GameEngineException e) {
-                    // spot was verified as enterable but addActor failed
-                }
-            }
+    protected String applySaleEffect(Actor seller, Actor merchant, Location merchantLocation) {
+        if (!rollPercent(ANIMAL_SPAWN_CHANCE_PERCENT)) {
+            return "";
         }
-        return message;
+        Actor animal = animalFactory.get();
+        Optional<Location> spot = LocationUtils.randomEnterableNearby(merchantLocation, animal);
+        if (spot.isEmpty()) {
+            return "";
+        }
+        try {
+            spot.get().addActor(animal);
+            return "A " + animal + " appears nearby.";
+        } catch (GameEngineException e) {
+            // spot was verified as enterable but addActor failed
+            return "";
+        }
     }
 }
