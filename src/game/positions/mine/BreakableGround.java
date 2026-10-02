@@ -1,4 +1,4 @@
-package game.positions;
+package game.positions.mine;
 
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
@@ -6,6 +6,8 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.BreakAction;
+import game.positions.Breakable;
+import game.positions.farm.Dirt;
 
 /**
  * Abstract base class for Ground that cannot be entered and must be broken to

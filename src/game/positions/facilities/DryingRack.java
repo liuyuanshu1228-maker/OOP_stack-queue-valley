@@ -1,4 +1,4 @@
-package game.positions;
+package game.positions.facilities;
 
 import edu.monash.fit2099.engine.items.Item;
 import game.items.food.DriedProduct;

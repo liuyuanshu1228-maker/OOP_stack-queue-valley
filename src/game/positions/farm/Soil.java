@@ -1,4 +1,4 @@
-package game.positions;
+package game.positions.farm;
 
 import edu.monash.fit2099.engine.positions.Ground;
 

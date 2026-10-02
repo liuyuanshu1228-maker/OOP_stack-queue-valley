@@ -1,9 +1,10 @@
-package game.positions;
+package game.positions.mine;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.mine.CopperOre;
+import game.positions.Chargeable;
 
 /**
  * A copper node. It cannot be entered, so it has to be broken to clear the

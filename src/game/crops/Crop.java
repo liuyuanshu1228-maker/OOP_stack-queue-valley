@@ -5,7 +5,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.HarvestAction;
-import game.positions.Dirt;
+import game.positions.farm.Dirt;
 
 /**
  * Abstract base class for all crops.

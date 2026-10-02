@@ -1,9 +1,11 @@
-package game.positions;
+package game.positions.mine;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.Stone;
+import game.positions.LocationUtils;
+
 import java.util.Optional;
 import java.util.Random;
 

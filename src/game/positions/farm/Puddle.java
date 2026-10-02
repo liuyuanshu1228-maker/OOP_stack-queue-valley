@@ -1,11 +1,12 @@
-package game.positions;
+package game.positions.farm;
 
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
+import game.positions.Chargeable;
 
 /**
  * A puddle on the ground. It starts uncharged and can become a charged puddle
- * when a {@link CopperNode} is broken nearby. A charged puddle shocks whoever
+ * when a CopperNode is broken nearby. A charged puddle shocks whoever
  * stands on it every turn.
  */
 public class Puddle extends Ground implements Chargeable {

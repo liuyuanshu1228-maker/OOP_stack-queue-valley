@@ -1,4 +1,4 @@
-package game.positions;
+package game.positions.farm;
 
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
@@ -6,6 +6,8 @@ import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.TillAction;
 import game.actions.WaterAction;
+import game.positions.Tillable;
+import game.positions.Waterable;
 
 /**
  * A class representing dirt on the ground. Dirt can be tilled into Soil
@@ -53,7 +55,6 @@ public class Dirt extends Ground implements Tillable, Waterable {
     @Override
     public ActionList allowableActions(Actor actor, Location location, String direction) {
         ActionList actions = new ActionList();
-        // Till/Water can only be performed on the tile the Actor is standing on, not adjacent tiles.
         if (direction.isEmpty()) {
             actions.add(new TillAction(location));
             actions.add(new WaterAction(location));
