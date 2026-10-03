@@ -58,8 +58,7 @@ public final class Perching implements CreatureState {
     @Override
     public CreatureState nextState(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        boolean foodNearby = LocationUtils.nearestWhere(here, Crow.SENSING_RADIUS,
-                candidate -> CrowSensing.hasForageableItems(candidate, creature)).isPresent();
+        boolean foodNearby = CrowSensing.nearestFood(here, creature).isPresent();
 
         if (foodNearby) {
             return Foraging.INSTANCE;

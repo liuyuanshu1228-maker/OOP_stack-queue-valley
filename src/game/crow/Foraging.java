@@ -50,8 +50,7 @@ public final class Foraging implements CreatureState {
             return cache(creature, here);
         }
 
-        Optional<Location> itemLocation = LocationUtils.nearestWhere(here, Crow.SENSING_RADIUS,
-                candidate -> CrowSensing.hasForageableItems(candidate, creature));
+        Optional<Location> itemLocation = CrowSensing.nearestFood(here, creature);
         if (itemLocation.isEmpty()) {
             return creature + " finds nothing worth foraging.";
         }
@@ -127,9 +126,7 @@ public final class Foraging implements CreatureState {
     @Override
     public CreatureState nextState(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        boolean foodNearby = CrowSensing.hasForageableItems(here, creature)
-                || LocationUtils.nearestWhere(here, Crow.SENSING_RADIUS,
-                        candidate -> CrowSensing.hasForageableItems(candidate, creature)).isPresent();
+        boolean foodNearby = CrowSensing.foodWithinRange(here, creature);
 
         if (!foodNearby) {
             return Perching.INSTANCE;
@@ -150,8 +147,7 @@ public final class Foraging implements CreatureState {
     @Override
     public String onEnter(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        Optional<Location> itemLocation = LocationUtils.nearestWhere(here, Crow.SENSING_RADIUS,
-                candidate -> CrowSensing.hasForageableItems(candidate, creature));
+        Optional<Location> itemLocation = CrowSensing.nearestFood(here, creature);
 
         if (itemLocation.isEmpty()) {
             return creature + " starts foraging.";
