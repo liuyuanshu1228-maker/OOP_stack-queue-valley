@@ -10,12 +10,13 @@ import game.positions.LocationUtils;
 import java.util.Optional;
 
 /**
- * The crow's default state: wanders aimlessly around the map, watching for
- * food or for actors to mob.
+ * The crow's default, idle state: wanders aimlessly around the map, watching
+ * for food or for actors to mob.
  * <p>
- * This is the only state wired up so far. The conditions that would move
- * the crow into Foraging, Mobbing or Fleeing are added alongside those
- * states, in {@link #nextState}.
+ * From here the crow moves to {@link Mobbing} if exactly one actor is nearby,
+ * or to {@link Foraging} once food comes within sensing range; otherwise it
+ * stays perching. {@link Mobbing} and {@link Fleeing} both settle back into
+ * this state once their own conditions for leaving are met.
  */
 public final class Perching implements CreatureState {
 
