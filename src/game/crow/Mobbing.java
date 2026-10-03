@@ -12,10 +12,12 @@ import java.util.Optional;
 import java.util.Random;
 
 /**
- * The crow has spotted a lone actor and moves in to harass them. Each turn
- * it closes the gap; once adjacent it steals one item from the target's
- * inventory and tucks it into its own, so the stolen goods are dropped on
- * the spot if the crow is later forced into Fleeing.
+ * The crow has spotted a lone actor and dives in to harass them. On entering
+ * this state the crow immediately grabs an item from the target regardless of
+ * distance (a surprise first strike). Each subsequent turn it closes the gap
+ * and steals again once adjacent. Stolen items sit in the crow's own inventory
+ * and are dropped when it later panics into {@link Fleeing}, letting the
+ * Farmer pick them back up.
  * <p>
  * Transitions out:
  * <ul>
@@ -44,8 +46,7 @@ public final class Mobbing implements CreatureState {
     @Override
     public String act(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        Optional<Location> targetLoc = LocationUtils.nearestWhere(
-                here, Crow.SENSING_RADIUS, Location::containsAnActor);
+        Optional<Location> targetLoc = CrowSensing.nearestActor(here);
 
         if (targetLoc.isEmpty()) {
             return creature + " mobs the area but finds no target.";
@@ -106,15 +107,26 @@ public final class Mobbing implements CreatureState {
     }
 
     /**
-     * The crow announces its attack as it dives toward its lone target.
+     * First-strike: the crow dives and immediately steals one item from the
+     * nearest visible actor, regardless of distance. This is the only place
+     * in the codebase where an item is taken from a live actor without the
+     * actor needing to be adjacent first.
      *
      * @param creature the crow entering this state
      * @param map the map the crow is on
-     * @return a description of the entry effect
+     * @return a description of the ambush and what (if anything) was stolen
      */
     @Override
     public String onEnter(Actor creature, GameMap map) {
-        return creature + " spots a lone target and dives in to mob!";
+        Location here = map.locationOf(creature);
+        Optional<Location> targetLoc = CrowSensing.nearestActor(here);
+
+        if (targetLoc.isEmpty()) {
+            return creature + " swoops into an aggressive stance.";
+        }
+
+        Actor target = targetLoc.get().getActor();
+        return creature + " dives aggressively at " + target + "! " + steal(creature, target);
     }
 
     @Override

@@ -47,20 +47,26 @@ public final class Perching implements CreatureState {
     }
 
     /**
-     * Moves to Foraging once food becomes visible within sensing range.
-     * The conditions for moving to Mobbing/Fleeing are added once those
-     * states exist.
+     * Moves to Mobbing if exactly one other actor is visible within sensing
+     * range (a lone target worth harassing). Moves to Foraging once food is
+     * visible within sensing range. Otherwise stays perching.
+     * <p>
+     * Mobbing is checked first: if a lone actor is nearby the crow prioritises
+     * the confrontation over scavenging for food.
      *
      * @param creature the crow whose next state is being decided
      * @param map the map the crow is on
-     * @return Foraging if food is within sensing range, otherwise this state
+     * @return the next state
      */
     @Override
     public CreatureState nextState(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        boolean foodNearby = CrowSensing.nearestFood(here, creature).isPresent();
 
-        if (foodNearby) {
+        if (CrowSensing.countActorsWithinRange(here) == 1) {
+            return Mobbing.INSTANCE;
+        }
+
+        if (CrowSensing.nearestFood(here, creature).isPresent()) {
             return Foraging.INSTANCE;
         }
 
