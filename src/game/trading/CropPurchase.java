@@ -92,16 +92,6 @@ public abstract class CropPurchase implements Purchasable {
     }
 
     /**
-     * Rolls a random chance, for subclasses that introduce chance-based behaviour.
-     *
-     * @param percent the chance of success, out of 100
-     * @return {@code true} if the roll succeeds, {@code false} otherwise
-     */
-    protected final boolean rollPercent(int percent) {
-        return RandomUtils.rollPercent(percent);
-    }
-
-    /**
      * Factory method that creates a new instance of the specific Crop ground to plant.
      *
      * @return a new Crop instance

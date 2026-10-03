@@ -6,7 +6,6 @@ import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.statistics.FarmerStatistics;
 import game.trading.Sellable;
-import game.util.RandomUtils;
 
 
 /**
@@ -83,15 +82,5 @@ public abstract class SellableItem extends Item implements Sellable {
      */
     protected String applySaleEffect(Actor seller, Actor merchant, Location merchantLocation) {
         return "";
-    }
-
-    /**
-     * Rolls a random chance.
-     *
-     * @param percent the chance of success, out of 100
-     * @return {@code true} if the roll succeeds, {@code false} otherwise
-     */
-    protected final boolean rollPercent(int percent) {
-        return RandomUtils.rollPercent(percent);
     }
 }

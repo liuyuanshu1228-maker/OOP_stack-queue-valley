@@ -38,7 +38,7 @@ public class Diamond extends SellableItem {
     @Override
     protected String applySaleEffect(Actor seller, Actor merchant, Location merchantLocation) {
         List<Item> items = seller.getInventory().getItems();
-        if (items.isEmpty() || !rollPercent(THEFT_CHANCE_PERCENT)) {
+        if (items.isEmpty() || !RandomUtils.rollPercent(THEFT_CHANCE_PERCENT)) {
             return "";
         }
         Item stolen = RandomUtils.pickRandom(items);

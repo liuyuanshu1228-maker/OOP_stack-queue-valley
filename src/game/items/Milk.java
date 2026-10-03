@@ -1,5 +1,7 @@
 package game.items;
 
+import game.util.RandomUtils;
+
 /**
  * Represents a Milk ('K') item produced by a Cow. Can be sold to the Merchant
  * for 60 coins, with a 50% chance that the Merchant takes the Milk and pays nothing.
@@ -25,6 +27,6 @@ public class Milk extends SellableItem {
      */
     @Override
     protected boolean merchantRefusesPayment() {
-        return rollPercent(NO_PAYMENT_CHANCE_PERCENT);
+        return RandomUtils.rollPercent(NO_PAYMENT_CHANCE_PERCENT);
     }
 }
