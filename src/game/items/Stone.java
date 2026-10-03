@@ -3,6 +3,7 @@ package game.items;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
+import game.util.RandomUtils;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -46,7 +47,7 @@ public class Stone extends SellableItem {
             return "";
         }
         Ground built = groundFactory.get();
-        pickRandom(nearby).setGround(built);
+        RandomUtils.pickRandom(nearby).setGround(built);
         return merchant + " builds a " + built + " nearby.";
     }
 }

@@ -8,8 +8,6 @@ import game.statistics.FarmerStatistics;
 import game.trading.Sellable;
 import game.util.RandomUtils;
 
-import java.util.List;
-import java.util.Random;
 
 /**
  * Abstract base class for portable items that can be sold to a Merchant.
@@ -20,7 +18,6 @@ import java.util.Random;
 public abstract class SellableItem extends Item implements Sellable {
 
     private final int sellPrice;
-    private final Random random = new Random();
 
     /**
      * Constructor for SellableItem. Initializes a portable item with the given sell price.
@@ -96,16 +93,5 @@ public abstract class SellableItem extends Item implements Sellable {
      */
     protected final boolean rollPercent(int percent) {
         return RandomUtils.rollPercent(percent);
-    }
-
-    /**
-     * Picks one element of the given non-empty list uniformly at random.
-     *
-     * @param options the list to pick from; must not be empty
-     * @param <T>     the type of the list elements
-     * @return a randomly chosen element
-     */
-    protected final <T> T pickRandom(List<T> options) {
-        return options.get(random.nextInt(options.size()));
     }
 }

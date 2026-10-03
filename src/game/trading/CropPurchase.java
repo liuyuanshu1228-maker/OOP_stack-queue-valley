@@ -7,8 +7,6 @@ import game.crops.Crop;
 import game.statistics.FarmerStatistics;
 import game.util.RandomUtils;
 
-import java.util.Random;
-
 /**
  * Abstract base class for purchasing crops from a Merchant.
  * Encapsulates common attributes and planting logic on a non-crop tile
@@ -18,7 +16,6 @@ public abstract class CropPurchase implements Purchasable {
 
     private final String productName;
     private final int price;
-    private final Random random = new Random();
 
     /**
      * Constructor for CropPurchase.
@@ -72,7 +69,7 @@ public abstract class CropPurchase implements Purchasable {
                     + ", but " + merchant + " has no room to plant it nearby.";
         }
 
-        Location plantedLocation = candidates.get(random.nextInt(candidates.size()));
+        Location plantedLocation = RandomUtils.pickRandom(candidates);
         plantedLocation.setGround(createCrop());
 
         boolean waived = rollPaymentWaiver();

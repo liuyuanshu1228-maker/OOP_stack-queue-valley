@@ -4,6 +4,8 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.util.RandomUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -128,7 +130,7 @@ public final class LocationUtils {
         if (options.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(options.get(RANDOM.nextInt(options.size())));
+        return Optional.of(RandomUtils.pickRandom(options));
     }
 
     /**

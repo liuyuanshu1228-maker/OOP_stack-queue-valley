@@ -1,5 +1,6 @@
 package game.util;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -22,5 +23,16 @@ public final class RandomUtils {
      */
     public static boolean rollPercent(int percent) {
         return RANDOM.nextInt(100) < percent;
+    }
+
+    /**
+     * Picks one element of the given non-empty list uniformly at random.
+     *
+     * @param options the list to pick from; must not be empty
+     * @param <T>     the type of the list elements
+     * @return a randomly chosen element
+     */
+    public static <T> T pickRandom(List<T> options) {
+        return options.get(RANDOM.nextInt(options.size()));
     }
 }

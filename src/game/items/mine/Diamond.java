@@ -4,6 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.SellableItem;
+import game.util.RandomUtils;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class Diamond extends SellableItem {
         if (items.isEmpty() || !rollPercent(THEFT_CHANCE_PERCENT)) {
             return "";
         }
-        Item stolen = pickRandom(items);
+        Item stolen = RandomUtils.pickRandom(items);
         seller.getInventory().remove(stolen);
         return merchant + " also steals " + stolen + ".";
     }
