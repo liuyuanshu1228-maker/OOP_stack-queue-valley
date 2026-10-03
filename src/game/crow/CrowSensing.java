@@ -22,6 +22,36 @@ final class CrowSensing {
     }
 
     /**
+     * Counts the number of other actors (excluding the crow itself) visible
+     * within {@link Crow#SENSING_RADIUS} of here.  Because
+     * {@link Location#getNearbyLocations} does not include the centre tile,
+     * the crow at {@code here} is never included in the count.
+     *
+     * @param here the Location the crow is currently on
+     * @return the number of other actors within sensing range
+     */
+    static int countActorsWithinRange(Location here) {
+        int count = 0;
+        for (Location nearby : here.getNearbyLocations(Crow.SENSING_RADIUS)) {
+            if (nearby.containsAnActor()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Whether there are two or more other actors within sensing range —
+     * enough to make the crow feel outnumbered and panic into Fleeing.
+     *
+     * @param here the Location the crow is currently on
+     * @return true if two or more other actors are within sensing range
+     */
+    static boolean isCrowded(Location here) {
+        return countActorsWithinRange(here) >= 2;
+    }
+
+    /**
      * Whether there is an Item at this Location worth foraging: one that
      * the given creature hasn't already hidden away itself.
      *
