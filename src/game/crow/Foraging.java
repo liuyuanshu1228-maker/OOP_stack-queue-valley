@@ -188,6 +188,7 @@ public final class Foraging implements CreatureState {
         return scattered;
     }
 
+    /** @return the name of this state */
     @Override
     public String toString() {
         return "Foraging";

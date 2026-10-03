@@ -19,6 +19,7 @@ import java.util.Random;
  */
 public abstract class WanderingActor extends Actor {
 
+    /** Random number generator used to pick a random adjacent exit each turn. */
     private final Random random = new Random();
 
     /**

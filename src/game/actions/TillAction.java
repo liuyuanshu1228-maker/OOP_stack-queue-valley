@@ -19,6 +19,7 @@ import java.util.List;
  */
 public class TillAction extends Action {
 
+    /** The map location whose ground is to be tilled. */
     private final Location location;
 
     /**

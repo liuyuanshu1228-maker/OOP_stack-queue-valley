@@ -18,8 +18,10 @@ import java.util.Arrays;
  */
 public class Merchant extends WanderingActor {
 
+    /** The Merchant's starting (and maximum) hit points. */
     private static final int MAX_HP = 100;
 
+    /** The set of products this Merchant offers for purchase. */
     private final Purchasable[] catalog;
 
     /**

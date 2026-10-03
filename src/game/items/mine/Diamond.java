@@ -13,7 +13,9 @@ import java.util.List;
  */
 public class Diamond extends SellableItem {
 
+    /** Coins paid by the Merchant when a Diamond is sold. */
     private static final int SELL_PRICE = 5000;
+    /** Percentage chance that the Merchant steals a random item from the seller after payment. */
     private static final int THEFT_CHANCE_PERCENT = 50;
 
     /**

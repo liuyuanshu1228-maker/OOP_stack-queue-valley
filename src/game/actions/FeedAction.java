@@ -20,7 +20,10 @@ public class FeedAction extends Action {
     /** Stamina points consumed by a successful feed action. */
     private static final int STAMINA_COST = 2;
 
+    /** The food item consumed during the feed action. */
     private final Item food;
+
+    /** The animal actor being fed. */
     private final Actor animal;
 
     /**

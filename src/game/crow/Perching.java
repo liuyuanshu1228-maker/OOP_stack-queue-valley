@@ -95,6 +95,7 @@ public final class Perching implements CreatureState {
         return creature + " settles onto the " + crop + ", and its droppings count as a free watering.";
     }
 
+    /** @return the name of this state */
     @Override
     public String toString() {
         return "Perching";

@@ -19,6 +19,7 @@ public class Rock extends BreakableGround {
     /** Chance (out of 100) that breaking a rock releases a shockwave. */
     private static final int SHOCKWAVE_CHANCE_PERCENT = 50;
 
+    /** Random number generator used to determine whether a shockwave occurs. */
     private final Random random = new Random();
 
     /**

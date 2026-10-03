@@ -16,9 +16,12 @@ import java.util.function.Supplier;
  */
 public class Egg extends SellableItem {
 
+    /** Coins paid by the Merchant when an Egg is sold. */
     private static final int SELL_PRICE = 40;
+    /** Percentage chance that selling an Egg spawns a new animal near the Merchant. */
     private static final int ANIMAL_SPAWN_CHANCE_PERCENT = 50;
 
+    /** Factory that produces the Actor spawned adjacent to the Merchant on a successful sale. */
     private final Supplier<Actor> animalFactory;
 
     /**

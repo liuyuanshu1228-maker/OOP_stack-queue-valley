@@ -14,8 +14,13 @@ import game.trading.Purchasable;
  */
 public class BuyAction extends Action {
 
+    /** The product being purchased. */
     private final Purchasable purchasable;
+
+    /** The Merchant actor selling the product. */
     private final Actor merchant;
+
+    /** The current map location of the Merchant. */
     private final Location merchantLocation;
 
     /**

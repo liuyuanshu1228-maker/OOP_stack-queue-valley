@@ -15,8 +15,11 @@ import game.capabilities.BurningStatus;
  */
 public class Fire extends Item {
 
+    /** Damage per turn applied to any Actor standing on this fire's tile. */
     private final int burnDamagePerTurn;
+    /** Number of turns the BurningStatus inflicted by this fire lasts on the victim. */
     private final int burnDurationTurns;
+    /** Turns of life remaining before this fire extinguishes itself. */
     private int remainingTurns;
 
     /**

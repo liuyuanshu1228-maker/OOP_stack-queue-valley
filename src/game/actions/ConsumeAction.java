@@ -14,6 +14,7 @@ import java.util.Optional;
  */
 public class ConsumeAction extends Action {
 
+    /** The item to be consumed from the actor's inventory. */
     private final Item item;
 
     /**

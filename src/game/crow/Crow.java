@@ -28,9 +28,13 @@ public class Crow extends Actor implements StatefulCreature, ItemCache, Composur
     /** How far (in tiles) the crow can sense items and actors around it. */
     public static final int SENSING_RADIUS = 5;
 
+    /** The state this crow is currently in. */
     private CreatureState state = Perching.INSTANCE;
+
+    /** Items this crow has deliberately hidden away, so it does not forage them again. */
     private final Set<Item> cachedItems = new HashSet<>();
 
+    /** Number of consecutive turns this crow has felt safe (no actors within sensing range). */
     private int safeTurns = 0;
 
     /**

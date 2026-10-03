@@ -23,6 +23,7 @@ import java.util.List;
  */
 public class WaterAction extends Action {
 
+    /** The map location whose ground is to be watered. */
     private final Location location;
 
     /**

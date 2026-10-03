@@ -13,9 +13,16 @@ import game.trading.Sellable;
  */
 public class SellAction extends Action {
 
+    /** The item being sold from the actor's inventory. */
     private final Item item;
+
+    /** The Sellable capability that defines the sell price and sell logic. */
     private final Sellable sellable;
+
+    /** The Merchant actor buying the item. */
     private final Actor merchant;
+
+    /** The current map location of the Merchant. */
     private final Location merchantLocation;
 
     /**

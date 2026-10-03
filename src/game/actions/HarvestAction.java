@@ -16,6 +16,7 @@ import game.statistics.StatisticUtils;
  */
 public class HarvestAction extends Action {
 
+    /** The map location of the crop to be harvested. */
     private final Location location;
 
     /**

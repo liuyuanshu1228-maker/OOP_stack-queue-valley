@@ -168,6 +168,7 @@ public final class Fleeing implements CreatureState {
         return startled;
     }
 
+    /** @return the name of this state */
     @Override
     public String toString() {
         return "Fleeing";

@@ -21,6 +21,7 @@ import game.statistics.StatisticUtils;
  */
 public class WaterCropAction extends Action {
 
+    /** The map location of the crop to be watered. */
     private final Location cropLocation;
 
     /**

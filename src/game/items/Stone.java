@@ -15,8 +15,10 @@ import java.util.function.Supplier;
  */
 public class Stone extends SellableItem {
 
+    /** Coins paid by the Merchant when a Stone is sold. */
     private static final int SELL_PRICE = 10;
 
+    /** Factory that produces the Ground instance placed on a tile adjacent to the Merchant after the sale. */
     private final Supplier<Ground> groundFactory;
 
     /**

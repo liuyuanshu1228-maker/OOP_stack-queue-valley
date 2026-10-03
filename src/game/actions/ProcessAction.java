@@ -13,7 +13,10 @@ import game.positions.ProcessingFacility;
  */
 public class ProcessAction extends Action {
 
+    /** The processing facility (e.g. DryingRack, PreservesJar) performing the transformation. */
     private final ProcessingFacility facility;
+
+    /** The item in the actor's inventory to be processed. */
     private final Item product;
 
     /**

@@ -34,9 +34,12 @@ public class Geode extends Item implements Breakable {
     /** How many turns the burn the fire inflicts lasts. */
     private static final int BURN_DURATION_TURNS = 4;
 
+    /** Context label used when the BreakAction is offered from the carrier's inventory. */
     private static final String IN_INVENTORY = "in inventory";
+    /** Context label used when the BreakAction is offered from the tile the Geode lies on. */
     private static final String ON_THE_GROUND = "on the ground";
 
+    /** Random number generator used to decide the outcome of breaking this Geode. */
     private final Random random = new Random();
 
     /**

@@ -6,7 +6,9 @@ package game.items;
  */
 public class Milk extends SellableItem {
 
+    /** Coins paid by the Merchant when Milk is sold (subject to the refusal chance). */
     private static final int SELL_PRICE = 60;
+    /** Percentage chance that the Merchant takes the Milk without paying. */
     private static final int NO_PAYMENT_CHANCE_PERCENT = 50;
 
     /**

@@ -129,6 +129,7 @@ public final class Mobbing implements CreatureState {
         return creature + " dives aggressively at " + target + "! " + steal(creature, target);
     }
 
+    /** @return the name of this state */
     @Override
     public String toString() {
         return "Mobbing";

@@ -16,8 +16,13 @@ import game.items.Fire;
  */
 public class BurningStatus implements Status {
 
+    /** The actor currently affected by this burn. */
     private final Actor burningActor;
+
+    /** HP deducted from the burning actor each turn. */
     private final int damagePerTurn;
+
+    /** Number of turns remaining before the burn expires. */
     private int remainingTurns;
 
     /**

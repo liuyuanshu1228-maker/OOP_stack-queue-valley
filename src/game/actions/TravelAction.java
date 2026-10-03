@@ -13,8 +13,13 @@ import game.travel.TravelMethod;
  */
 public class TravelAction extends Action {
 
+    /** Human-readable destination label shown to the player in the action menu. */
     private final String destinationName;
+
+    /** The intended map location the actor is travelling to. */
     private final Location destinationLocation;
+
+    /** The travel mechanism that determines the actual landing and arrival effect. */
     private final TravelMethod method;
 
     /**

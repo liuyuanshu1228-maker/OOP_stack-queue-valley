@@ -14,8 +14,13 @@ import game.positions.Breakable;
  */
 public class BreakAction extends Action {
 
+    /** The Breakable object (ground tile or item) to be broken. */
     private final Breakable target;
+
+    /** The map location of the target being broken. */
     private final Location location;
+
+    /** Context string (e.g. "in inventory", "North") used to distinguish identical targets in the menu. */
     private final String whereItIs;
 
     /**
