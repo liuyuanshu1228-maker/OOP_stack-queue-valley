@@ -17,11 +17,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A crow: a stateful creature that cycles between perching, foraging,
- * mobbing nearby actors, and fleeing when threatened.
- * <p>
- * {@link Perching}, {@link Foraging} and {@link Fleeing} are wired up so far;
- * Mobbing is added incrementally.
+ * A crow: a stateful creature that cycles between {@link Perching},
+ * {@link Foraging}, {@link Mobbing}, and {@link Fleeing}.
  */
 public class Crow extends Actor implements StatefulCreature, ItemCache, Composure {
 
