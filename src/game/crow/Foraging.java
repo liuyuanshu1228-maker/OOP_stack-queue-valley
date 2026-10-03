@@ -7,11 +7,11 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.actors.CreatureState;
 import game.actors.ItemCache;
 import game.positions.LocationUtils;
+import game.util.RandomUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 /**
  * The crow seeks out the nearest item lying on the ground and, once it
@@ -28,8 +28,6 @@ public final class Foraging implements CreatureState {
 
     /** How far the hiding spot must be from where the item was found. */
     private static final int MIN_CACHE_DISTANCE = 2;
-
-    private static final Random RANDOM = new Random();
 
     private Foraging() {
     }
@@ -89,7 +87,7 @@ public final class Foraging implements CreatureState {
             return creature + " picks up the " + item + ", but can't find anywhere to hide it.";
         }
 
-        Location hidingSpot = candidates.get(RANDOM.nextInt(candidates.size()));
+        Location hidingSpot = RandomUtils.pickRandom(candidates);
         here.removeItem(item);
         hidingSpot.addItem(item);
         creature.asCapability(ItemCache.class).ifPresent(cache -> cache.remember(item));
@@ -178,7 +176,7 @@ public final class Foraging implements CreatureState {
 
         for (Location source : nearby) {
             for (Item item : new ArrayList<>(source.getItems())) {
-                Location destination = nearby.get(RANDOM.nextInt(nearby.size()));
+                Location destination = RandomUtils.pickRandom(nearby);
                 source.removeItem(item);
                 destination.addItem(item);
                 scattered++;

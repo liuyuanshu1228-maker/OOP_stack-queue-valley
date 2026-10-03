@@ -4,8 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import game.capabilities.StrawberryHealStatus;
 import game.capabilities.StrawberryPoisonStatus;
 import game.items.food.ConsumableItem;
-
-import java.util.Random;
+import game.util.RandomUtils;
 
 /**
  * A strawberry, produced by watering or harvesting a {@link Strawberry}
@@ -15,8 +14,6 @@ import java.util.Random;
 public class StrawberryItem extends ConsumableItem {
 
     private static final int ROTTEN_CHANCE_PERCENT = 50;
-
-    private static final Random RANDOM = new Random();
 
     private final boolean rotten;
 
@@ -37,7 +34,7 @@ public class StrawberryItem extends ConsumableItem {
      * @return a new, randomly rotten or fresh strawberry
      */
     public static StrawberryItem createRandom() {
-        return new StrawberryItem(RANDOM.nextInt(100) < ROTTEN_CHANCE_PERCENT);
+        return new StrawberryItem(RandomUtils.rollPercent(ROTTEN_CHANCE_PERCENT));
     }
 
     /**

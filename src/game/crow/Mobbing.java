@@ -6,10 +6,10 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actors.CreatureState;
 import game.positions.LocationUtils;
+import game.util.RandomUtils;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 /**
  * The crow has spotted a lone actor and dives in to harass them. On entering
@@ -29,8 +29,6 @@ public final class Mobbing implements CreatureState {
 
     /** The single shared instance of this stateless state. */
     public static final Mobbing INSTANCE = new Mobbing();
-
-    private static final Random RANDOM = new Random();
 
     private Mobbing() {
     }
@@ -79,7 +77,7 @@ public final class Mobbing implements CreatureState {
         if (victimItems.isEmpty()) {
             return creature + " harasses " + victim + " but finds nothing to steal.";
         }
-        Item stolen = victimItems.get(RANDOM.nextInt(victimItems.size()));
+        Item stolen = RandomUtils.pickRandom(victimItems);
         victim.getInventory().remove(stolen);
         creature.getInventory().add(stolen);
         return creature + " steals " + stolen + " from " + victim + "!";
