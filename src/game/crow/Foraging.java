@@ -115,17 +115,22 @@ public final class Foraging implements CreatureState {
     }
 
     /**
-     * Moves to Perching once there is nothing left to forage within sensing
-     * range. The conditions for moving to Mobbing/Fleeing are added once
-     * those states exist.
+     * Moves to Fleeing if the crow feels crowded (at least
+     * {@value CrowSensing#CROWD_SIZE} actors within sensing range), or to
+     * Perching once there is nothing left to forage within sensing range.
+     * The condition for moving to Mobbing is added once that state exists.
      *
      * @param creature the crow whose next state is being decided
      * @param map the map the crow is on
-     * @return Perching if nothing is left to forage, otherwise this state
+     * @return Fleeing if crowded, Perching if nothing is left to forage, otherwise this state
      */
     @Override
     public CreatureState nextState(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
+        if (CrowSensing.isCrowded(here)) {
+            return Fleeing.INSTANCE;
+        }
+
         boolean foodNearby = CrowSensing.foodWithinRange(here, creature);
 
         if (!foodNearby) {

@@ -8,6 +8,7 @@ import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import game.actions.CreatureStateAction;
+import game.actors.Composure;
 import game.actors.CreatureState;
 import game.actors.ItemCache;
 import game.actors.StatefulCreature;
@@ -19,10 +20,10 @@ import java.util.Set;
  * A crow: a stateful creature that cycles between perching, foraging,
  * mobbing nearby actors, and fleeing when threatened.
  * <p>
- * Only {@link Perching} is wired up so far; Foraging, Mobbing and Fleeing
- * are added incrementally.
+ * {@link Perching}, {@link Foraging} and {@link Fleeing} are wired up so far;
+ * Mobbing is added incrementally.
  */
-public class Crow extends Actor implements StatefulCreature, ItemCache {
+public class Crow extends Actor implements StatefulCreature, ItemCache, Composure {
 
     /** The crow's starting (and maximum) hit points. */
     private static final int STARTING_HP = 30;
@@ -32,6 +33,8 @@ public class Crow extends Actor implements StatefulCreature, ItemCache {
 
     private CreatureState state = Perching.INSTANCE;
     private final Set<Item> cachedItems = new HashSet<>();
+
+    private int safeTurns = 0;
 
     /**
      * Constructor.
@@ -79,6 +82,32 @@ public class Crow extends Actor implements StatefulCreature, ItemCache {
     @Override
     public void remember(Item item) {
         cachedItems.add(item);
+    }
+
+    /**
+     * Returns how many consecutive turns this crow has felt safe.
+     *
+     * @return the number of consecutive safe turns
+     */
+    @Override
+    public int getSafeTurns() {
+        return safeTurns;
+    }
+
+    /**
+     * Records one more consecutive turn in which this crow felt safe.
+     */
+    @Override
+    public void recordSafeTurn() {
+        safeTurns++;
+    }
+
+    /**
+     * Resets the count of consecutive safe turns back to zero.
+     */
+    @Override
+    public void resetComposure() {
+        safeTurns = 0;
     }
 
     /**
