@@ -5,6 +5,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.crops.Crop;
 import game.statistics.FarmerStatistics;
+import game.util.RandomUtils;
 
 import java.util.Random;
 
@@ -100,7 +101,7 @@ public abstract class CropPurchase implements Purchasable {
      * @return {@code true} if the roll succeeds, {@code false} otherwise
      */
     protected final boolean rollPercent(int percent) {
-        return random.nextInt(100) < percent;
+        return RandomUtils.rollPercent(percent);
     }
 
     /**

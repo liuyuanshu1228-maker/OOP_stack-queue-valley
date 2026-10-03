@@ -6,6 +6,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.statistics.FarmerStatistics;
 import game.trading.Sellable;
+import game.util.RandomUtils;
 
 import java.util.List;
 import java.util.Random;
@@ -94,7 +95,7 @@ public abstract class SellableItem extends Item implements Sellable {
      * @return {@code true} if the roll succeeds, {@code false} otherwise
      */
     protected final boolean rollPercent(int percent) {
-        return random.nextInt(100) < percent;
+        return RandomUtils.rollPercent(percent);
     }
 
     /**

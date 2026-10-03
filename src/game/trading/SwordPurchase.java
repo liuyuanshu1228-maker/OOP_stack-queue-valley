@@ -5,16 +5,13 @@ import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.items.Sword;
 import game.statistics.FarmerStatistics;
-
-import java.util.Random;
+import game.util.RandomUtils;
 
 /** Buying a Sword: 3000 coins, 50% chance the merchant gives nothing. */
 public class SwordPurchase implements Purchasable {
 
     private static final int PRICE = 3000;
     private static final int FAIL_CHANCE_PERCENT = 50;
-
-    private final Random random = new Random();
 
     /**
      * Returns the display name of the Sword product.
@@ -48,7 +45,7 @@ public class SwordPurchase implements Purchasable {
     @Override
     public String purchase(Actor buyer, Actor merchant, Location merchantLocation) {
         buyer.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.DECREASE, PRICE);
-        if (random.nextInt(100) < FAIL_CHANCE_PERCENT) {
+        if (RandomUtils.rollPercent(FAIL_CHANCE_PERCENT)) {
             return buyer + " pays " + merchant + ", who pockets the coins and hands over nothing.";
         }
         buyer.getInventory().add(new Sword());
