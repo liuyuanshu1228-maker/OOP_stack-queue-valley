@@ -182,16 +182,45 @@ public final class LocationUtils {
      * tile is enterable or gets any closer than staying put
      */
     public static Optional<Location> stepToward(Location from, Location target, Actor actor) {
+        return bestStep(from, target, actor, -1);
+    }
+
+    /**
+     * Picks the tile adjacent to from (that actor could step onto) which
+     * takes actor furthest away from threat, by Chebyshev distance.
+     *
+     * @param from the Location to step from
+     * @param threat the Location being fled from
+     * @param actor the Actor that would be doing the stepping
+     * @return the best adjacent Location to step to, or empty if no adjacent
+     * tile is enterable or gets any further away than staying put
+     */
+    public static Optional<Location> stepAway(Location from, Location threat, Actor actor) {
+        return bestStep(from, threat, actor, 1);
+    }
+
+    /**
+     * Picks the enterable tile adjacent to from that most improves actor's
+     * Chebyshev distance to reference in the given direction.
+     *
+     * @param from the Location to step from
+     * @param reference the Location the distance is measured to
+     * @param actor the Actor that would be doing the stepping
+     * @param direction -1 to minimise the distance (approach), +1 to maximise it (flee)
+     * @return the best adjacent Location to step to, or empty if no adjacent
+     * tile is enterable or improves on staying put
+     */
+    private static Optional<Location> bestStep(Location from, Location reference, Actor actor, int direction) {
         Location best = null;
-        int bestDistance = chebyshevDistance(from, target);
+        int bestScore = direction * chebyshevDistance(from, reference);
 
         for (Location candidate : from.getNearbyLocations(1)) {
             if (!candidate.canActorEnter(actor)) {
                 continue;
             }
-            int distance = chebyshevDistance(candidate, target);
-            if (distance < bestDistance) {
-                bestDistance = distance;
+            int score = direction * chebyshevDistance(candidate, reference);
+            if (score > bestScore) {
+                bestScore = score;
                 best = candidate;
             }
         }
