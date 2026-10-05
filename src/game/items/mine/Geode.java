@@ -9,8 +9,7 @@ import game.actions.BreakAction;
 import game.items.Fire;
 import game.positions.Breakable;
 import game.positions.LocationUtils;
-
-import java.util.Random;
+import game.util.RandomUtils;
 
 /**
  * A geode. It can be picked up and carried, and can be broken either from the
@@ -38,9 +37,6 @@ public class Geode extends Item implements Breakable {
     private static final String IN_INVENTORY = "in inventory";
     /** Context label used when the BreakAction is offered from the tile the Geode lies on. */
     private static final String ON_THE_GROUND = "on the ground";
-
-    /** Random number generator used to decide the outcome of breaking this Geode. */
-    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -90,7 +86,7 @@ public class Geode extends Item implements Breakable {
         } else {
             location.removeItem(this);
         }
-        if (random.nextInt(100) < DIAMOND_CHANCE_PERCENT) {
+        if (RandomUtils.rollPercent(DIAMOND_CHANCE_PERCENT)) {
             location.addItem(new Diamond());
             return actor + " breaks the " + this + ". It splits open, revealing a diamond!";
         }

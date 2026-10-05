@@ -5,9 +5,9 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.Stone;
 import game.positions.LocationUtils;
+import game.util.RandomUtils;
 
 import java.util.Optional;
-import java.util.Random;
 
 /**
  * A rock. It cannot be entered, so it has to be broken to clear the way.
@@ -18,9 +18,6 @@ public class Rock extends BreakableGround {
 
     /** Chance (out of 100) that breaking a rock releases a shockwave. */
     private static final int SHOCKWAVE_CHANCE_PERCENT = 50;
-
-    /** Random number generator used to determine whether a shockwave occurs. */
-    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -47,7 +44,7 @@ public class Rock extends BreakableGround {
      */
     @Override
     protected String afterBreaking(Actor actor, Location location) {
-        if (random.nextInt(100) >= SHOCKWAVE_CHANCE_PERCENT) {
+        if (!RandomUtils.rollPercent(SHOCKWAVE_CHANCE_PERCENT)) {
             return "The rock crumbles quietly.";
         }
         Optional<Location> landing = LocationUtils.randomEnterableNearby(location, actor);
