@@ -5,7 +5,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.crops.Crop;
 import game.statistics.FarmerStatistics;
-import game.util.RandomUtils;
+import game.RandomUtils;
 
 /**
  * Abstract base class for purchasing crops from a Merchant.

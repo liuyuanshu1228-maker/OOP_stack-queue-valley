@@ -4,7 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.Egg;
 import game.positions.LocationUtils;
-import game.util.RandomUtils;
+import game.RandomUtils;
 
 /**
  * A Chicken that wanders the farm and can be fed, producing Eggs.

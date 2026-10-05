@@ -6,7 +6,7 @@ import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.WaterCropAction;
 import game.positions.LocationUtils;
-import game.util.RandomUtils;
+import game.RandomUtils;
 
 /**
  * A parsnip crop. It can be watered, which heals the farmer but risks

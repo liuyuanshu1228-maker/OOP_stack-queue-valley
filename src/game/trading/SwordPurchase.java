@@ -5,7 +5,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.items.Sword;
 import game.statistics.FarmerStatistics;
-import game.util.RandomUtils;
+import game.RandomUtils;
 
 /** Buying a Sword: 3000 coins, 50% chance the merchant gives nothing. */
 public class SwordPurchase implements Purchasable {

@@ -9,7 +9,7 @@ import game.actions.BreakAction;
 import game.items.Fire;
 import game.positions.Breakable;
 import game.positions.LocationUtils;
-import game.util.RandomUtils;
+import game.RandomUtils;
 
 /**
  * A geode. It can be picked up and carried, and can be broken either from the

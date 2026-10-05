@@ -5,7 +5,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.WaterCropAction;
 import game.positions.farm.Puddle;
-import game.util.RandomUtils;
+import game.RandomUtils;
 
 /**
  * A cauliflower crop. Watering it may turn the surrounding ground into

@@ -6,7 +6,7 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actors.CreatureState;
 import game.positions.LocationUtils;
-import game.util.RandomUtils;
+import game.RandomUtils;
 
 import java.util.List;
 import java.util.Optional;

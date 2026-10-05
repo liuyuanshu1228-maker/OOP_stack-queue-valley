@@ -4,7 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.crops.Crop;
 import game.crops.Tomato;
-import game.util.RandomUtils;
+import game.RandomUtils;
 
 /** Buying a Tomato crop: 500 coins, 50% chance the merchant plants it free. */
 public class TomatoPurchase extends CropPurchase {

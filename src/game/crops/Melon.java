@@ -7,7 +7,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.actions.WaterCropAction;
 import game.positions.LocationUtils;
-import game.util.RandomUtils;
+import game.RandomUtils;
 
 /**
  * A melon crop. Watering it may raise the farmer's maximum stamina, and it

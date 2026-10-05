@@ -4,7 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import game.capabilities.StrawberryHealStatus;
 import game.capabilities.StrawberryPoisonStatus;
 import game.items.food.ConsumableItem;
-import game.util.RandomUtils;
+import game.RandomUtils;
 
 /**
  * A strawberry, produced by watering or harvesting a {@link Strawberry}

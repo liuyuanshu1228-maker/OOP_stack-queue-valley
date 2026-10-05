@@ -2,7 +2,7 @@ package game.travel;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.util.RandomUtils;
+import game.RandomUtils;
 
 /**
  * A ladder linking one map to another. Climbing it risks a fall, but a fall
