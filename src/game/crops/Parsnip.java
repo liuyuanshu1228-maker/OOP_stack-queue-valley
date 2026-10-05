@@ -6,8 +6,7 @@ import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.WaterCropAction;
 import game.positions.LocationUtils;
-
-import java.util.Random;
+import game.util.RandomUtils;
 
 /**
  * A parsnip crop. It can be watered, which heals the farmer but risks
@@ -30,8 +29,6 @@ public class Parsnip extends Crop implements CropWaterable {
 
     /** Chance (out of 100) that a second Parsnip spawns on an adjacent tile. */
     private static final int BONUS_SPAWN_CHANCE_PERCENT = 50;
-
-    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -79,8 +76,8 @@ public class Parsnip extends Crop implements CropWaterable {
         actor.getInventory().add(new ParsnipItem());
         removeCrop(location);
 
-        if (random.nextInt(100) < BONUS_SPAWN_CHANCE_PERCENT) {
-            LocationUtils.dropItemNearby(location, new ParsnipItem(), random);
+        if (RandomUtils.rollPercent(BONUS_SPAWN_CHANCE_PERCENT)) {
+            LocationUtils.dropItemNearby(location, new ParsnipItem());
         }
 
         return actor + " harvests the Parsnip crop.";
@@ -113,7 +110,7 @@ public class Parsnip extends Crop implements CropWaterable {
                 + (healthAfter - healthBefore) + " points (" + healthBefore + " -> " + healthAfter + ").";
 
         int damageChancePercent = BASE_DAMAGE_CHANCE_PERCENT + getWateringCount();
-        if (random.nextInt(100) < damageChancePercent) {
+        if (RandomUtils.rollPercent(damageChancePercent)) {
             removeCrop(location);
             message += " The " + this + " couldn't take it and was destroyed.";
         }

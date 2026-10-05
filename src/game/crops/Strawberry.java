@@ -4,9 +4,9 @@ import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.WaterCropAction;
+import game.util.RandomUtils;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * A strawberry crop. It can be watered, which scatters strawberries onto
@@ -29,8 +29,6 @@ public class Strawberry extends Crop implements CropWaterable {
 
     /** Number of strawberries dropped nearby by a single watering. */
     private static final int STRAWBERRIES_PER_WATERING = 2;
-
-    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -82,7 +80,7 @@ public class Strawberry extends Crop implements CropWaterable {
         String message = actor + " harvests the " + this + " and picks up 2 strawberries.";
 
         int destructionChancePercent = BASE_DESTRUCTION_CHANCE_PERCENT - getWateringCount();
-        if (random.nextInt(100) < destructionChancePercent) {
+        if (RandomUtils.rollPercent(destructionChancePercent)) {
             removeCrop(location);
             message += " The " + this + " couldn't withstand the harvest and was destroyed.";
         }
@@ -110,7 +108,7 @@ public class Strawberry extends Crop implements CropWaterable {
         List<Location> adjacentLocations = location.getNearbyLocations(1);
 
         for (int i = 0; i < STRAWBERRIES_PER_WATERING; i++) {
-            Location target = adjacentLocations.get(random.nextInt(adjacentLocations.size()));
+            Location target = RandomUtils.pickRandom(adjacentLocations);
             target.addItem(StrawberryItem.createRandom());
         }
 

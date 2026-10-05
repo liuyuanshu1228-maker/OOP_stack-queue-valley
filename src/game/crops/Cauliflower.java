@@ -5,8 +5,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.WaterCropAction;
 import game.positions.farm.Puddle;
-
-import java.util.Random;
+import game.util.RandomUtils;
 
 /**
  * A cauliflower crop. Watering it may turn the surrounding ground into
@@ -29,8 +28,6 @@ public class Cauliflower extends Crop implements CropWaterable {
 
     /** Chance (out of 100) that watering turns the surrounding ground into puddles. */
     private static final int PUDDLE_CHANCE_PERCENT = 50;
-
-    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -94,7 +91,7 @@ public class Cauliflower extends Crop implements CropWaterable {
     public String harvest(Actor actor, Location location) {
         removeCrop(location);
 
-        if (random.nextInt(100) < SUCCESS_CHANCE_PERCENT) {
+        if (RandomUtils.rollPercent(SUCCESS_CHANCE_PERCENT)) {
             actor.getInventory().add(new CauliflowerItem());
             return actor + " harvests the " + this + " and gets a cauliflower.";
         }
@@ -122,7 +119,7 @@ public class Cauliflower extends Crop implements CropWaterable {
     public String water(Actor actor, Location location) {
         String message = actor + " waters the " + this + ".";
 
-        if (random.nextInt(100) < PUDDLE_CHANCE_PERCENT) {
+        if (RandomUtils.rollPercent(PUDDLE_CHANCE_PERCENT)) {
             for (Location adjacentLocation : location.getNearbyLocations(1)) {
                 if (adjacentLocation.getGroundAs(Crop.class) == null) {
                     adjacentLocation.setGround(new Puddle());

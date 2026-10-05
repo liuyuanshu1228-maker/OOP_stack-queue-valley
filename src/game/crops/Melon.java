@@ -7,8 +7,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.actions.WaterCropAction;
 import game.positions.LocationUtils;
-
-import java.util.Random;
+import game.util.RandomUtils;
 
 /**
  * A melon crop. Watering it may raise the farmer's maximum stamina, and it
@@ -34,8 +33,6 @@ public class Melon extends Crop implements CropWaterable {
 
     /** Amount by which watering raises the actor's maximum stamina, when it does. */
     private static final int MAX_STAMINA_INCREASE_AMOUNT = 1;
-
-    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -82,7 +79,7 @@ public class Melon extends Crop implements CropWaterable {
     public String harvest(Actor actor, Location location) {
         removeCrop(location);
 
-        if (random.nextInt(100) < EXPLOSION_CHANCE_PERCENT) {
+        if (RandomUtils.rollPercent(EXPLOSION_CHANCE_PERCENT)) {
             int damage = Math.max(0, BASE_EXPLOSION_DAMAGE - getWateringCount());
             LocationUtils.hurtActorsAround(location, damage);
             return actor + " harvests the " + this + ". It explodes, dealing " + damage + " damage to everyone nearby!";
@@ -111,7 +108,7 @@ public class Melon extends Crop implements CropWaterable {
     public String water(Actor actor, Location location) {
         String message = actor + " waters the " + this + ".";
 
-        if (random.nextInt(100) < MAX_STAMINA_INCREASE_CHANCE_PERCENT) {
+        if (RandomUtils.rollPercent(MAX_STAMINA_INCREASE_CHANCE_PERCENT)) {
             int maxStaminaBefore = actor.getMaximumStatistic(ActorStatistics.STAMINA);
             actor.modifyStatisticMaximum(ActorStatistics.STAMINA, StatisticOperations.INCREASE, MAX_STAMINA_INCREASE_AMOUNT);
             int maxStaminaAfter = actor.getMaximumStatistic(ActorStatistics.STAMINA);
