@@ -26,6 +26,16 @@ public final class RandomUtils {
     }
 
     /**
+     * Returns a uniformly random integer from 0 (inclusive) to bound (exclusive).
+     *
+     * @param bound the upper bound (exclusive); must be positive
+     * @return a random integer in the range [0, bound)
+     */
+    public static int randomInt(int bound) {
+        return RANDOM.nextInt(bound);
+    }
+
+    /**
      * Picks one element of the given non-empty list uniformly at random.
      *
      * @param options the list to pick from; must not be empty
