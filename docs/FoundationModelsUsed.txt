@@ -1,0 +1,37 @@
+FIT2099 Assignment 2 - Foundation Models Used
+=============================================
+
+Each team member describes their own use of foundation models below.
+
+
+Poyee Tan (ptan0095) - REQ3 (Merchant / trading) and REQ5 (Crow: Fleeing state)
+-------------------------------------------------------------------------------
+
+Tool used: Claude (Anthropic), via Claude Code in the IDE.
+
+How it was used:
+- Debugging and reviewing: helped locate bugs and design-principle issues
+  (DRY, encapsulation, DIP) in my REQ3 code, and found a compile error after
+  a teammate's package refactor.
+- Explaining and planning: helped me understand the assignment rules, the
+  order in which to approach changes, and the trade-offs of design options
+  (e.g. a static RandomUtils vs. a Random in each class).
+- Code: generated the refactoring code for REQ3 (SellableItem base class,
+  CropPurchase encapsulation, Merchant catalog injection, RandomUtils usage),
+  and the implementation of the REQ5 Fleeing state (Fleeing, Composure,
+  LocationUtils.stepAway, CrowSensing helpers), based on a design I approved.
+- Testing: wrote a temporary test harness (not submitted) to check every
+  REQ3 rule and the Fleeing transitions.
+- Wording help for commit messages point for me to write, contribution log
+  entries and the README REQ5 section.
+
+My own work and decisions:
+- Wrote the original REQ3 implementation (26-30 Sep).
+- Chose which issues to fix and which design options to adopt, agreed changes
+  to teammates' files with them first, and reviewed every change before it
+  was committed and pushed.
+- The design rationale and UML diagrams are entirely my own work; AI was
+  not used to write or draw them.
+
+
+[Other team members: add your own section below in the same format.]
