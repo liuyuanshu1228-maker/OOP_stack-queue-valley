@@ -34,10 +34,10 @@ import game.travel.TravelGround;
 import game.trading.ParsnipPurchase;
 import game.trading.SwordPurchase;
 import game.trading.TomatoPurchase;
+import game.util.RandomUtils;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -96,8 +96,6 @@ public class StackQueueValleyWorld extends World {
 
     /** The fixed destinations of the alien device, on the farm and in the mines. */
     private static final Link ALIEN_DEVICE_DESTINATIONS = new Link(new Spot(5, 3), new Spot(6, 4));
-
-    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -294,8 +292,8 @@ public class StackQueueValleyWorld extends World {
      * @return a uniformly random location on the map
      */
     private Location randomLocation(GameMap map) {
-        int x = random.nextInt(map.getXRange().max() + 1);
-        int y = random.nextInt(map.getYRange().max() + 1);
+        int x = RandomUtils.randomInt(map.getXRange().max() + 1);
+        int y = RandomUtils.randomInt(map.getYRange().max() + 1);
         return map.at(x, y);
     }
 

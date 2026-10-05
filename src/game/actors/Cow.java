@@ -5,8 +5,6 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.items.Milk;
 import game.positions.LocationUtils;
 
-import java.util.Random;
-
 /**
  * A Cow that wanders the farm and can be fed, producing Milk.
  */
@@ -17,8 +15,6 @@ public class Cow extends Animal {
 
     /** HP restored to the Cow when it is fed. */
     private static final int HEAL_AMOUNT = 5;
-
-    private final Random random = new Random();
 
     /**
      * Constructor.
@@ -44,7 +40,7 @@ public class Cow extends Animal {
     public String feed(Actor farmer, Location farmerLocation) {
         this.heal(HEAL_AMOUNT);
 
-        LocationUtils.dropItemNearby(farmerLocation, new Milk(), random);
+        LocationUtils.dropItemNearby(farmerLocation, new Milk());
 
         return this + " moos contentedly.";
     }

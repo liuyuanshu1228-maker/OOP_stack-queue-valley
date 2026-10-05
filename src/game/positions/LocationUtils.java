@@ -9,7 +9,6 @@ import game.util.RandomUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -17,8 +16,6 @@ import java.util.function.Supplier;
  * Utility methods for working with the tiles around a given Location.
  */
 public final class LocationUtils {
-
-    private static final Random RANDOM = new Random();
 
     private LocationUtils() {
         // Prevent instantiation; this class only provides static utility methods.
@@ -30,24 +27,12 @@ public final class LocationUtils {
      *
      * @param referenceLocation the Location whose adjacent tiles are considered
      * @param item the Item to place
-     * @param random the Random instance to use for tile selection
-     */
-    public static void dropItemNearby(Location referenceLocation, Item item, Random random) {
-        List<Location> nearby = referenceLocation.getNearbyLocations(1);
-        if (!nearby.isEmpty()) {
-            nearby.get(random.nextInt(nearby.size())).addItem(item);
-        }
-    }
-
-    /**
-     * Places the given Item on a randomly selected tile adjacent to the given Location,
-     * using this class's own Random instance. Does nothing if no adjacent tile exists.
-     *
-     * @param referenceLocation the Location whose adjacent tiles are considered
-     * @param item the Item to place
      */
     public static void dropItemNearby(Location referenceLocation, Item item) {
-        dropItemNearby(referenceLocation, item, RANDOM);
+        List<Location> nearby = referenceLocation.getNearbyLocations(1);
+        if (!nearby.isEmpty()) {
+            RandomUtils.pickRandom(nearby).addItem(item);
+        }
     }
 
     /**

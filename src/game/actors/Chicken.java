@@ -4,8 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.Egg;
 import game.positions.LocationUtils;
-
-import java.util.Random;
+import game.util.RandomUtils;
 
 /**
  * A Chicken that wanders the farm and can be fed, producing Eggs.
@@ -18,10 +17,8 @@ public class Chicken extends Animal {
     /** HP restored to the Chicken when it is fed. */
     private static final int HEAL_AMOUNT = 3;
 
-    /** Chance (0.0 to 1.0) that a second Egg is dropped. */
-    private static final double BONUS_EGG_CHANCE = 0.5;
-
-    private final Random random = new Random();
+    /** Chance (out of 100) that a second Egg is dropped. */
+    private static final int BONUS_EGG_CHANCE_PERCENT = 50;
 
     /**
      * Constructor.
@@ -48,9 +45,9 @@ public class Chicken extends Animal {
     public String feed(Actor farmer, Location farmerLocation) {
         this.heal(HEAL_AMOUNT);
 
-        LocationUtils.dropItemNearby(farmerLocation, new Egg(() -> new Chicken("Chicken")), random);
-        if (random.nextDouble() < BONUS_EGG_CHANCE) {
-            LocationUtils.dropItemNearby(farmerLocation, new Egg(() -> new Chicken("Chicken")), random);
+        LocationUtils.dropItemNearby(farmerLocation, new Egg(() -> new Chicken("Chicken")));
+        if (RandomUtils.rollPercent(BONUS_EGG_CHANCE_PERCENT)) {
+            LocationUtils.dropItemNearby(farmerLocation, new Egg(() -> new Chicken("Chicken")));
         }
 
         return this + " clucks happily.";
