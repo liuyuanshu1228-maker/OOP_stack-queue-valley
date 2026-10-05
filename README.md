@@ -32,7 +32,7 @@
 
 ## REQ5 (HD) — Stateful Creature: The Crow
 
-A group of four, so this requirement is satisfied with **one** creature — a
+A group of three, so this requirement is satisfied with **one** creature — a
 `Crow` (`src/game/crow/Crow.java`) — with exactly **four** states. Each state
 is its own class under `src/game/crow`, implementing a shared
 `game.actors.CreatureState` interface (`act`, `nextState`, `onEnter`). States
@@ -43,24 +43,39 @@ safe — lives on the `Crow` object itself, via two small capability
 interfaces (`ItemCache`, `Composure`), not on the state objects. This is
 what lets every crow on the map safely share the same four state instances.
 
+**Where to find it in game:** run `game.Application`. The crow is shown as
+`v` on the farm map; it is placed on a random free tile when the world is
+created.
+
 ### The four states
 
 | State | Ordinary turn (`act`) | Transition effect (`onEnter`) |
 |---|---|---|
 | **Perching** | Default/idle: hops to a random enterable adjacent tile. | If it lands on a `Crop`, its droppings count as a free watering (`Crop.recordWatering()`) — a small cross-feature hook into REQ1. |
 | **Foraging** | *New behaviour.* If standing over an unclaimed item, hides it (see below); otherwise steps toward the nearest forageable item within sensing range. | Swoops in on the target item and scatters every *other* item within 1 tile of it onto random nearby tiles, as if startled by the sudden arrival. |
-| **Mobbing** | *New behaviour.* If adjacent to its target, steals one random item from that actor's inventory into its own; otherwise steps toward the target. | First strike: immediately steals one item from the nearest actor **regardless of distance** — the only place in the codebase an item is taken from a live actor without requiring adjacency first. |
-| **Fleeing** | Steps directly away from the nearest actor, or stays put if cornered. | Resets its safe-turn counter, drops its *entire* inventory (including anything stolen while Mobbing) onto random nearby tiles, and startles every adjacent actor one tile backwards. |
+| **Mobbing** | *New behaviour.* Pursues the nearest actor turn after turn; once adjacent, steals one random item from that actor's inventory into the crow's **own** inventory; otherwise steps toward the target. | First strike: immediately steals one item from the nearest actor **regardless of distance**, so the theft happens the moment the crow turns on its target. |
+| **Fleeing** | *New behaviour.* Steps directly away from the nearest actor (`LocationUtils.stepAway`), or stays put if cornered. | Resets its safe-turn counter, drops its *entire* inventory (including anything stolen while Mobbing) onto random nearby tiles, and startles every adjacent actor one tile backwards. |
 
-**Why Foraging and Mobbing are the two genuinely new behaviours:** the spec
-explicitly disqualifies "wandering" and "attacking whatever is next to it" —
-which is exactly what Perching (random wander) and a plain adjacent-attack
-would be. Foraging (seek the nearest item, then carry it off and hide it) is
-the spec's own example of a qualifying behaviour. Mobbing (reach into
-another actor's inventory and take something) has no precedent anywhere
-else in the codebase. Fleeing's directed step-away/drop/knockback is a
-sophisticated *effect*, but is not counted as one of the two required new
-behaviours.
+**Which states introduce genuinely new behaviour:** the spec explicitly
+disqualifies "wandering" and "attacking whatever is next to it", which is
+why Perching (random wander) is *not* counted. The other three each add a
+behaviour that did not exist anywhere in the codebase before REQ5:
+
+- **Foraging** — seek out the nearest item, then carry it off and hide it
+  somewhere else. This is the spec's own example of a qualifying behaviour.
+- **Fleeing** — directed retreat: every turn, pick the adjacent tile that
+  moves the crow *furthest* from the closest actor. Before REQ5 the codebase
+  could only move an actor *toward* a target (`stepToward`) or at random;
+  `stepAway` was added for this state.
+- **Mobbing** — a multi-turn pursuit of one actor that ends in taking an item
+  into the crow's own inventory. This is deliberately different from the
+  Merchant's Diamond theft in REQ3: that is a one-off side effect of a trade
+  with an adjacent seller, and the stolen item is removed from the game,
+  whereas Mobbing chases its target across turns and keeps what it takes, so
+  the item can later be recovered (see below).
+
+The spec requires at least two of the four states to be new behaviours;
+three are provided, so the requirement does not hinge on any single one.
 
 **Theft → recovery loop:** an item Mobbing steals sits in the crow's own
 inventory, not the farmer's loss forever — the moment the crow panics into
@@ -72,7 +87,10 @@ each state in isolation.
 ### Transition graph
 
 Every state can reach **two** other states, on top of staying put — never
-more than two, never fewer:
+more than two, never fewer. Conditions are checked **top to bottom** and the
+first one that holds wins, so the next state is always uniquely determined
+(e.g. a Perching crow with exactly one actor nearby goes to Mobbing even if
+food is also in range):
 
 ```
 Perching  --[exactly 1 actor within sensing range]--> Mobbing
