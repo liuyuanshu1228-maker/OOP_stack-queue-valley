@@ -184,7 +184,7 @@ public final class LocationUtils {
      * tile is enterable or gets any closer than staying put
      */
     public static Optional<Location> stepToward(Location from, Location target, Actor actor) {
-        return bestStep(from, target, actor, -1);
+        return bestStep(from, target, actor, StepDirection.TOWARD);
     }
 
     /**
@@ -198,7 +198,7 @@ public final class LocationUtils {
      * tile is enterable or gets any further away than staying put
      */
     public static Optional<Location> stepAway(Location from, Location threat, Actor actor) {
-        return bestStep(from, threat, actor, 1);
+        return bestStep(from, threat, actor, StepDirection.AWAY);
     }
 
     /**
@@ -208,19 +208,20 @@ public final class LocationUtils {
      * @param from the Location to step from
      * @param reference the Location the distance is measured to
      * @param actor the Actor that would be doing the stepping
-     * @param direction -1 to minimise the distance (approach), +1 to maximise it (flee)
+     * @param direction whether to approach (minimise the distance) or flee (maximise it)
      * @return the best adjacent Location to step to, or empty if no adjacent
      * tile is enterable or improves on staying put
      */
-    private static Optional<Location> bestStep(Location from, Location reference, Actor actor, int direction) {
+    private static Optional<Location> bestStep(Location from, Location reference, Actor actor,
+                                               StepDirection direction) {
         Location best = null;
-        int bestScore = direction * chebyshevDistance(from, reference);
+        int bestScore = direction.score(chebyshevDistance(from, reference));
 
         for (Location candidate : from.getNearbyLocations(1)) {
             if (!candidate.canActorEnter(actor)) {
                 continue;
             }
-            int score = direction * chebyshevDistance(candidate, reference);
+            int score = direction.score(chebyshevDistance(candidate, reference));
             if (score > bestScore) {
                 bestScore = score;
                 best = candidate;
@@ -228,5 +229,34 @@ public final class LocationUtils {
         }
 
         return Optional.ofNullable(best);
+    }
+
+    /**
+     * Which way a step should move an actor relative to a reference Location.
+     */
+    private enum StepDirection {
+        /** Move closer to the reference Location. */
+        TOWARD(-1),
+        /** Move further away from the reference Location. */
+        AWAY(1);
+
+        private final int sign;
+
+        /**
+         * @param sign -1 if a smaller distance is better, +1 if a larger distance is better
+         */
+        StepDirection(int sign) {
+            this.sign = sign;
+        }
+
+        /**
+         * Converts a distance into a score where a higher score is always a better step.
+         *
+         * @param distance the Chebyshev distance to the reference Location
+         * @return the score of that distance for this direction
+         */
+        int score(int distance) {
+            return sign * distance;
+        }
     }
 }
