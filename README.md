@@ -1,5 +1,9 @@
 # FIT2099 Assignment (Semester 2, 2026)
 
+## Contribution Log
+
+https://docs.google.com/spreadsheets/d/14k_CRD-zLqx8Qtg6DL1X_qB89g8ZwoPe-r2XALmmoUY/edit?gid=0#gid=0
+
 ```
    ,-,--.  ,--.--------.   ,---.       _,.----.  ,--.-.,-.                
  ,-.'-  _\/==/,  -   , -\.--.'  \    .' .' -   \/==/- |\  \               
