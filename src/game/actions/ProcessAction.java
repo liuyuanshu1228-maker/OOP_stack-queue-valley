@@ -47,13 +47,17 @@ public class ProcessAction extends Action {
     }
 
     /**
-     * Describes what this Action will do if chosen in the menu.
+     * Describes what this Action will do if chosen in the menu. Names the
+     * facility as well as the product, so that two different facilities
+     * offering to process the same item (e.g. a Drying Rack and a Preserves
+     * Jar both adjacent to the Actor) are not shown as identical menu
+     * entries.
      *
      * @param actor The actor performing the action.
      * @return the action description to be displayed on the menu
      */
     @Override
     public String menuDescription(Actor actor) {
-        return actor + " processes " + product + ".";
+        return actor + " processes " + product + " at the " + facility + ".";
     }
 }
