@@ -2,8 +2,8 @@ package game.items.mine;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
-import edu.monash.fit2099.engine.positions.Location;
 import game.items.SellableItem;
+import game.trading.MerchantContext;
 import game.RandomUtils;
 
 import java.util.List;
@@ -30,19 +30,18 @@ public class Diamond extends SellableItem {
      * Rolls a 50% chance for the Merchant to steal a random item from the seller's inventory.
      * The stolen item is removed from the game.
      *
-     * @param seller           the Actor selling this item
-     * @param merchant         the Actor buying it
-     * @param merchantLocation the Location of the merchant
+     * @param seller          the Actor selling this item
+     * @param merchantContext the Merchant buying it and its current Location
      * @return a description of the theft, or an empty string if nothing was stolen
      */
     @Override
-    protected String applySaleEffect(Actor seller, Actor merchant, Location merchantLocation) {
+    protected String applySaleEffect(Actor seller, MerchantContext merchantContext) {
         List<Item> items = seller.getInventory().getItems();
         if (items.isEmpty() || !RandomUtils.rollPercent(THEFT_CHANCE_PERCENT)) {
             return "";
         }
         Item stolen = RandomUtils.pickRandom(items);
         seller.getInventory().remove(stolen);
-        return merchant + " also steals " + stolen + ".";
+        return merchantContext.getMerchant() + " also steals " + stolen + ".";
     }
 }

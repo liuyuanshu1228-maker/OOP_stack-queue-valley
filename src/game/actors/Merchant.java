@@ -4,9 +4,9 @@ import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
-import edu.monash.fit2099.engine.positions.Location;
 import game.actions.BuyAction;
 import game.actions.SellAction;
+import game.trading.MerchantContext;
 import game.trading.Purchasable;
 import game.trading.Sellable;
 import java.util.Arrays;
@@ -50,15 +50,15 @@ public class Merchant extends WanderingActor {
     @Override
     public ActionList allowableActions(Actor otherActor, String direction, GameMap map) {
         ActionList actions = new ActionList();
-        Location merchantLocation = map.locationOf(this);
+        MerchantContext merchantContext = new MerchantContext(this, map.locationOf(this));
 
         for (Purchasable offering : catalog) {
-            actions.add(new BuyAction(offering, this, merchantLocation));
+            actions.add(new BuyAction(offering, merchantContext));
         }
 
         for (Item item : otherActor.getInventory().getItems()) {
             item.asCapability(Sellable.class).ifPresent(sellable ->
-                    actions.add(new SellAction(item, sellable, this, merchantLocation)));
+                    actions.add(new SellAction(item, sellable, merchantContext)));
         }
         return actions;
     }

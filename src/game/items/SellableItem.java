@@ -2,9 +2,9 @@ package game.items;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
-import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.statistics.FarmerStatistics;
+import game.trading.MerchantContext;
 import game.trading.Sellable;
 
 
@@ -45,19 +45,19 @@ public abstract class SellableItem extends Item implements Sellable {
      * Completes the sale of this item: unless the Merchant refuses to pay, the seller
      * is paid and any item-specific side effect is applied.
      *
-     * @param seller           the Actor selling this item
-     * @param merchant         the Actor buying it
-     * @param merchantLocation the Location of the merchant
+     * @param seller          the Actor selling this item
+     * @param merchantContext the Merchant buying it and its current Location
      * @return a description of the sale outcome
      */
     @Override
-    public final String sell(Actor seller, Actor merchant, Location merchantLocation) {
+    public final String sell(Actor seller, MerchantContext merchantContext) {
+        Actor merchant = merchantContext.getMerchant();
         if (merchantRefusesPayment()) {
             return merchant + " takes the " + this + " from " + seller + " and pays nothing.";
         }
         seller.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.INCREASE, sellPrice);
         String message = seller + " sells " + this + " to " + merchant + " for " + sellPrice + " coins.";
-        String effect = applySaleEffect(seller, merchant, merchantLocation);
+        String effect = applySaleEffect(seller, merchantContext);
         return effect.isEmpty() ? message : message + " " + effect;
     }
 
@@ -75,12 +75,11 @@ public abstract class SellableItem extends Item implements Sellable {
      * Applies any item-specific side effect after the seller has been paid.
      * Defaults to no effect; subclasses may override.
      *
-     * @param seller           the Actor selling this item
-     * @param merchant         the Actor buying it
-     * @param merchantLocation the Location of the merchant
+     * @param seller          the Actor selling this item
+     * @param merchantContext the Merchant buying it and its current Location
      * @return a description of the side effect, or an empty string if nothing happened
      */
-    protected String applySaleEffect(Actor seller, Actor merchant, Location merchantLocation) {
+    protected String applySaleEffect(Actor seller, MerchantContext merchantContext) {
         return "";
     }
 }

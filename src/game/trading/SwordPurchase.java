@@ -1,7 +1,6 @@
 package game.trading;
 
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.items.Sword;
 import game.statistics.FarmerStatistics;
@@ -37,13 +36,13 @@ public class SwordPurchase implements Purchasable {
      * Deducts the Sword price from the buyer and either adds a new {@link Sword}
      * to the buyer's inventory or results in the Merchant pocketing the coins (50% chance).
      *
-     * @param buyer            the Actor buying this product
-     * @param merchant         the Merchant selling it
-     * @param merchantLocation the Location of the Merchant
+     * @param buyer           the Actor buying this product
+     * @param merchantContext the Merchant selling it and its current Location
      * @return a description of the purchase outcome
      */
     @Override
-    public String purchase(Actor buyer, Actor merchant, Location merchantLocation) {
+    public String purchase(Actor buyer, MerchantContext merchantContext) {
+        Actor merchant = merchantContext.getMerchant();
         buyer.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.DECREASE, PRICE);
         if (RandomUtils.rollPercent(FAIL_CHANCE_PERCENT)) {
             return buyer + " pays " + merchant + ", who pockets the coins and hands over nothing.";

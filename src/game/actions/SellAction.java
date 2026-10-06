@@ -4,7 +4,7 @@ import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
-import edu.monash.fit2099.engine.positions.Location;
+import game.trading.MerchantContext;
 import game.trading.Sellable;
 
 /**
@@ -19,25 +19,20 @@ public class SellAction extends Action {
     /** The Sellable capability that defines the sell price and sell logic. */
     private final Sellable sellable;
 
-    /** The Merchant actor buying the item. */
-    private final Actor merchant;
-
-    /** The current map location of the Merchant. */
-    private final Location merchantLocation;
+    /** The Merchant buying the item, and its current Location. */
+    private final MerchantContext merchantContext;
 
     /**
      * Constructor for SellAction.
      *
-     * @param item             the Item in the actor's inventory to be sold
-     * @param sellable         the Sellable capability of the item
-     * @param merchant         the Merchant actor buying the item
-     * @param merchantLocation the current Location of the Merchant
+     * @param item            the Item in the actor's inventory to be sold
+     * @param sellable        the Sellable capability of the item
+     * @param merchantContext the Merchant buying the item and its current Location
      */
-    public SellAction(Item item, Sellable sellable, Actor merchant, Location merchantLocation) {
+    public SellAction(Item item, Sellable sellable, MerchantContext merchantContext) {
         this.item = item;
         this.sellable = sellable;
-        this.merchant = merchant;
-        this.merchantLocation = merchantLocation;
+        this.merchantContext = merchantContext;
     }
 
     /**
@@ -50,7 +45,7 @@ public class SellAction extends Action {
     @Override
     public String execute(Actor actor, GameMap map) {
         actor.getInventory().remove(item);
-        return sellable.sell(actor, merchant, merchantLocation);
+        return sellable.sell(actor, merchantContext);
     }
 
     /**
@@ -61,6 +56,6 @@ public class SellAction extends Action {
      */
     @Override
     public String menuDescription(Actor actor) {
-        return actor + " sells " + item + " to " + merchant + " for " + sellable.getSellPrice() + " coins.";
+        return actor + " sells " + item + " to " + merchantContext.getMerchant() + " for " + sellable.getSellPrice() + " coins.";
     }
 }

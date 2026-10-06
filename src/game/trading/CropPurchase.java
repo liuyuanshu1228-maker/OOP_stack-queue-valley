@@ -53,14 +53,14 @@ public abstract class CropPurchase implements Purchasable {
      * Merchant to plant the crop (returning early if none exists), then charges
      * the buyer (unless waived) and triggers any crop-specific planting effect.
      *
-     * @param buyer            the Actor buying this crop
-     * @param merchant         the Merchant selling it
-     * @param merchantLocation the Location of the Merchant
+     * @param buyer           the Actor buying this crop
+     * @param merchantContext the Merchant selling it and its current Location
      * @return a description of the purchase outcome
      */
     @Override
-    public final String purchase(Actor buyer, Actor merchant, Location merchantLocation) {
-        var candidates = merchantLocation.getNearbyLocations(1).stream()
+    public final String purchase(Actor buyer, MerchantContext merchantContext) {
+        Actor merchant = merchantContext.getMerchant();
+        var candidates = merchantContext.getLocation().getNearbyLocations(1).stream()
                 .filter(adjacent -> adjacent.getGroundAs(Crop.class) == null)
                 .toList();
 

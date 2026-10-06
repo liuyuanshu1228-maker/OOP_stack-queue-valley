@@ -4,6 +4,7 @@ import edu.monash.fit2099.engine.GameEngineException;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.positions.LocationUtils;
+import game.trading.MerchantContext;
 import game.RandomUtils;
 
 import java.util.Optional;
@@ -39,26 +40,25 @@ public class Egg extends SellableItem {
      * Rolls a 50% chance for an animal to spawn on an enterable tile adjacent to the Merchant.
      * Nothing happens if there is no valid tile.
      *
-     * @param seller           the Actor selling this item
-     * @param merchant         the Actor buying it
-     * @param merchantLocation the Location of the merchant
+     * @param seller          the Actor selling this item
+     * @param merchantContext the Merchant buying it and its current Location
      * @return a description of the spawn, or an empty string if no animal appeared
      */
     @Override
-    protected String applySaleEffect(Actor seller, Actor merchant, Location merchantLocation) {
+    protected String applySaleEffect(Actor seller, MerchantContext merchantContext) {
         if (!RandomUtils.rollPercent(ANIMAL_SPAWN_CHANCE_PERCENT)) {
             return "";
         }
         Actor animal = animalFactory.get();
-        Optional<Location> spot = LocationUtils.randomEnterableNearby(merchantLocation, animal);
+        Optional<Location> spot = LocationUtils.randomEnterableNearby(merchantContext.getLocation(), animal);
         if (spot.isEmpty()) {
             return "";
         }
         try {
             spot.get().addActor(animal);
-            return animal + " appears near " + merchant + ".";
+            return animal + " appears near " + merchantContext.getMerchant() + ".";
         } catch (GameEngineException e) {
-            return animal + " tries to appear near " + merchant + ", but there is no room for it.";
+            return animal + " tries to appear near " + merchantContext.getMerchant() + ", but there is no room for it.";
         }
     }
 }

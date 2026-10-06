@@ -3,6 +3,7 @@ package game.items;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
+import game.trading.MerchantContext;
 import game.RandomUtils;
 
 import java.util.List;
@@ -35,19 +36,18 @@ public class Stone extends SellableItem {
     /**
      * Builds a new Ground on a randomly chosen tile adjacent to the Merchant.
      *
-     * @param seller           the Actor selling this item
-     * @param merchant         the Actor buying it
-     * @param merchantLocation the Location of the merchant
+     * @param seller          the Actor selling this item
+     * @param merchantContext the Merchant buying it and its current Location
      * @return a description of the Ground being built, or an empty string if there is no adjacent tile
      */
     @Override
-    protected String applySaleEffect(Actor seller, Actor merchant, Location merchantLocation) {
-        List<Location> nearby = merchantLocation.getNearbyLocations(1);
+    protected String applySaleEffect(Actor seller, MerchantContext merchantContext) {
+        List<Location> nearby = merchantContext.getLocation().getNearbyLocations(1);
         if (nearby.isEmpty()) {
             return "";
         }
         Ground built = groundFactory.get();
         RandomUtils.pickRandom(nearby).setGround(built);
-        return merchant + " builds a " + built + " nearby.";
+        return merchantContext.getMerchant() + " builds a " + built + " nearby.";
     }
 }

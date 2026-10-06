@@ -3,9 +3,9 @@ package game.actions;
 import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
-import edu.monash.fit2099.engine.positions.Location;
 import game.statistics.FarmerStatistics;
 import game.statistics.StatisticUtils;
+import game.trading.MerchantContext;
 import game.trading.Purchasable;
 
 /**
@@ -17,23 +17,18 @@ public class BuyAction extends Action {
     /** The product being purchased. */
     private final Purchasable purchasable;
 
-    /** The Merchant actor selling the product. */
-    private final Actor merchant;
-
-    /** The current map location of the Merchant. */
-    private final Location merchantLocation;
+    /** The Merchant selling the product, and its current Location. */
+    private final MerchantContext merchantContext;
 
     /**
      * Constructor for BuyAction.
      *
-     * @param purchasable      the Purchasable product being offered
-     * @param merchant         the Merchant actor selling the product
-     * @param merchantLocation the current Location of the Merchant
+     * @param purchasable     the Purchasable product being offered
+     * @param merchantContext the Merchant selling the product and its current Location
      */
-    public BuyAction(Purchasable purchasable, Actor merchant, Location merchantLocation) {
+    public BuyAction(Purchasable purchasable, MerchantContext merchantContext) {
         this.purchasable = purchasable;
-        this.merchant = merchant;
-        this.merchantLocation = merchantLocation;
+        this.merchantContext = merchantContext;
     }
 
     /**
@@ -49,7 +44,7 @@ public class BuyAction extends Action {
         if (!StatisticUtils.hasEnough(actor, FarmerStatistics.COINS, purchasable.getPrice())) {
             return actor + " doesn't have enough coins to buy " + purchasable.getProductName() + ".";
         }
-        return purchasable.purchase(actor, merchant, merchantLocation);
+        return purchasable.purchase(actor, merchantContext);
     }
 
     /**
