@@ -49,7 +49,7 @@ public final class Fleeing implements CreatureState {
                     + CALM_DOWN_TURNS + " turns before it calms down).";
         }
 
-        Optional<Location> escape = LocationUtils.stepAway(here, threat.get(), creature);
+        Optional<Location> escape = CrowNavigation.stepAway(here, threat.get(), creature);
         if (escape.isEmpty()) {
             return creature + " is cornered by " + threat.get().getActor() + " and flaps in place.";
         }
@@ -146,7 +146,7 @@ public final class Fleeing implements CreatureState {
                 continue;
             }
             Actor actor = neighbour.getActor();
-            Optional<Location> backStep = LocationUtils.stepAway(neighbour, here, actor);
+            Optional<Location> backStep = CrowNavigation.stepAway(neighbour, here, actor);
             if (backStep.isPresent()) {
                 map.moveActor(actor, backStep.get());
                 startled.add(actor + " to " + backStep.get());

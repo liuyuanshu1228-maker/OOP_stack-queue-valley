@@ -4,7 +4,6 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import game.creaturestate.ItemCache;
-import game.positions.LocationUtils;
 
 import java.util.Optional;
 
@@ -74,7 +73,7 @@ final class CrowSensing {
      * @return the closest Location with forageable food, or empty if there is none
      */
     static Optional<Location> nearestFood(Location here, Actor creature) {
-        return LocationUtils.nearestWhere(here, Crow.SENSING_RADIUS,
+        return CrowNavigation.nearestWhere(here, Crow.SENSING_RADIUS,
                 candidate -> hasForageableItems(candidate, creature));
     }
 
@@ -111,7 +110,7 @@ final class CrowSensing {
      * @return the closest Location holding an actor, or empty if there is none
      */
     static Optional<Location> nearestActor(Location here) {
-        return LocationUtils.nearestWhere(here, Crow.SENSING_RADIUS, Location::containsAnActor);
+        return CrowNavigation.nearestWhere(here, Crow.SENSING_RADIUS, Location::containsAnActor);
     }
 
     /**

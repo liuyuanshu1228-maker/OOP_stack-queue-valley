@@ -52,11 +52,11 @@ public final class Mobbing implements CreatureState {
 
         Location target = targetLoc.get();
 
-        if (LocationUtils.chebyshevDistance(here, target) == 1) {
+        if (CrowNavigation.chebyshevDistance(here, target) == 1) {
             return steal(creature, target.getActor());
         }
 
-        Optional<Location> step = LocationUtils.stepToward(here, target, creature);
+        Optional<Location> step = CrowNavigation.stepToward(here, target, creature);
         if (step.isEmpty()) {
             return creature + " cannot get closer to mob.";
         }

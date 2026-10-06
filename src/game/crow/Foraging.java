@@ -6,7 +6,6 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.creaturestate.CreatureState;
 import game.creaturestate.ItemCache;
-import game.positions.LocationUtils;
 import game.RandomUtils;
 
 import java.util.ArrayList;
@@ -53,7 +52,7 @@ public final class Foraging implements CreatureState {
             return creature + " finds nothing worth foraging.";
         }
 
-        Optional<Location> step = LocationUtils.stepToward(here, itemLocation.get(), creature);
+        Optional<Location> step = CrowNavigation.stepToward(here, itemLocation.get(), creature);
         if (step.isEmpty()) {
             return creature + " can't find a way toward the food.";
         }
@@ -77,7 +76,7 @@ public final class Foraging implements CreatureState {
             if (!candidate.getItems().isEmpty()) {
                 continue;
             }
-            if (LocationUtils.chebyshevDistance(here, candidate) < MIN_CACHE_DISTANCE) {
+            if (CrowNavigation.chebyshevDistance(here, candidate) < MIN_CACHE_DISTANCE) {
                 continue;
             }
             candidates.add(candidate);
