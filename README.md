@@ -225,9 +225,9 @@ the crow never left Fleeing — which is why the radius is 2.
   capability interfaces, so `Crow` only takes on exactly the per-creature
   data a particular state actually needs, rather than one fat interface
   every `Actor` would have to implement in full.
-- **DIP** — `CreatureStateAction` depends only on the `StatefulCreature`/
-  `CreatureState` abstractions, never on `Crow` or on any concrete state by
-  name. There is no `instanceof`/`switch`-on-type dispatch anywhere in the
-  state machine. Likewise, `Perching`'s free-watering effect depends only on
-  the `FreelyWaterable` capability, never on the concrete `Crop` class,
-  keeping `game.crow` and `game.crops` fully decoupled.
+  - **DIP** — `CreatureStateAction` depends only on the `StatefulCreature`/
+    `CreatureState` abstractions, never on `Crow` or on any concrete state by
+    name. There is no `instanceof`/`switch`-on-type dispatch anywhere in the
+    state machine. Likewise, `Perching`'s free-watering effect depends only on
+    the `FreelyWaterable` capability, never on the concrete `Crop` class,
+    keeping `game.crow` and `game.crops` fully decoupled.
