@@ -113,4 +113,18 @@ final class CrowSensing {
     static Optional<Location> nearestActor(Location here) {
         return LocationUtils.nearestWhere(here, Crow.SENSING_RADIUS, Location::containsAnActor);
     }
+
+    /**
+     * Whether exactly one actor is within sensing range and that actor is
+     * carrying at least one item — a lone target worth mobbing.
+     *
+     * @param here the Location to sense from
+     * @return true if there is a lone actor nearby with a non-empty inventory
+     */
+    static boolean hasLoneTargetWithItems(Location here) {
+        return countActorsWithinRange(here) == 1
+                && nearestActor(here)
+                        .map(location -> !location.getActor().getInventory().getItems().isEmpty())
+                        .orElse(false);
+    }
 }

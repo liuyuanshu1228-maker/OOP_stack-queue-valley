@@ -51,7 +51,8 @@ public final class Perching implements CreatureState {
 
     /**
      * Moves to Mobbing if exactly one other actor is visible within sensing
-     * range (a lone target worth harassing). Moves to Foraging once food is
+     * range and it is carrying something (a lone target worth harassing).
+     * Moves to Foraging once food is
      * visible within sensing range. Otherwise stays perching.
      * <p>
      * Mobbing is checked first: if a lone actor is nearby the crow prioritises
@@ -65,7 +66,7 @@ public final class Perching implements CreatureState {
     public CreatureState nextState(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
 
-        if (CrowSensing.countActorsWithinRange(here) == 1) {
+        if (CrowSensing.hasLoneTargetWithItems(here)) {
             return Mobbing.INSTANCE;
         }
 

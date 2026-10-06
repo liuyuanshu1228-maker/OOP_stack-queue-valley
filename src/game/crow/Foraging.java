@@ -152,12 +152,14 @@ public final class Foraging implements CreatureState {
         Optional<Location> itemLocation = CrowSensing.nearestFood(here, creature);
 
         if (itemLocation.isEmpty()) {
-            return creature + " starts foraging the items at " + here + ".";
+            return creature + " starts foraging the items at " + here
+                    + ", without swooping anywhere, so no items are scattered.";
         }
 
         List<String> scattered = scatterNearbyItems(itemLocation.get());
         if (scattered.isEmpty()) {
-            return creature + " swoops down toward the food at " + itemLocation.get() + ".";
+            return creature + " swoops down toward the food at " + itemLocation.get()
+                    + ", but there are no other items around it to scatter.";
         }
         return creature + " swoops down toward the food at " + itemLocation.get()
                 + ", scattering the other items around it: " + scattered + ".";
@@ -165,22 +167,28 @@ public final class Foraging implements CreatureState {
 
     /**
      * Relocates every item within 1 tile of centre onto a random tile
-     * within the same radius.
+     * within the same radius. All items are lifted first, so each one is
+     * moved exactly once even if it lands on a tile not yet visited.
      *
      * @param centre the Location to scatter items around
      * @return where each item landed, e.g. "Egg to (3, 4) on Inherited Farm"
      */
     private List<String> scatterNearbyItems(Location centre) {
         List<Location> nearby = centre.getNearbyLocations(1);
-        List<String> scattered = new ArrayList<>();
+        List<Item> lifted = new ArrayList<>();
 
         for (Location source : nearby) {
             for (Item item : new ArrayList<>(source.getItems())) {
-                Location destination = RandomUtils.pickRandom(nearby);
                 source.removeItem(item);
-                destination.addItem(item);
-                scattered.add(item + " to " + destination);
+                lifted.add(item);
             }
+        }
+
+        List<String> scattered = new ArrayList<>();
+        for (Item item : lifted) {
+            Location destination = RandomUtils.pickRandom(nearby);
+            destination.addItem(item);
+            scattered.add(item + " to " + destination);
         }
 
         return scattered;

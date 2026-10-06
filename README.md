@@ -69,7 +69,7 @@ by name, and every tile by its coordinates (e.g. `(5, 3) on Inherited Farm`)
 |---|---|---|
 | **Perching** | Default/idle: hops to a random enterable adjacent tile. | Its droppings count as a free watering (`Crop.recordWatering()`) for **every** crop on its own tile and the 8 tiles around it — a cross-feature hook into REQ1. The message lists every crop watered, e.g. `... a free watering for every crop within 1 tile: [Parsnip, Melon].` |
 | **Foraging** | *New behaviour.* If standing over an unclaimed item, hides it (see below); otherwise steps toward the nearest forageable item within sensing range. | Swoops in on the target item and scatters every *other* item within 1 tile of it onto random nearby tiles, as if startled by the sudden arrival. |
-| **Mobbing** | *New behaviour.* Pursues the nearest actor turn after turn; once adjacent, steals one random item from that actor's inventory into the crow's **own** inventory; otherwise steps toward the target. | The dive knocks **everything** the target is carrying onto random tiles around the target; unlike stealing, the crow keeps none of it. The message lists every item knocked loose, e.g. `... knocking everything they carry onto the tiles around them: [Hoe, Watering Can, Pickaxe]!` |
+| **Mobbing** | *New behaviour.* Pursues the nearest actor turn after turn; once adjacent, steals one random item from that actor's inventory into the crow's **own** inventory; otherwise steps toward the target. | The dive knocks **everything** the target is carrying onto random tiles around the target; unlike stealing, the crow keeps none of it. The message lists every item knocked loose, e.g. `... knocking everything they carry onto the tiles around (5, 3) on Inherited Farm: [Hoe, Watering Can, Pickaxe]!` |
 | **Fleeing** | *New behaviour.* Steps directly away from the nearest actor (`LocationUtils.stepAway`), or stays put if cornered. | Resets its safe-turn counter, drops its *entire* inventory (including anything stolen while Mobbing) onto random nearby tiles, and startles every adjacent actor one tile backwards. |
 
 **Which states introduce genuinely new behaviour:** the spec explicitly
@@ -111,13 +111,13 @@ Fleeing's transition effects) is a single shared helper,
 Every state can reach **two** other states, on top of staying put — never
 more than two, never fewer. Conditions are checked **top to bottom** and the
 first one that holds wins, so the next state is always uniquely determined
-(e.g. a Perching crow with exactly one actor nearby goes to Mobbing even if
-food is also in range):
+(e.g. a Perching crow with exactly one item-carrying actor nearby goes to
+Mobbing even if food is also in range):
 
 ```
-Perching  --[exactly 1 actor within sensing range]--> Mobbing
-Perching  --[food within sensing range]-------------> Foraging
-Perching  --[otherwise]------------------------------> Perching (stays)
+Perching  --[exactly 1 actor within sensing range, carrying >=1 item]--> Mobbing
+Perching  --[food within sensing range]-------------------------------> Foraging
+Perching  --[otherwise]------------------------------------------------> Perching (stays)
 
 Foraging  --[crowded: >=2 actors within sensing range]--> Fleeing
 Foraging  --[no food left within sensing range]----------> Perching
@@ -160,31 +160,50 @@ Chicken (`n`), the Cow (`B`) and the Merchant (`$`) all count.
 
 | To see | Do this | Expect a line like |
 |---|---|---|
-| **Perching → Mobbing** | Walk the Farmer to within 2 tiles of a Perching crow while no other actor is within 2 tiles of it. | `[Perching -> Mobbing] Crow ... dives aggressively at Farmer Bob ..., knocking everything they carry onto the tiles around (x, y) on Inherited Farm: [Hoe, Watering Can, Pickaxe]!` — the Farmer's inventory is now empty. |
+| **Perching → Mobbing** | Walk the Farmer, carrying at least one item, to within 2 tiles of a Perching crow while no other actor is within 2 tiles of it. The crow only mobs a lone actor who carries something, so the dive always has items to knock loose. | `[Perching -> Mobbing] Crow ... dives aggressively at Farmer Bob ..., knocking everything they carry onto the tiles around (x, y) on Inherited Farm: [Hoe, Watering Can, Pickaxe]!` — the Farmer's inventory is now empty. |
 | **Mobbing (ordinary turn)** | Stay within 2 tiles. | `[Mobbing] ... swoops toward Farmer Bob ... landing at (x, y) ...`; once adjacent, `[Mobbing] ... steals Hoe from Farmer Bob ...! It now carries: [Hoe].` |
-| **Perching → Foraging** | Drop an item within 2 tiles of a Perching crow, then step more than 2 tiles away (if the Farmer stays as the only nearby actor, the crow mobs instead — Mobbing is checked first). | `[Perching -> Foraging] ... swoops down toward the food at (x, y) ...`, plus `scattering the other items around it: [Egg to (x, y) ...]` if other items lie next to the food. |
+| **Perching → Foraging** | Drop an item within 2 tiles of a Perching crow, then step more than 2 tiles away (if the Farmer stays as the only nearby actor and still carries something, the crow mobs instead — Mobbing is checked first). | `[Perching -> Foraging] ... swoops down toward the food at (x, y) ..., scattering the other items around it: [Egg to (x, y) ...].`, or `... but there are no other items around it to scatter.` |
 | **Foraging (ordinary turn)** | Wait. | `[Foraging] ... hops toward the food at (x, y) ..., landing at (x, y) ...`, then `[Foraging] ... snatches the Hoe from (x, y) ... and hides it at (x, y) ...`. A hidden item is remembered and never foraged again. |
 | **Foraging → Perching** | Wait until every item within 2 tiles has been hidden. | `[Foraging -> Perching] ...` with the Perching effect below. |
-| **Mobbing / Foraging → Fleeing** | Have 2 or more actors within 2 tiles of the crow, e.g. stand next to it while the Chicken or Cow wanders past. | `[Mobbing -> Fleeing] ... panics and takes flight at (x, y) ..., dropping everything it carries onto the tiles around it: [Hoe], startling actors backwards: [Farmer Bob ... to (x, y) ...]!` |
+| **Mobbing / Foraging → Fleeing** | Have 2 or more actors within 2 tiles of the crow, e.g. stand next to it while the Chicken or Cow wanders past. | `[Mobbing -> Fleeing] ... panics and takes flight at (x, y) ... (calm-down count reset to 0/3); dropping everything it carries onto the tiles around it: [Hoe]; startling actors backwards: [Farmer Bob ... to (x, y) ...]!` |
 | **Fleeing (ordinary turn)** | Keep actors nearby, or move away. | `[Fleeing] ... flees from Cow ... at (x, y) ..., landing at (x, y) ...`, or `[Fleeing] ... keeps a wary eye out, catching its breath (safe for 2/3 turns before it calms down).` |
-| **Fleeing → Perching** | Keep every actor more than 2 tiles away for 3 turns in a row. | `[Fleeing -> Perching] ... settles back onto a perch at (x, y) ..., and its droppings count as a free watering for every crop within 1 tile: [Parsnip, Melon].` |
+| **Fleeing → Perching** | Keep every actor more than 2 tiles away for 3 turns in a row. | `[Fleeing -> Perching] ... settles back onto a perch at (x, y) ..., and its droppings count as a free watering for every crop within 1 tile: [Parsnip, Melon].`, or `... with no crops within 1 tile to water.` |
 | **Mobbing → Perching** | Move the Farmer more than 2 tiles away (or travel to the mines) with no other actor nearby. | `[Mobbing -> Perching] ...` with the Perching effect above. |
-| **Fleeing → Foraging** | Let the crow be safe (no actor within 2 tiles) while an item lies within 2 tiles — e.g. the items it just dropped while panicking. | `[Fleeing -> Foraging] ... swoops down toward the food at (x, y) ...` |
+| **Fleeing → Foraging** | Let the crow be safe (no actor within 2 tiles) while an item lies within 2 tiles — e.g. the items it just dropped while panicking. | `[Fleeing -> Foraging] ... swoops down toward the food at (x, y) ...`, as for Perching → Foraging. If the only food is on the crow's own tile: `... starts foraging the items at (x, y) ..., without swooping anywhere, so no items are scattered.` |
+
+**When an effect has nothing to act on, it says so.** A transition effect
+depends on what is around the crow, so whenever part of it has nothing to
+work on, the message states that explicitly instead of staying silent:
+
+| Effect | Message when there is nothing to act on |
+|---|---|
+| Perching — water nearby crops | `... with no crops within 1 tile to water.` |
+| Foraging — scatter items around the food | `... but there are no other items around it to scatter.` / `... without swooping anywhere, so no items are scattered.` |
+| Fleeing — drop what it carries | `... it carries nothing to drop ...` |
+| Fleeing — startle adjacent actors | `... no adjacent actor can be startled backwards!` |
+| Mobbing — knock the target's items loose | `... is carrying nothing to knock loose.` (a safeguard only: Mobbing is entered only for a lone actor who carries something, and the dive happens on that same turn) |
+
+The ordinary-turn behaviours do the same, e.g. `... finds nothing worth
+foraging.`, `... is cornered by Cow ... and flaps in place.`, `... perches,
+with nowhere to go.`
 
 **Note — "finds nothing to steal":** Mobbing's transition effect empties the
 target's inventory onto the ground, so on the following turns the crow's
 ordinary Mobbing behaviour prints `[Mobbing] ... harasses Farmer Bob ... but
 finds nothing to steal.` until the Farmer picks at least one item back up
 (the pick-up option appears when standing on the item). To see a theft,
-pick an item up and stay next to the crow. The same message appears when the
-crow mobs the Chicken, Cow or Merchant, who carry nothing.
+pick an item up and stay next to the crow. The same message appears if,
+while Mobbing, the nearest actor becomes the Chicken, Cow or Merchant, who
+carry nothing.
 
-**Simulation check:** we drove the real `StackQueueValleyWorld` for 50 games
-of 100 turns each (Chicken, Cow and Merchant wandering as normal). All eight
-transitions in the graph occurred, and all four states appeared in 45–47 of
-the 50 games. With the original 5-tile radius, the 10x7 farm was almost
-entirely inside the crow's range, so the animals and Merchant always counted
-as a crowd and the crow never left Fleeing — which is why the radius is 2.
+**Simulation check:** we drove the real `StackQueueValleyWorld` for 20 games
+of 100 turns each, with the Chicken, Cow and Merchant wandering as normal and
+the Farmer wandering at random and picking up any item it stepped on. All
+eight transitions in the graph occurred, all four states appeared in 19 of
+the 20 games, and every entry into Mobbing (35 of 35) knocked items loose.
+With the original 5-tile radius, the 10x7 farm was almost entirely inside
+the crow's range, so the animals and Merchant always counted as a crowd and
+the crow never left Fleeing — which is why the radius is 2.
 
 ### SOLID
 

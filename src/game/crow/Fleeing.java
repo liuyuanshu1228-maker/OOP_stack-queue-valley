@@ -100,14 +100,14 @@ public final class Fleeing implements CreatureState {
         List<Item> dropped = LocationUtils.dropInventoryNearby(creature, here);
         List<String> startled = startleNeighbours(here, map);
 
-        String message = creature + " panics and takes flight at " + here;
-        if (!dropped.isEmpty()) {
-            message += ", dropping everything it carries onto the tiles around it: " + dropped;
-        }
-        if (!startled.isEmpty()) {
-            message += ", startling actors backwards: " + startled;
-        }
-        return message + "!";
+        String droppedText = dropped.isEmpty()
+                ? "it carries nothing to drop"
+                : "dropping everything it carries onto the tiles around it: " + dropped;
+        String startledText = startled.isEmpty()
+                ? "no adjacent actor can be startled backwards"
+                : "startling actors backwards: " + startled;
+        return creature + " panics and takes flight at " + here + " (calm-down count reset to 0/" + CALM_DOWN_TURNS
+                + "); " + droppedText + "; " + startledText + "!";
     }
 
     /**
