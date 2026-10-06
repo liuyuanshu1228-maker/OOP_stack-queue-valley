@@ -39,7 +39,7 @@ https://docs.google.com/spreadsheets/d/14k_CRD-zLqx8Qtg6DL1X_qB89g8ZwoPe-r2XALmm
 A group of three, so this requirement is satisfied with **one** creature — a
 `Crow` (`src/game/crow/Crow.java`) — with exactly **four** states. Each state
 is its own class under `src/game/crow`, implementing a shared
-`game.actors.CreatureState` interface (`act`, `nextState`, `onEnter`). States
+`game.creaturestate.CreatureState` interface (`act`, `nextState`, `onEnter`). States
 are stateless singletons (a private constructor and a public `INSTANCE`
 field, the classic State-pattern/flyweight shape); any data that varies per
 creature — which items it's hidden, how many consecutive turns it's felt
@@ -67,7 +67,7 @@ by name, and every tile by its coordinates (e.g. `(5, 3) on Inherited Farm`)
 
 | State | Ordinary turn (`act`) | Transition effect (`onEnter`) |
 |---|---|---|
-| **Perching** | Default/idle: hops to a random enterable adjacent tile. | Its droppings count as a free watering (`Crop.recordWatering()`) for **every** crop on its own tile and the 8 tiles around it — a cross-feature hook into REQ1. The message lists every crop watered, e.g. `... a free watering for every crop within 1 tile: [Parsnip, Melon].` |
+| **Perching** | Default/idle: hops to a random enterable adjacent tile. | Its droppings count as a free watering (`FreelyWaterable.receiveFreeWatering()`) for **every** crop on its own tile and the 8 tiles around it — a cross-feature hook into REQ1, reached through a `game.positions.FreelyWaterable` capability rather than a direct dependency on `Crop`, so `game.crow` has no compile-time dependency on `game.crops`. The message lists every crop watered, e.g. `... a free watering for every crop within 1 tile: [Parsnip, Melon].` |
 | **Foraging** | *New behaviour.* If standing over an unclaimed item, hides it (see below); otherwise steps toward the nearest forageable item within sensing range. | Swoops in on the target item and scatters every *other* item within 1 tile of it onto random nearby tiles, as if startled by the sudden arrival. |
 | **Mobbing** | *New behaviour.* Pursues the nearest actor turn after turn; once adjacent, steals one random item from that actor's inventory into the crow's **own** inventory; otherwise steps toward the target. | The dive knocks **everything** the target is carrying onto random tiles around the target; unlike stealing, the crow keeps none of it. The message lists every item knocked loose, e.g. `... knocking everything they carry onto the tiles around (5, 3) on Inherited Farm: [Hoe, Watering Can, Pickaxe]!` |
 | **Fleeing** | *New behaviour.* Steps directly away from the nearest actor (`LocationUtils.stepAway`), or stays put if cornered. | Resets its safe-turn counter, drops its *entire* inventory (including anything stolen while Mobbing) onto random nearby tiles, and startles every adjacent actor one tile backwards. |
@@ -228,4 +228,6 @@ the crow never left Fleeing — which is why the radius is 2.
 - **DIP** — `CreatureStateAction` depends only on the `StatefulCreature`/
   `CreatureState` abstractions, never on `Crow` or on any concrete state by
   name. There is no `instanceof`/`switch`-on-type dispatch anywhere in the
-  state machine.
+  state machine. Likewise, `Perching`'s free-watering effect depends only on
+  the `FreelyWaterable` capability, never on the concrete `Crop` class,
+  keeping `game.crow` and `game.crops` fully decoupled.
