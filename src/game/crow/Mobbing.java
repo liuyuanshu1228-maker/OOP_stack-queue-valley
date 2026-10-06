@@ -61,7 +61,8 @@ public final class Mobbing implements CreatureState {
             return creature + " cannot get closer to mob.";
         }
         map.moveActor(creature, step.get());
-        return creature + " swoops toward " + target.getActor() + " to mob them.";
+        return creature + " swoops toward " + target.getActor() + " at " + target + " to mob them, landing at "
+                + step.get() + ".";
     }
 
     /**
@@ -80,7 +81,8 @@ public final class Mobbing implements CreatureState {
         Item stolen = RandomUtils.pickRandom(victimItems);
         victim.getInventory().remove(stolen);
         creature.getInventory().add(stolen);
-        return creature + " steals " + stolen + " from " + victim + "!";
+        return creature + " steals " + stolen + " from " + victim + "! It now carries: "
+                + creature.getInventory().getItems() + ".";
     }
 
     /**
@@ -129,8 +131,8 @@ public final class Mobbing implements CreatureState {
             return creature + " dives aggressively at " + target + ", but " + target
                     + " is carrying nothing to knock loose.";
         }
-        return creature + " dives aggressively at " + target + ", knocking everything they carry onto the tiles around them: "
-                + knockedLoose + "!";
+        return creature + " dives aggressively at " + target + ", knocking everything they carry onto the tiles around "
+                + targetLoc.get() + ": " + knockedLoose + "!";
     }
 
     /** @return the name of this state */

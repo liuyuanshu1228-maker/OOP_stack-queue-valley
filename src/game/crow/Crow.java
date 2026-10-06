@@ -25,8 +25,13 @@ public class Crow extends Actor implements StatefulCreature, ItemCache, Composur
     /** The crow's starting (and maximum) hit points. */
     private static final int STARTING_HP = 30;
 
-    /** How far (in tiles) the crow can sense items and actors around it. */
-    public static final int SENSING_RADIUS = 5;
+    /**
+     * How far (in tiles) the crow can sense items and actors around it. Kept
+     * small because the farm is only 10x7: a wider radius covers nearly the
+     * whole farm, so the wandering animals and Merchant would always count as
+     * a crowd and the crow would never leave Fleeing.
+     */
+    public static final int SENSING_RADIUS = 2;
 
     /** The state this crow is currently in. */
     private CreatureState state = Perching.INSTANCE;

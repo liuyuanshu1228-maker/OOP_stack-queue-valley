@@ -1,12 +1,15 @@
 package game.crow;
 
 import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actors.Composure;
 import game.actors.CreatureState;
 import game.positions.LocationUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -41,7 +44,9 @@ public final class Fleeing implements CreatureState {
         Location here = map.locationOf(creature);
         Optional<Location> threat = CrowSensing.nearestActor(here);
         if (threat.isEmpty()) {
-            return creature + " keeps a wary eye out, catching its breath.";
+            int safeTurns = creature.asCapability(Composure.class).map(Composure::getSafeTurns).orElse(0);
+            return creature + " keeps a wary eye out, catching its breath (safe for " + safeTurns + "/"
+                    + CALM_DOWN_TURNS + " turns before it calms down).";
         }
 
         Optional<Location> escape = LocationUtils.stepAway(here, threat.get(), creature);
@@ -49,7 +54,8 @@ public final class Fleeing implements CreatureState {
             return creature + " is cornered by " + threat.get().getActor() + " and flaps in place.";
         }
         map.moveActor(creature, escape.get());
-        return creature + " flees from " + threat.get().getActor() + ".";
+        return creature + " flees from " + threat.get().getActor() + " at " + threat.get() + ", landing at "
+                + escape.get() + ".";
     }
 
     /**
@@ -91,15 +97,15 @@ public final class Fleeing implements CreatureState {
         creature.asCapability(Composure.class).ifPresent(Composure::resetComposure);
         Location here = map.locationOf(creature);
 
-        int dropped = LocationUtils.dropInventoryNearby(creature, here).size();
-        int startled = startleNeighbours(here, map);
+        List<Item> dropped = LocationUtils.dropInventoryNearby(creature, here);
+        List<String> startled = startleNeighbours(here, map);
 
-        String message = creature + " panics and takes flight";
-        if (dropped > 0) {
-            message += ", dropping " + dropped + " item(s)";
+        String message = creature + " panics and takes flight at " + here;
+        if (!dropped.isEmpty()) {
+            message += ", dropping everything it carries onto the tiles around it: " + dropped;
         }
-        if (startled > 0) {
-            message += ", startling " + startled + " actor(s) backwards";
+        if (!startled.isEmpty()) {
+            message += ", startling actors backwards: " + startled;
         }
         return message + "!";
     }
@@ -131,10 +137,10 @@ public final class Fleeing implements CreatureState {
      *
      * @param here the Location the actors are pushed away from
      * @param map the map the actors are on
-     * @return the number of actors pushed back
+     * @return where each actor was pushed, e.g. "Farmer Bob (100/100) to (3, 2) on Inherited Farm"
      */
-    private int startleNeighbours(Location here, GameMap map) {
-        int startled = 0;
+    private List<String> startleNeighbours(Location here, GameMap map) {
+        List<String> startled = new ArrayList<>();
         for (Location neighbour : here.getNearbyLocations(1)) {
             if (!neighbour.containsAnActor()) {
                 continue;
@@ -143,7 +149,7 @@ public final class Fleeing implements CreatureState {
             Optional<Location> backStep = LocationUtils.stepAway(neighbour, here, actor);
             if (backStep.isPresent()) {
                 map.moveActor(actor, backStep.get());
-                startled++;
+                startled.add(actor + " to " + backStep.get());
             }
         }
         return startled;

@@ -23,7 +23,9 @@ public class CreatureStateAction extends Action {
      *
      * @param actor the creature acting
      * @param map the map the creature is on
-     * @return a description of what happened, to be displayed to the player
+     * @return a description of what happened, prefixed with the current state
+     * (e.g. "[Foraging]") or, on a transition, the old and new state
+     * (e.g. "[Perching -> Mobbing]")
      */
     @Override
     public String execute(Actor actor, GameMap map) {
@@ -33,10 +35,10 @@ public class CreatureStateAction extends Action {
 
         if (next != current) {
             creature.setState(next);
-            return next.onEnter(actor, map);
+            return "[" + current + " -> " + next + "] " + next.onEnter(actor, map);
         }
 
-        return current.act(actor, map);
+        return "[" + current + "] " + current.act(actor, map);
     }
 
     /**

@@ -46,7 +46,7 @@ public final class Perching implements CreatureState {
         }
 
         map.moveActor(creature, destination.get());
-        return creature + " hops to a new perch.";
+        return creature + " hops to a new perch at " + destination.get() + ".";
     }
 
     /**
@@ -87,8 +87,9 @@ public final class Perching implements CreatureState {
      */
     @Override
     public String onEnter(Actor creature, GameMap map) {
+        Location here = map.locationOf(creature);
         List<Crop> watered = new ArrayList<>();
-        for (Location location : LocationUtils.centreAndAdjacent(map.locationOf(creature))) {
+        for (Location location : LocationUtils.centreAndAdjacent(here)) {
             Crop crop = location.getGroundAs(Crop.class);
             if (crop != null) {
                 crop.recordWatering();
@@ -97,10 +98,10 @@ public final class Perching implements CreatureState {
         }
 
         if (watered.isEmpty()) {
-            return creature + " settles back onto a perch, with no crops within 1 tile to water.";
+            return creature + " settles back onto a perch at " + here + ", with no crops within 1 tile to water.";
         }
-        return creature + " settles back onto a perch, and its droppings count as a free watering for every crop within 1 tile: "
-                + watered + ".";
+        return creature + " settles back onto a perch at " + here
+                + ", and its droppings count as a free watering for every crop within 1 tile: " + watered + ".";
     }
 
     /** @return the name of this state */

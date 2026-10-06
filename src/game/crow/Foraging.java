@@ -59,7 +59,7 @@ public final class Foraging implements CreatureState {
         }
 
         map.moveActor(creature, step.get());
-        return creature + " hops toward some food.";
+        return creature + " hops toward the food at " + itemLocation.get() + ", landing at " + step.get() + ".";
     }
 
     /**
@@ -84,14 +84,14 @@ public final class Foraging implements CreatureState {
         }
 
         if (candidates.isEmpty()) {
-            return creature + " picks up the " + item + ", but can't find anywhere to hide it.";
+            return creature + " spots the " + item + " at " + here + ", but can't find anywhere to hide it.";
         }
 
         Location hidingSpot = RandomUtils.pickRandom(candidates);
         here.removeItem(item);
         hidingSpot.addItem(item);
         creature.asCapability(ItemCache.class).ifPresent(cache -> cache.remember(item));
-        return creature + " snatches the " + item + " and hides it away.";
+        return creature + " snatches the " + item + " from " + here + " and hides it at " + hidingSpot + ".";
     }
 
     /**
@@ -152,14 +152,15 @@ public final class Foraging implements CreatureState {
         Optional<Location> itemLocation = CrowSensing.nearestFood(here, creature);
 
         if (itemLocation.isEmpty()) {
-            return creature + " starts foraging.";
+            return creature + " starts foraging the items at " + here + ".";
         }
 
-        int scattered = scatterNearbyItems(itemLocation.get());
-        if (scattered == 0) {
-            return creature + " swoops down toward some food.";
+        List<String> scattered = scatterNearbyItems(itemLocation.get());
+        if (scattered.isEmpty()) {
+            return creature + " swoops down toward the food at " + itemLocation.get() + ".";
         }
-        return creature + " swoops down toward some food, scattering " + scattered + " other item(s) nearby.";
+        return creature + " swoops down toward the food at " + itemLocation.get()
+                + ", scattering the other items around it: " + scattered + ".";
     }
 
     /**
@@ -167,18 +168,18 @@ public final class Foraging implements CreatureState {
      * within the same radius.
      *
      * @param centre the Location to scatter items around
-     * @return the number of items scattered
+     * @return where each item landed, e.g. "Egg to (3, 4) on Inherited Farm"
      */
-    private int scatterNearbyItems(Location centre) {
+    private List<String> scatterNearbyItems(Location centre) {
         List<Location> nearby = centre.getNearbyLocations(1);
-        int scattered = 0;
+        List<String> scattered = new ArrayList<>();
 
         for (Location source : nearby) {
             for (Item item : new ArrayList<>(source.getItems())) {
                 Location destination = RandomUtils.pickRandom(nearby);
                 source.removeItem(item);
                 destination.addItem(item);
-                scattered++;
+                scattered.add(item + " to " + destination);
             }
         }
 
