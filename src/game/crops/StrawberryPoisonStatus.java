@@ -1,4 +1,4 @@
-package game.capabilities;
+package game.crops;
 
 import edu.monash.fit2099.engine.GameEntity;
 import edu.monash.fit2099.engine.actors.Actor;
@@ -6,28 +6,28 @@ import edu.monash.fit2099.engine.capabilities.Status;
 import edu.monash.fit2099.engine.positions.Location;
 
 /**
- * The healing from eating a fresh strawberry: 1 HP restored per turn for 2
- * turns.
+ * The poison inflicted by eating a rotten strawberry: 1 damage point per
+ * turn for 3 turns.
  */
-public class StrawberryHealStatus implements Status {
+public class StrawberryPoisonStatus implements Status {
 
-    public static final int HEAL_PER_TURN = 1;
-    public static final int DURATION_TURNS = 2;
+    public static final int DAMAGE_PER_TURN = 1;
+    public static final int DURATION_TURNS = 3;
 
-    private final Actor healedActor;
+    private final Actor poisonedActor;
     private int remainingTurns = DURATION_TURNS;
 
     /**
      * Constructor.
      *
-     * @param healedActor the actor being healed
+     * @param poisonedActor the actor being poisoned
      */
-    public StrawberryHealStatus(Actor healedActor) {
-        this.healedActor = healedActor;
+    public StrawberryPoisonStatus(Actor poisonedActor) {
+        this.poisonedActor = poisonedActor;
     }
 
     /**
-     * Restores one turn's worth of healing.
+     * Deals one turn's worth of poison damage.
      *
      * @see Status#tickStatus(GameEntity, Location)
      * @param currentEntity the entity this status is attached to
@@ -35,12 +35,12 @@ public class StrawberryHealStatus implements Status {
      */
     @Override
     public void tickStatus(GameEntity currentEntity, Location location) {
-        healedActor.heal(HEAL_PER_TURN);
+        poisonedActor.hurt(DAMAGE_PER_TURN);
         remainingTurns--;
     }
 
     /**
-     * @return true while there are still healing turns remaining
+     * @return true while there are still poison turns remaining
      */
     @Override
     public boolean isStatusActive() {
@@ -49,6 +49,6 @@ public class StrawberryHealStatus implements Status {
 
     @Override
     public String toString() {
-        return "Recovering";
+        return "Poisoned";
     }
 }

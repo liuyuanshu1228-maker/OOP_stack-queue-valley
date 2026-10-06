@@ -3,8 +3,8 @@ package game.actions;
 import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
-import game.actors.CreatureState;
-import game.actors.StatefulCreature;
+import game.creaturestate.CreatureState;
+import game.creaturestate.StatefulCreature;
 
 /**
  * An Action that advances a {@link StatefulCreature}'s state machine by one

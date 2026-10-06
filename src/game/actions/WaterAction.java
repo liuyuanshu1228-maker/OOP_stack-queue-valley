@@ -1,15 +1,9 @@
 package game.actions;
 
-import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.actors.ActorStatistics;
-import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.tools.WateringTool;
 import game.positions.Waterable;
-import game.statistics.StatisticUtils;
-
-import java.util.List;
 
 /**
  * An Action that allows an Actor to water the Ground at their current Location,
@@ -20,10 +14,7 @@ import java.util.List;
  * one type of Ground into another (e.g. Dirt into a Puddle), whereas watering a
  * crop nurtures it in place and is handled by {@link game.actions.WaterCropAction}.
  */
-public class WaterAction extends Action {
-
-    /** The map location whose ground is to be watered. */
-    private final Location location;
+public class WaterAction extends CapabilityToolAction<Waterable, WateringTool> {
 
     /**
      * Constructor.
@@ -31,34 +22,20 @@ public class WaterAction extends Action {
      * @param location the Location whose Ground is to be watered
      */
     public WaterAction(Location location) {
-        this.location = location;
+        super(location, Waterable.class, WateringTool.class,
+                "has no watering can to water the ground.", "cannot water this ground.");
     }
 
     /**
-     * Performs the watering attempt. If the Actor is carrying a watering tool
-     * and has enough stamina for that tool's cost, waters the Ground and
-     * deducts stamina; otherwise, fails without any side effects.
+     * Waters the Ground, replacing it with the Waterable's water result.
      *
-     * @param actor The actor performing the action.
-     * @param map   The map the actor is on.
+     * @param actor the actor performing the action
+     * @param location the Location whose Ground is to be watered
+     * @param waterable the Waterable capability of the Ground
      * @return a description of the outcome, to be displayed to the player
      */
     @Override
-    public String execute(Actor actor, GameMap map) {
-        Waterable waterable = location.getGroundAs(Waterable.class);
-        List<WateringTool> tools = actor.getInventory().getItemsAs(WateringTool.class);
-
-        if (tools.isEmpty()) {
-            return actor + " has no watering can to water the ground.";
-        }
-        if (waterable == null) {
-            return actor + " cannot water this ground.";
-        }
-
-        if (!StatisticUtils.trySpend(actor, ActorStatistics.STAMINA, tools.get(0).getStaminaCost())) {
-            return actor + " is too tired to water the ground.";
-        }
-
+    protected String applyEffect(Actor actor, Location location, Waterable waterable) {
         location.setGround(waterable.getWaterResult());
         return actor + " waters the ground.";
     }

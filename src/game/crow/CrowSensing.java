@@ -3,7 +3,7 @@ package game.crow;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
-import game.actors.ItemCache;
+import game.creaturestate.ItemCache;
 import game.positions.LocationUtils;
 
 import java.util.Optional;
@@ -124,7 +124,7 @@ final class CrowSensing {
     static boolean hasLoneTargetWithItems(Location here) {
         return countActorsWithinRange(here) == 1
                 && nearestActor(here)
-                        .map(location -> !location.getActor().getInventory().getItems().isEmpty())
-                        .orElse(false);
+                .map(location -> !location.getActor().getInventory().getItems().isEmpty())
+                .orElse(false);
     }
 }

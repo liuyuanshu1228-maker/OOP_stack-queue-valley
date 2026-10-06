@@ -8,10 +8,10 @@ import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import game.actions.CreatureStateAction;
-import game.actors.Composure;
-import game.actors.CreatureState;
-import game.actors.ItemCache;
-import game.actors.StatefulCreature;
+import game.creaturestate.Composure;
+import game.creaturestate.CreatureState;
+import game.creaturestate.ItemCache;
+import game.creaturestate.StatefulCreature;
 
 import java.util.HashSet;
 import java.util.Set;

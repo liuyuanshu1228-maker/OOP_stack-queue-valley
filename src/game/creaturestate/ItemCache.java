@@ -1,4 +1,4 @@
-package game.actors;
+package game.creaturestate;
 
 import edu.monash.fit2099.engine.items.Item;
 

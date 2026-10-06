@@ -6,6 +6,7 @@ import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.HarvestAction;
 import game.actions.WaterCropAction;
+import game.positions.FreelyWaterable;
 import game.positions.farm.Dirt;
 
 /**
@@ -19,9 +20,11 @@ import game.positions.farm.Dirt;
  * Every crop is {@link Harvestable}; the {@link HarvestAction} menu entry is
  * offered automatically, whether the Actor is standing on the crop or on an
  * adjacent tile. Crops that are also {@link CropWaterable} get the
- * {@link WaterCropAction} menu entry automatically as well.
+ * {@link WaterCropAction} menu entry automatically as well. Every crop also
+ * accepts a free watering (e.g. from a crow's droppings) through
+ * {@link FreelyWaterable}, independent of whether it is CropWaterable.
  */
-public abstract class Crop extends Ground implements Harvestable {
+public abstract class Crop extends Ground implements Harvestable, FreelyWaterable {
 
     /**
      * The number of times this crop has been watered.
@@ -52,6 +55,15 @@ public abstract class Crop extends Ground implements Harvestable {
      */
     public void recordWatering() {
         wateringCount++;
+    }
+
+    /**
+     * Applies the effect of being watered for free (e.g. by a crow's
+     * droppings): counts as one ordinary watering.
+     */
+    @Override
+    public void receiveFreeWatering() {
+        recordWatering();
     }
 
     /**

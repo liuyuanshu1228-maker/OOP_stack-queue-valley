@@ -1,4 +1,4 @@
-package game.actors;
+package game.creaturestate;
 
 /**
  * Capability interface for an Actor that tracks how long it has gone

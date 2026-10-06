@@ -3,8 +3,8 @@ package game.crow;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import game.actors.CreatureState;
-import game.crops.Crop;
+import game.creaturestate.CreatureState;
+import game.positions.FreelyWaterable;
 import game.positions.LocationUtils;
 
 import java.util.ArrayList;
@@ -89,12 +89,12 @@ public final class Perching implements CreatureState {
     @Override
     public String onEnter(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        List<Crop> watered = new ArrayList<>();
+        List<FreelyWaterable> watered = new ArrayList<>();
         for (Location location : LocationUtils.centreAndAdjacent(here)) {
-            Crop crop = location.getGroundAs(Crop.class);
-            if (crop != null) {
-                crop.recordWatering();
-                watered.add(crop);
+            FreelyWaterable waterable = location.getGroundAs(FreelyWaterable.class);
+            if (waterable != null) {
+                waterable.receiveFreeWatering();
+                watered.add(waterable);
             }
         }
 

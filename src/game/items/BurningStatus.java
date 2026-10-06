@@ -1,10 +1,9 @@
-package game.capabilities;
+package game.items;
 
 import edu.monash.fit2099.engine.GameEntity;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.capabilities.Status;
 import edu.monash.fit2099.engine.positions.Location;
-import game.items.Fire;
 
 /**
  * The burn inflicted on an Actor by standing in {@link Fire}: a fixed amount

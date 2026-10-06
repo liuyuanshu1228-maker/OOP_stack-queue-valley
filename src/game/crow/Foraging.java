@@ -4,8 +4,8 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import game.actors.CreatureState;
-import game.actors.ItemCache;
+import game.creaturestate.CreatureState;
+import game.creaturestate.ItemCache;
 import game.positions.LocationUtils;
 import game.RandomUtils;
 
