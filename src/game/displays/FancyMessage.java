@@ -1,7 +1,12 @@
 package game.displays;
 
-public class FancyMessage {
-    public static String GAME_TITLE = "   ,-,--.  ,--.--------.   ,---.       _,.----.  ,--.-.,-.                \n" +
+/**
+ * Holds the fancy ASCII-art title banner printed once when the game starts.
+ */
+public final class FancyMessage {
+
+    /** The ASCII-art banner printed, line by line, at game start. */
+    public static final String GAME_TITLE = "   ,-,--.  ,--.--------.   ,---.       _,.----.  ,--.-.,-.                \n" +
             " ,-.'-  _\\/==/,  -   , -\\.--.'  \\    .' .' -   \\/==/- |\\  \\               \n" +
             "/==/_ ,_.'\\==\\.-.  - ,-./\\==\\-/\\ \\  /==/  ,  ,-'|==|_ `/_ /,--.--------.  \n" +
             "\\==\\  \\    `--`\\==\\- \\   /==/-|_\\ | |==|-   |  .|==| ,   //==/,  -   , -\\ \n" +
@@ -28,4 +33,8 @@ public class FancyMessage {
             "  |==| -  ,//==/-  /\\ - \\|==|- `-._|==|- `-._|==|_  ,`-._  \\==\\-, /       \n" +
             "  \\==\\  _ / \\==\\ _.\\=\\.-'/==/ - , ,/==/ - , ,/==/ ,     /  /==/._/        \n" +
             "   `--`--'   `--`        `--`-----'`--`-----'`--`-----``   `--`-`         ";
+
+    private FancyMessage() {
+        // Prevent instantiation; this class only provides a static constant.
+    }
 }
