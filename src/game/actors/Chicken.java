@@ -45,11 +45,20 @@ public class Chicken extends Animal {
     public String feed(Actor farmer, Location farmerLocation) {
         this.heal(HEAL_AMOUNT);
 
-        LocationUtils.dropItemNearby(farmerLocation, new Egg(() -> new Chicken("Chicken")));
+        LocationUtils.dropItemNearby(farmerLocation, layEgg());
         if (RandomUtils.rollPercent(BONUS_EGG_CHANCE_PERCENT)) {
-            LocationUtils.dropItemNearby(farmerLocation, new Egg(() -> new Chicken("Chicken")));
+            LocationUtils.dropItemNearby(farmerLocation, layEgg());
         }
 
         return this + " clucks happily.";
+    }
+
+    /**
+     * Creates an Egg that may hatch into a new Chicken.
+     *
+     * @return a new Chicken Egg
+     */
+    private Egg layEgg() {
+        return new Egg(() -> new Chicken("Chicken"));
     }
 }

@@ -103,9 +103,8 @@ public final class Foraging implements CreatureState {
      * @return the first forageable Item found
      */
     private Item pickForageableItem(Location here, Actor creature) {
-        ItemCache cache = creature.asCapability(ItemCache.class).orElse(null);
         for (Item item : here.getItems()) {
-            if (cache == null || !cache.remembers(item)) {
+            if (CrowSensing.isForageable(item, creature)) {
                 return item;
             }
         }

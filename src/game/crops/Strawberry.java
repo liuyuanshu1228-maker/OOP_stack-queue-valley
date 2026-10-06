@@ -58,7 +58,7 @@ public class Strawberry extends Crop implements CropWaterable {
             actor.getInventory().add(StrawberryItem.createRandom());
         }
 
-        String message = actor + " harvests the " + this + " and picks up 2 strawberries.";
+        String message = actor + " harvests the " + this + " and picks up " + STRAWBERRIES_PER_HARVEST + " strawberries.";
 
         int destructionChancePercent = BASE_DESTRUCTION_CHANCE_PERCENT - getWateringCount();
         if (RandomUtils.rollPercent(destructionChancePercent)) {

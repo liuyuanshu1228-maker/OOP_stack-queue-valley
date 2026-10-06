@@ -75,13 +75,7 @@ public final class LocationUtils {
      * @return a random enterable adjacent tile, or empty if there is none
      */
     public static Optional<Location> randomEnterableNearby(Location referenceLocation, Actor actor) {
-        List<Location> candidates = new ArrayList<>();
-        for (Location nearby : referenceLocation.getNearbyLocations(1)) {
-            if (nearby.canActorEnter(actor)) {
-                candidates.add(nearby);
-            }
-        }
-        return pickOne(candidates);
+        return pickEnterable(referenceLocation.getNearbyLocations(1), actor);
     }
 
     /**
@@ -93,29 +87,31 @@ public final class LocationUtils {
      * @return a random enterable tile, or empty if there is none
      */
     public static Optional<Location> randomEnterableLocation(GameMap map, Actor actor) {
-        List<Location> candidates = new ArrayList<>();
+        List<Location> allLocations = new ArrayList<>();
         for (int y : map.getYRange()) {
             for (int x : map.getXRange()) {
-                Location location = map.at(x, y);
-                if (location.canActorEnter(actor)) {
-                    candidates.add(location);
-                }
+                allLocations.add(map.at(x, y));
             }
         }
-        return pickOne(candidates);
+        return pickEnterable(allLocations, actor);
     }
 
     /**
-     * Picks one of the given options uniformly at random.
+     * Picks one of the given Locations that the given Actor is able to enter,
+     * uniformly at random.
      *
-     * @param options the options to pick from
-     * @return one randomly chosen option, or empty if there are no options
+     * @param options the Locations to pick from
+     * @param actor the Actor who would move onto the chosen Location
+     * @return one randomly chosen enterable Location, or empty if there is none
      */
-    private static Optional<Location> pickOne(List<Location> options) {
-        if (options.isEmpty()) {
+    private static Optional<Location> pickEnterable(List<Location> options, Actor actor) {
+        List<Location> candidates = options.stream()
+                .filter(location -> location.canActorEnter(actor))
+                .toList();
+        if (candidates.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(RandomUtils.pickRandom(options));
+        return Optional.of(RandomUtils.pickRandom(candidates));
     }
 
     /**

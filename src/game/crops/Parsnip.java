@@ -62,7 +62,7 @@ public class Parsnip extends Crop implements CropWaterable {
             LocationUtils.dropItemNearby(location, new ParsnipItem());
         }
 
-        return actor + " harvests the Parsnip crop.";
+        return actor + " harvests the " + this + ".";
     }
 
     /**

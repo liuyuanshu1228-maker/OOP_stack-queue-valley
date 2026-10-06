@@ -22,18 +22,30 @@ final class CrowSensing {
     }
 
     /**
-     * Whether there is an Item at this Location worth foraging: one that
-     * the given creature hasn't already hidden away itself.
+     * Whether the given Item is worth foraging: one that the given creature
+     * hasn't already hidden away itself.
+     *
+     * @param item the Item to check
+     * @param creature the creature doing the sensing
+     * @return true if the creature has not cached this Item
+     */
+    static boolean isForageable(Item item, Actor creature) {
+        return creature.asCapability(ItemCache.class)
+                .map(cache -> !cache.remembers(item))
+                .orElse(true);
+    }
+
+    /**
+     * Whether there is an Item at this Location worth foraging.
      *
      * @param location the Location to check
      * @param creature the creature doing the sensing
      * @return true if there is at least one forageable Item at this Location
+     * @see #isForageable(Item, Actor)
      */
     static boolean hasForageableItems(Location location, Actor creature) {
-        ItemCache cache = creature.asCapability(ItemCache.class).orElse(null);
-
         for (Item item : location.getItems()) {
-            if (cache == null || !cache.remembers(item)) {
+            if (isForageable(item, creature)) {
                 return true;
             }
         }

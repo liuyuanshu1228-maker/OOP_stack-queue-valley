@@ -11,8 +11,6 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.RandomUtils;
 
-import java.util.Optional;
-
 /**
  * Abstract base class for actors that wander randomly around the map each turn.
  *
@@ -53,14 +51,11 @@ public abstract class WanderingActor extends Actor {
                 .filter(exit -> exit.getDestination().canActorEnter(this))
                 .toList();
 
-        Optional<Exit> chosenExit = enterableExits.isEmpty()
-                ? Optional.empty()
-                : Optional.of(RandomUtils.pickRandom(enterableExits));
-        if (chosenExit.isEmpty()) {
+        if (enterableExits.isEmpty()) {
             return new DoNothingAction();
         }
 
-        Exit exit = chosenExit.get();
+        Exit exit = RandomUtils.pickRandom(enterableExits);
         return new MoveActorAction(exit.getDestination(), exit.getName(), exit.getHotKey());
     }
 }

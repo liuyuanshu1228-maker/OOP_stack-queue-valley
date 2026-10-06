@@ -7,6 +7,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.displays.Menu;
+import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import game.statistics.FarmerStatistics;
@@ -17,6 +18,8 @@ import java.util.List;
  */
 public class Farmer extends Actor {
 
+    private static final int STARTING_HP = 100;
+    private static final int STARTING_STAMINA = 100;
     private static final int STARTING_COINS = 10000;
 
     /**
@@ -25,8 +28,8 @@ public class Farmer extends Actor {
      * @param name the farmer's name
      */
     public Farmer(String name) {
-        super("Farmer " + name, '@', 100);
-        this.addNewStatistic(ActorStatistics.STAMINA, new BaseStatistic(100));
+        super("Farmer " + name, '@', STARTING_HP);
+        this.addNewStatistic(ActorStatistics.STAMINA, new BaseStatistic(STARTING_STAMINA));
         this.addNewStatistic(FarmerStatistics.COINS, new BaseStatistic(STARTING_COINS));
     }
 
@@ -71,7 +74,7 @@ public class Farmer extends Actor {
         display.println(this + " has " + this.getStatistic(FarmerStatistics.COINS)
                 + "/" + this.getMaximumStatistic(FarmerStatistics.COINS) + " coins.");
 
-        List items = this.getInventory().getItems();
+        List<Item> items = this.getInventory().getItems();
         if (items.isEmpty()) {
             display.println(this + " is carrying nothing.");
         } else {
