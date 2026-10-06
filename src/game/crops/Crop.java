@@ -5,6 +5,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.HarvestAction;
+import game.actions.WaterCropAction;
 import game.positions.farm.Dirt;
 
 /**
@@ -17,8 +18,8 @@ import game.positions.farm.Dirt;
  * <p>
  * Every crop is {@link Harvestable}; the {@link HarvestAction} menu entry is
  * offered automatically, whether the Actor is standing on the crop or on an
- * adjacent tile. Subclasses that can also be watered add their own watering
- * action on top of this.
+ * adjacent tile. Crops that are also {@link CropWaterable} get the
+ * {@link WaterCropAction} menu entry automatically as well.
  */
 public abstract class Crop extends Ground implements Harvestable {
 
@@ -63,9 +64,8 @@ public abstract class Crop extends Ground implements Harvestable {
     }
 
     /**
-     * Offers a harvesting action to an actor standing on or next to this crop.
-     * Subclasses that can also be watered should override this, call
-     * {@code super.allowableActions(...)}, and add their own watering action.
+     * Offers a harvesting action to an actor standing on or next to this crop,
+     * plus a watering action if this crop is {@link CropWaterable}.
      *
      * @param actor the actor acting
      * @param location the current location of this crop
@@ -76,6 +76,9 @@ public abstract class Crop extends Ground implements Harvestable {
     public ActionList allowableActions(Actor actor, Location location, String direction) {
         ActionList actions = new ActionList();
         actions.add(new HarvestAction(location));
+        if (asCapability(CropWaterable.class).isPresent()) {
+            actions.add(new WaterCropAction(location));
+        }
         return actions;
     }
 }

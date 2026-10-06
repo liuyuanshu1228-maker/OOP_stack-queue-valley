@@ -1,10 +1,8 @@
 package game.crops;
 
-import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.Location;
-import game.actions.WaterCropAction;
 import game.positions.LocationUtils;
 import game.RandomUtils;
 import game.statistics.StatisticUtils;
@@ -39,23 +37,6 @@ public class Melon extends Crop implements CropWaterable {
      */
     public Melon() {
         super('M', "Melon");
-    }
-
-    /**
-     * Offers a watering action, on top of the harvesting action inherited
-     * from {@link Crop}, to an actor standing on or next to this crop.
-     *
-     * @see Crop#allowableActions(Actor, Location, String)
-     * @param actor the actor acting
-     * @param location the current location of this crop
-     * @param direction the direction of this crop from the actor
-     * @return the allowable actions for this crop
-     */
-    @Override
-    public ActionList allowableActions(Actor actor, Location location, String direction) {
-        ActionList actions = super.allowableActions(actor, location, direction);
-        actions.add(new WaterCropAction(location));
-        return actions;
     }
 
     /**
