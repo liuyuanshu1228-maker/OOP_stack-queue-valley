@@ -36,6 +36,35 @@ public final class LocationUtils {
     }
 
     /**
+     * Removes every Item the given Actor is carrying and places each one on a
+     * randomly selected tile adjacent to the given Location.
+     *
+     * @param actor the Actor whose inventory is emptied
+     * @param referenceLocation the Location whose adjacent tiles receive the Items
+     * @return the Items that were dropped, in the order they were carried
+     */
+    public static List<Item> dropInventoryNearby(Actor actor, Location referenceLocation) {
+        List<Item> carried = new ArrayList<>(actor.getInventory().getItems());
+        for (Item item : carried) {
+            actor.getInventory().remove(item);
+            dropItemNearby(referenceLocation, item);
+        }
+        return carried;
+    }
+
+    /**
+     * The given Location together with every tile adjacent to it.
+     *
+     * @param centre the Location at the centre of the area
+     * @return the centre and its adjacent tiles
+     */
+    public static List<Location> centreAndAdjacent(Location centre) {
+        List<Location> area = new ArrayList<>(centre.getNearbyLocations(1));
+        area.add(centre);
+        return area;
+    }
+
+    /**
      * Places a new Item on every tile adjacent to the given Location (but not
      * on the Location itself). Each tile gets its own Item, created by the
      * given factory.
@@ -57,9 +86,7 @@ public final class LocationUtils {
      * @param damage the damage to deal to each Actor caught in it
      */
     public static void hurtActorsAround(Location centre, int damage) {
-        List<Location> blastLocations = new ArrayList<>(centre.getNearbyLocations(1));
-        blastLocations.add(centre);
-        for (Location blastLocation : blastLocations) {
+        for (Location blastLocation : centreAndAdjacent(centre)) {
             if (blastLocation.containsAnActor()) {
                 blastLocation.getActor().hurt(damage);
             }

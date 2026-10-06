@@ -55,9 +55,9 @@ created.
 
 | State | Ordinary turn (`act`) | Transition effect (`onEnter`) |
 |---|---|---|
-| **Perching** | Default/idle: hops to a random enterable adjacent tile. | If it lands on a `Crop`, its droppings count as a free watering (`Crop.recordWatering()`) — a small cross-feature hook into REQ1. |
+| **Perching** | Default/idle: hops to a random enterable adjacent tile. | Its droppings count as a free watering (`Crop.recordWatering()`) for **every** crop on its own tile and the 8 tiles around it — a cross-feature hook into REQ1. The message lists every crop watered, e.g. `... a free watering for every crop within 1 tile: [Parsnip, Melon].` |
 | **Foraging** | *New behaviour.* If standing over an unclaimed item, hides it (see below); otherwise steps toward the nearest forageable item within sensing range. | Swoops in on the target item and scatters every *other* item within 1 tile of it onto random nearby tiles, as if startled by the sudden arrival. |
-| **Mobbing** | *New behaviour.* Pursues the nearest actor turn after turn; once adjacent, steals one random item from that actor's inventory into the crow's **own** inventory; otherwise steps toward the target. | First strike: immediately steals one item from the nearest actor **regardless of distance**, so the theft happens the moment the crow turns on its target. |
+| **Mobbing** | *New behaviour.* Pursues the nearest actor turn after turn; once adjacent, steals one random item from that actor's inventory into the crow's **own** inventory; otherwise steps toward the target. | The dive knocks **everything** the target is carrying onto random tiles around the target; unlike stealing, the crow keeps none of it. The message lists every item knocked loose, e.g. `... knocking everything they carry onto the tiles around them: [Hoe, Watering Can, Pickaxe]!` |
 | **Fleeing** | *New behaviour.* Steps directly away from the nearest actor (`LocationUtils.stepAway`), or stays put if cornered. | Resets its safe-turn counter, drops its *entire* inventory (including anything stolen while Mobbing) onto random nearby tiles, and startles every adjacent actor one tile backwards. |
 
 **Which states introduce genuinely new behaviour:** the spec explicitly
@@ -83,10 +83,16 @@ three are provided, so the requirement does not hinge on any single one.
 
 **Theft → recovery loop:** an item Mobbing steals sits in the crow's own
 inventory, not the farmer's loss forever — the moment the crow panics into
-Fleeing, `onEnter` empties its inventory onto the ground at its current
-location, so the farmer can walk over and pick the stolen item back up. This
-connects two states' effects into one coherent mechanic rather than treating
+Fleeing, `onEnter` empties its inventory onto the tiles around it, so the
+farmer can walk over and pick the stolen item back up. Likewise, the items
+Mobbing's dive knocks to the ground stay there until the farmer picks them
+up — or until the crow, once Foraging, carries them off and hides them. This
+connects the states' effects into one coherent mechanic rather than treating
 each state in isolation.
+
+Emptying an inventory onto the surrounding tiles (used by both Mobbing's and
+Fleeing's transition effects) is a single shared helper,
+`LocationUtils.dropInventoryNearby`, so the two effects never drift apart.
 
 ### Transition graph
 

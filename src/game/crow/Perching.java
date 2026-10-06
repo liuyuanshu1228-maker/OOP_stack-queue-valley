@@ -7,6 +7,8 @@ import game.actors.CreatureState;
 import game.crops.Crop;
 import game.positions.LocationUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -76,24 +78,29 @@ public final class Perching implements CreatureState {
 
     /**
      * The effect of settling back into Perching after being in another
-     * state: if the crow happens to be standing over a crop, its droppings
-     * count as a free watering for it.
+     * state: the crow's droppings count as a free watering for every crop on
+     * its own tile and on each tile adjacent to it.
      *
      * @param creature the crow entering this state
      * @param map the map the crow is on
-     * @return a description of the effect
+     * @return a description of the effect, listing every crop watered
      */
     @Override
     public String onEnter(Actor creature, GameMap map) {
-        Location here = map.locationOf(creature);
-        Crop crop = here.getGroundAs(Crop.class);
-
-        if (crop == null) {
-            return creature + " settles back onto a perch.";
+        List<Crop> watered = new ArrayList<>();
+        for (Location location : LocationUtils.centreAndAdjacent(map.locationOf(creature))) {
+            Crop crop = location.getGroundAs(Crop.class);
+            if (crop != null) {
+                crop.recordWatering();
+                watered.add(crop);
+            }
         }
 
-        crop.recordWatering();
-        return creature + " settles onto the " + crop + ", and its droppings count as a free watering.";
+        if (watered.isEmpty()) {
+            return creature + " settles back onto a perch, with no crops within 1 tile to water.";
+        }
+        return creature + " settles back onto a perch, and its droppings count as a free watering for every crop within 1 tile: "
+                + watered + ".";
     }
 
     /** @return the name of this state */

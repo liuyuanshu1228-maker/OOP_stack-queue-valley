@@ -1,15 +1,12 @@
 package game.crow;
 
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actors.Composure;
 import game.actors.CreatureState;
 import game.positions.LocationUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -94,7 +91,7 @@ public final class Fleeing implements CreatureState {
         creature.asCapability(Composure.class).ifPresent(Composure::resetComposure);
         Location here = map.locationOf(creature);
 
-        int dropped = dropEverything(creature, here);
+        int dropped = LocationUtils.dropInventoryNearby(creature, here).size();
         int startled = startleNeighbours(here, map);
 
         String message = creature + " panics and takes flight";
@@ -126,22 +123,6 @@ public final class Fleeing implements CreatureState {
             composure.get().resetComposure();
         }
         return composure.get().getSafeTurns();
-    }
-
-    /**
-     * Drops every item the crow is carrying onto random tiles next to it.
-     *
-     * @param creature the crow dropping its items
-     * @param here the crow's current Location
-     * @return the number of items dropped
-     */
-    private int dropEverything(Actor creature, Location here) {
-        List<Item> carried = new ArrayList<>(creature.getInventory().getItems());
-        for (Item item : carried) {
-            creature.getInventory().remove(item);
-            LocationUtils.dropItemNearby(here, item);
-        }
-        return carried.size();
     }
 
     /**

@@ -13,9 +13,9 @@ import java.util.Optional;
 
 /**
  * The crow has spotted a lone actor and dives in to harass them. On entering
- * this state the crow immediately grabs an item from the target regardless of
- * distance (a surprise first strike). Each subsequent turn it closes the gap
- * and steals again once adjacent. Stolen items sit in the crow's own inventory
+ * this state the crow's dive knocks everything the target is carrying onto
+ * the tiles around them. Each subsequent turn it closes the gap and, once
+ * adjacent, steals one item. Stolen items sit in the crow's own inventory
  * and are dropped when it later panics into {@link Fleeing}, letting the
  * Farmer pick them back up.
  * <p>
@@ -105,14 +105,13 @@ public final class Mobbing implements CreatureState {
     }
 
     /**
-     * First-strike: the crow dives and immediately steals one item from the
-     * nearest visible actor, regardless of distance. This is the only place
-     * in the codebase where an item is taken from a live actor without the
-     * actor needing to be adjacent first.
+     * The crow dives at the nearest visible actor, knocking every item they
+     * are carrying onto random tiles adjacent to them. Unlike stealing, the
+     * crow keeps none of these items.
      *
      * @param creature the crow entering this state
      * @param map the map the crow is on
-     * @return a description of the ambush and what (if anything) was stolen
+     * @return a description of the dive, listing every item knocked loose
      */
     @Override
     public String onEnter(Actor creature, GameMap map) {
@@ -124,7 +123,14 @@ public final class Mobbing implements CreatureState {
         }
 
         Actor target = targetLoc.get().getActor();
-        return creature + " dives aggressively at " + target + "! " + steal(creature, target);
+        List<Item> knockedLoose = LocationUtils.dropInventoryNearby(target, targetLoc.get());
+
+        if (knockedLoose.isEmpty()) {
+            return creature + " dives aggressively at " + target + ", but " + target
+                    + " is carrying nothing to knock loose.";
+        }
+        return creature + " dives aggressively at " + target + ", knocking everything they carry onto the tiles around them: "
+                + knockedLoose + "!";
     }
 
     /** @return the name of this state */
