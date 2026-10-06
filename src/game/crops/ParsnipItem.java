@@ -2,7 +2,6 @@ package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
-import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.items.food.FoodItem;
 import game.statistics.StatisticUtils;
 
@@ -36,12 +35,8 @@ public class ParsnipItem extends FoodItem {
      */
     @Override
     public String consume(Actor actor) {
-        int healthBefore = actor.getStatistic(ActorStatistics.HEALTH);
-        actor.modifyStatistic(ActorStatistics.HEALTH, StatisticOperations.INCREASE, HP_RESTORED);
-        int healthAfter = actor.getStatistic(ActorStatistics.HEALTH);
-
         return actor + " eats the parsnip and is healed for "
-                + (healthAfter - healthBefore) + " HP (" + healthBefore + " -> " + healthAfter + ").";
+                + StatisticUtils.increaseAndDescribe(actor, ActorStatistics.HEALTH, HP_RESTORED, "HP") + ".";
     }
 
     /**

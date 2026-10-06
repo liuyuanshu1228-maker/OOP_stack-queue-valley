@@ -5,7 +5,6 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
-import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.actors.Feedable;
 import game.items.food.Food;
 import game.statistics.StatisticUtils;
@@ -49,11 +48,10 @@ public class FeedAction extends Action {
      */
     @Override
     public String execute(Actor actor, GameMap map) {
-        if (!StatisticUtils.hasEnough(actor, ActorStatistics.STAMINA, STAMINA_COST)) {
+        if (!StatisticUtils.trySpend(actor, ActorStatistics.STAMINA, STAMINA_COST)) {
             return actor + " is too tired to feed this animal.";
         }
 
-        actor.modifyStatistic(ActorStatistics.STAMINA, StatisticOperations.DECREASE, STAMINA_COST);
         actor.getInventory().remove(food);
 
         String feedResult = feedAnimal(actor, map);

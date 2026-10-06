@@ -5,7 +5,6 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.crops.Harvestable;
 import game.statistics.StatisticUtils;
 
@@ -46,14 +45,10 @@ public class HarvestAction extends Action {
             return harvestable.cannotHarvestMessage(actor);
         }
 
-        int cost = harvestable.getHarvestStaminaCost();
-        boolean hasEnoughStamina = StatisticUtils.hasEnough(actor, ActorStatistics.STAMINA, cost);
-
-        if (!hasEnoughStamina) {
+        if (!StatisticUtils.trySpend(actor, ActorStatistics.STAMINA, harvestable.getHarvestStaminaCost())) {
             return actor + " is too tired to harvest the " + location.getGround() + ".";
         }
 
-        actor.modifyStatistic(ActorStatistics.STAMINA, StatisticOperations.DECREASE, cost);
         return harvestable.harvest(actor, location);
     }
 

@@ -5,7 +5,6 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.items.tools.WateringTool;
 import game.positions.Waterable;
 import game.statistics.StatisticUtils;
@@ -56,13 +55,11 @@ public class WaterAction extends Action {
             return actor + " cannot water this ground.";
         }
 
-        int staminaCost = tools.get(0).getStaminaCost();
-        if (!StatisticUtils.hasEnough(actor, ActorStatistics.STAMINA, staminaCost)) {
+        if (!StatisticUtils.trySpend(actor, ActorStatistics.STAMINA, tools.get(0).getStaminaCost())) {
             return actor + " is too tired to water the ground.";
         }
 
         location.setGround(waterable.getWaterResult());
-        actor.modifyStatistic(ActorStatistics.STAMINA, StatisticOperations.DECREASE, staminaCost);
         return actor + " waters the ground.";
     }
 

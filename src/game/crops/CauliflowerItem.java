@@ -4,6 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import game.items.food.ConsumableItem;
 import game.RandomUtils;
+import game.statistics.StatisticUtils;
 
 /**
  * A cauliflower, produced by harvesting a {@link Cauliflower} crop. It can
@@ -31,12 +32,8 @@ public class CauliflowerItem extends ConsumableItem {
      */
     @Override
     public String consume(Actor actor) {
-        int healthBefore = actor.getStatistic(ActorStatistics.HEALTH);
-        actor.heal(HEAL_AMOUNT);
-        int healthAfter = actor.getStatistic(ActorStatistics.HEALTH);
-
         String message = actor + " eats the cauliflower and is healed for "
-                + (healthAfter - healthBefore) + " HP (" + healthBefore + " -> " + healthAfter + ").";
+                + StatisticUtils.increaseAndDescribe(actor, ActorStatistics.HEALTH, HEAL_AMOUNT, "HP") + ".";
 
         if (RandomUtils.rollPercent(BONUS_CHANCE_PERCENT)) {
             actor.getInventory().add(new CauliflowerItem());

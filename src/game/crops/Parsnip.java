@@ -7,6 +7,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.actions.WaterCropAction;
 import game.positions.LocationUtils;
 import game.RandomUtils;
+import game.statistics.StatisticUtils;
 
 /**
  * A parsnip crop. It can be watered, which heals the farmer but risks
@@ -103,11 +104,8 @@ public class Parsnip extends Crop implements CropWaterable {
      */
     @Override
     public String water(Actor actor, Location location) {
-        int healthBefore = actor.getStatistic(ActorStatistics.HEALTH);
-        actor.heal(HEAL_AMOUNT);
-        int healthAfter = actor.getStatistic(ActorStatistics.HEALTH);
         String message = actor + " waters the " + this + " and is healed for "
-                + (healthAfter - healthBefore) + " points (" + healthBefore + " -> " + healthAfter + ").";
+                + StatisticUtils.increaseAndDescribe(actor, ActorStatistics.HEALTH, HEAL_AMOUNT, "points") + ".";
 
         int damageChancePercent = BASE_DAMAGE_CHANCE_PERCENT + getWateringCount();
         if (RandomUtils.rollPercent(damageChancePercent)) {

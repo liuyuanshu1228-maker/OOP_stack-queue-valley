@@ -2,7 +2,6 @@ package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
-import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.items.food.FoodItem;
 import game.statistics.StatisticUtils;
 
@@ -34,13 +33,11 @@ public class TomatoItem extends FoodItem {
      */
     @Override
     public String consume(Actor actor) {
-        int maxHealthBefore = actor.getMaximumStatistic(ActorStatistics.HEALTH);
-        actor.modifyStatisticMaximum(ActorStatistics.HEALTH, StatisticOperations.INCREASE, MAX_HP_INCREASE);
-        int maxHealthAfter = actor.getMaximumStatistic(ActorStatistics.HEALTH);
+        String maxHealthChange = StatisticUtils.increaseMaximumAndDescribe(actor, ActorStatistics.HEALTH, MAX_HP_INCREASE);
         int healthAfter = actor.getStatistic(ActorStatistics.HEALTH);
 
-        return actor + " eats the tomato. Maximum HP increases by " + (maxHealthAfter - maxHealthBefore)
-                + " (" + maxHealthBefore + " -> " + maxHealthAfter + "), and current HP is restored to " + healthAfter + ".";
+        return actor + " eats the tomato. Maximum HP increases by " + maxHealthChange
+                + ", and current HP is restored to " + healthAfter + ".";
     }
 
     /**

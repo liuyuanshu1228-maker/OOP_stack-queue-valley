@@ -5,7 +5,6 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.items.tools.WateringTool;
 import game.crops.Crop;
 import game.crops.CropWaterable;
@@ -52,12 +51,10 @@ public class WaterCropAction extends Action {
             return actor + " has no watering tool to water the " + cropLocation.getGround() + ".";
         }
 
-        int cost = waterable.getWateringStaminaCost();
-        if (!StatisticUtils.hasEnough(actor, ActorStatistics.STAMINA, cost)) {
+        if (!StatisticUtils.trySpend(actor, ActorStatistics.STAMINA, waterable.getWateringStaminaCost())) {
             return actor + " is too tired to water the " + cropLocation.getGround() + ".";
         }
 
-        actor.modifyStatistic(ActorStatistics.STAMINA, StatisticOperations.DECREASE, cost);
         cropLocation.getGroundAs(Crop.class).recordWatering();
 
         return waterable.water(actor, cropLocation);

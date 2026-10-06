@@ -4,10 +4,10 @@ import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.Location;
-import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.actions.WaterCropAction;
 import game.positions.LocationUtils;
 import game.RandomUtils;
+import game.statistics.StatisticUtils;
 
 /**
  * A melon crop. Watering it may raise the farmer's maximum stamina, and it
@@ -109,11 +109,8 @@ public class Melon extends Crop implements CropWaterable {
         String message = actor + " waters the " + this + ".";
 
         if (RandomUtils.rollPercent(MAX_STAMINA_INCREASE_CHANCE_PERCENT)) {
-            int maxStaminaBefore = actor.getMaximumStatistic(ActorStatistics.STAMINA);
-            actor.modifyStatisticMaximum(ActorStatistics.STAMINA, StatisticOperations.INCREASE, MAX_STAMINA_INCREASE_AMOUNT);
-            int maxStaminaAfter = actor.getMaximumStatistic(ActorStatistics.STAMINA);
-            message += " Its maximum stamina increases by " + (maxStaminaAfter - maxStaminaBefore)
-                    + " (" + maxStaminaBefore + " -> " + maxStaminaAfter + ").";
+            message += " Its maximum stamina increases by "
+                    + StatisticUtils.increaseMaximumAndDescribe(actor, ActorStatistics.STAMINA, MAX_STAMINA_INCREASE_AMOUNT) + ".";
         }
 
         return message;
