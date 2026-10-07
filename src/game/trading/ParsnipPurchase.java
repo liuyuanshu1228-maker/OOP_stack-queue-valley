@@ -4,7 +4,8 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.crops.ParsnipItem;
 import game.crops.Crop;
-import game.positions.LocationUtils;
+import game.positions.area.Area;
+import game.positions.area.ItemDropper;
 import game.crops.Parsnip;
 
 /** 
@@ -44,7 +45,7 @@ public class ParsnipPurchase extends CropPurchase {
     @Override
     protected String applyPlantingEffect(Actor buyer, Actor merchant, Location cropLocation) {
         for (int i = 0; i < PARSNIPS_PRODUCED; i++) {
-            LocationUtils.dropItemNearby(cropLocation, new ParsnipItem());
+            new ItemDropper(Area.adjacentTo(cropLocation)).dropOnRandomTile(new ParsnipItem());
         }
         return buyer + " buys a Parsnip crop from " + merchant + ".";
     }
