@@ -11,7 +11,7 @@ import java.util.function.Predicate;
  * distance, searching for the nearest matching tile, and picking the best
  * adjacent step toward or away from a reference Location.
  * <p>
- * Kept separate from {@link game.positions.LocationUtils} because these
+ * Kept separate from {@link game.positions.area.Area} because these
  * methods exist only to support the Crow's state-machine behaviours
  * ({@link Foraging}, {@link Mobbing}, {@link Fleeing}, {@link CrowSensing})
  * and change only for reasons related to the Crow's AI, never for reasons
