@@ -9,10 +9,11 @@ import java.util.Random;
  * <p>
  * Callers use the static methods. Those delegate to a replaceable instance,
  * so a subclass can change how randomness works for the whole game (e.g. a
- * fixed-seed version for reproducible testing, or an always-succeed game
- * mode) by overriding {@link #doRollPercent(int)} and {@link #doRandomInt(int)}
- * and installing itself with {@link #setInstance(RandomUtils)}, without
- * changing this class or any caller.
+ * fixed-seed version for reproducible testing) by overriding
+ * {@link #doRandomInt(int)} and installing itself with
+ * {@link #setInstance(RandomUtils)}, without changing this class or any
+ * caller. Chances are rolled on top of {@link #doRandomInt(int)}, so that one
+ * override covers them too.
  */
 public class RandomUtils {
 
@@ -83,14 +84,16 @@ public class RandomUtils {
     }
 
     /**
-     * How this instance rolls a percentage chance. Subclasses override this
-     * to change the behaviour of {@link #rollPercent(int)}.
+     * How this instance rolls a percentage chance. It is built on
+     * {@link #doRandomInt(int)}, so overriding that method already changes the
+     * result of this one; override this method itself only to change how a
+     * chance is judged on its own. Used by {@link #rollPercent(int)}.
      *
      * @param percent the chance of success, out of 100
      * @return {@code true} if the roll succeeds, {@code false} otherwise
      */
     public boolean doRollPercent(int percent) {
-        return random.nextInt(PERCENT_SCALE) < percent;
+        return doRandomInt(PERCENT_SCALE) < percent;
     }
 
     /**
