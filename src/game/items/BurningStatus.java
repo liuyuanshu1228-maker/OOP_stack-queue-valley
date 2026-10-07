@@ -1,9 +1,7 @@
 package game.items;
 
-import edu.monash.fit2099.engine.GameEntity;
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.capabilities.Status;
-import edu.monash.fit2099.engine.positions.Location;
+import game.TimedStatus;
 
 /**
  * The burn inflicted on an Actor by standing in {@link Fire}: a fixed amount
@@ -13,16 +11,13 @@ import edu.monash.fit2099.engine.positions.Location;
  * {@link #applyTo(Actor, int, int)}) replaces the old one, which is what makes
  * a fire "reapply" its burn every turn an Actor keeps standing in it.
  */
-public class BurningStatus implements Status {
+public class BurningStatus extends TimedStatus {
 
     /** The actor currently affected by this burn. */
     private final Actor burningActor;
 
     /** HP deducted from the burning actor each turn. */
     private final int damagePerTurn;
-
-    /** Number of turns remaining before the burn expires. */
-    private int remainingTurns;
 
     /**
      * Constructor. Use {@link #applyTo(Actor, int, int)} to set an Actor alight.
@@ -32,9 +27,9 @@ public class BurningStatus implements Status {
      * @param durationTurns how many turns the burn lasts
      */
     private BurningStatus(Actor burningActor, int damagePerTurn, int durationTurns) {
+        super(durationTurns);
         this.burningActor = burningActor;
         this.damagePerTurn = damagePerTurn;
-        this.remainingTurns = durationTurns;
     }
 
     /**
@@ -53,23 +48,10 @@ public class BurningStatus implements Status {
 
     /**
      * Deals one turn's worth of burn damage.
-     *
-     * @see Status#tickStatus(GameEntity, Location)
-     * @param currentEntity the entity this status is attached to
-     * @param location the location of the entity this status is attached to
      */
     @Override
-    public void tickStatus(GameEntity currentEntity, Location location) {
+    protected void applyEffect() {
         burningActor.hurt(damagePerTurn);
-        remainingTurns--;
-    }
-
-    /**
-     * @return true while there are still burning turns remaining
-     */
-    @Override
-    public boolean isStatusActive() {
-        return remainingTurns > 0;
     }
 
     @Override
