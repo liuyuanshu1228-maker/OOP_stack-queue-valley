@@ -11,6 +11,7 @@ import game.random.RandomUtils;
  */
 public class StrawberryItem extends ConsumableItem {
 
+    /** Chance (out of 100) that a newly created Strawberry is rotten. */
     private static final int ROTTEN_CHANCE_PERCENT = 50;
 
     private final boolean rotten;

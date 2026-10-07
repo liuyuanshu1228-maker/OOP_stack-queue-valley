@@ -10,6 +10,7 @@ import game.items.food.ConsumableItem;
  */
 public class MelonItem extends ConsumableItem {
 
+    /** Amount by which eating a Melon raises the actor's maximum HP. */
     private static final int MAX_HEALTH_INCREASE_AMOUNT = 10;
 
     /**

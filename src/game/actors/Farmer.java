@@ -18,8 +18,11 @@ import java.util.List;
  */
 public class Farmer extends Actor {
 
+    /** The Farmer's starting (and maximum) hit points. */
     private static final int STARTING_HP = 100;
+    /** The Farmer's starting (and maximum) stamina. */
     private static final int STARTING_STAMINA = 100;
+    /** The number of coins the Farmer starts the game with. */
     private static final int STARTING_COINS = 10000;
 
     /**

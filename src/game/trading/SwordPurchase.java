@@ -11,7 +11,9 @@ import game.random.RandomUtils;
 /** Buying a Sword: 3000 coins, 50% chance the merchant gives nothing. */
 public class SwordPurchase implements Purchasable {
 
+    /** Coins charged for a Sword. */
     private static final int PRICE = 3000;
+    /** Chance (out of 100) that the Merchant keeps the coins and hands over nothing. */
     private static final int FAIL_CHANCE_PERCENT = 50;
 
     /**

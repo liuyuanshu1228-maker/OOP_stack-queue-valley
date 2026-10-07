@@ -54,6 +54,9 @@ public class BurningStatus extends TimedStatus {
         burningActor.hurt(damagePerTurn);
     }
 
+    /**
+     * @return the name of this status, as shown next to the actor (Burning)
+     */
     @Override
     public String toString() {
         return "Burning";
