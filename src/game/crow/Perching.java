@@ -5,7 +5,7 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.creaturestate.CreatureState;
 import game.positions.FreelyWaterable;
-import game.positions.LocationUtils;
+import game.positions.area.Area;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ public final class Perching implements CreatureState {
     @Override
     public String act(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        Optional<Location> destination = LocationUtils.randomEnterableNearby(here, creature);
+        Optional<Location> destination = Area.adjacentTo(here).randomEnterableTile(creature);
 
         if (destination.isEmpty()) {
             return creature + " perches, with nowhere to go.";
@@ -90,7 +90,7 @@ public final class Perching implements CreatureState {
     public String onEnter(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
         List<FreelyWaterable> watered = new ArrayList<>();
-        for (Location location : LocationUtils.centreAndAdjacent(here)) {
+        for (Location location : Area.centredOn(here).tiles()) {
             FreelyWaterable waterable = location.getGroundAs(FreelyWaterable.class);
             if (waterable != null) {
                 waterable.receiveFreeWatering();

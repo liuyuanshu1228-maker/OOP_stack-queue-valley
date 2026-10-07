@@ -5,7 +5,8 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.creaturestate.CreatureState;
-import game.positions.LocationUtils;
+import game.positions.area.Area;
+import game.positions.area.ItemDropper;
 import game.RandomUtils;
 
 import java.util.List;
@@ -125,7 +126,7 @@ public final class Mobbing implements CreatureState {
         }
 
         Actor target = targetLoc.get().getActor();
-        List<Item> knockedLoose = LocationUtils.dropInventoryNearby(target, targetLoc.get());
+        List<Item> knockedLoose = new ItemDropper(Area.adjacentTo(targetLoc.get())).dropAllCarriedBy(target);
 
         if (knockedLoose.isEmpty()) {
             return creature + " dives aggressively at " + target + ", but " + target

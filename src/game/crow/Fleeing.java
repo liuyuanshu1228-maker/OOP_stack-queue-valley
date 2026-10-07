@@ -6,7 +6,8 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.creaturestate.Composure;
 import game.creaturestate.CreatureState;
-import game.positions.LocationUtils;
+import game.positions.area.Area;
+import game.positions.area.ItemDropper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,7 +98,7 @@ public final class Fleeing implements CreatureState {
         creature.asCapability(Composure.class).ifPresent(Composure::resetComposure);
         Location here = map.locationOf(creature);
 
-        List<Item> dropped = LocationUtils.dropInventoryNearby(creature, here);
+        List<Item> dropped = new ItemDropper(Area.adjacentTo(here)).dropAllCarriedBy(creature);
         List<String> startled = startleNeighbours(here, map);
 
         String droppedText = dropped.isEmpty()
