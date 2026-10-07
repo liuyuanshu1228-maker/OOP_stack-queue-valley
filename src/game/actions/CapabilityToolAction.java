@@ -13,7 +13,8 @@ import java.util.List;
 /**
  * Abstract base class for an Action that requires an Actor to be carrying a
  * specific kind of tool and to use it on a Ground that exposes a matching
- * capability, at a stamina cost determined by the tool itself.
+ * capability, at a stamina cost determined by the tool by default (see
+ * {@link #staminaCost(HasStaminaCost, Object)}).
  * <p>
  * Subclasses need only say which capability and tool types are involved, the
  * failure messages, and what the tool's effect actually does.
@@ -58,7 +59,7 @@ public abstract class CapabilityToolAction<C, T extends HasStaminaCost> extends 
 
     /**
      * Checks that the Actor carries the required tool and that the Ground
-     * exposes the required capability, deducts the tool's stamina cost, and
+     * exposes the required capability, deducts the stamina cost, and
      * delegates to the subclass-specific effect.
      *
      * @param actor The actor performing the action.
@@ -77,11 +78,23 @@ public abstract class CapabilityToolAction<C, T extends HasStaminaCost> extends 
             return actor + " " + noCapabilityMessage;
         }
 
-        if (!StatisticUtils.trySpend(actor, ActorStatistics.STAMINA, tools.get(0).getStaminaCost())) {
+        if (!StatisticUtils.trySpend(actor, ActorStatistics.STAMINA, staminaCost(tools.get(0), capability))) {
             return actor + " is too tired to do this.";
         }
 
         return applyEffect(actor, location, capability);
+    }
+
+    /**
+     * The stamina this Action costs. Defaults to the tool's own cost;
+     * subclasses whose cost depends on what is being acted on override this.
+     *
+     * @param tool the tool being used
+     * @param capability the Ground's capability being acted on
+     * @return the stamina to deduct
+     */
+    protected int staminaCost(T tool, C capability) {
+        return tool.getStaminaCost();
     }
 
     /**

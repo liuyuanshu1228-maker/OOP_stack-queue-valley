@@ -2,9 +2,11 @@ package game.items.food;
 
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import game.actions.ConsumeAction;
+import game.statistics.StatisticUtils;
 
 /**
  * Abstract base class for portable Items that can be consumed.
@@ -37,5 +39,32 @@ public abstract class ConsumableItem extends Item implements Consumable {
         ActionList actions = new ActionList();
         actions.add(new ConsumeAction(this));
         return actions;
+    }
+
+    /**
+     * Shared effect for food that heals when eaten: restores HP to the Actor,
+     * capped at their maximum, and describes the actual change.
+     *
+     * @param actor  the Actor eating this Item
+     * @param amount the HP to restore
+     * @return a description such as "... eats the Parsnip and is healed for 1 HP (99 -> 100)."
+     */
+    protected String eatToHeal(Actor actor, int amount) {
+        return actor + " eats the " + this + " and is healed for "
+                + StatisticUtils.increaseAndDescribe(actor, ActorStatistics.HEALTH, amount, "HP") + ".";
+    }
+
+    /**
+     * Shared effect for food that raises maximum HP when eaten. Raising a
+     * maximum also restores the current value to it, so the message reports both.
+     *
+     * @param actor  the Actor eating this Item
+     * @param amount the amount by which maximum HP increases
+     * @return a description such as "... eats the Melon. Maximum HP increases by 10 (100 -> 110), and current HP is restored to 110."
+     */
+    protected String eatToRaiseMaxHealth(Actor actor, int amount) {
+        String maxHealthChange = StatisticUtils.increaseMaximumAndDescribe(actor, ActorStatistics.HEALTH, amount);
+        return actor + " eats the " + this + ". Maximum HP increases by " + maxHealthChange
+                + ", and current HP is restored to " + actor.getStatistic(ActorStatistics.HEALTH) + ".";
     }
 }

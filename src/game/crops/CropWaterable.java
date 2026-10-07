@@ -22,6 +22,12 @@ public interface CropWaterable {
     int getWateringStaminaCost();
 
     /**
+     * Records that this crop has been watered once, since several crop rules
+     * depend on how many times it has been watered.
+     */
+    void recordWatering();
+
+    /**
      * Applies the effect of watering this crop to the given Actor and Location.
      * Assumes stamina has already been verified as sufficient by the caller.
      *

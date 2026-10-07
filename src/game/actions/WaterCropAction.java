@@ -1,24 +1,25 @@
 package game.actions;
 
-import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.actors.ActorStatistics;
-import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import game.items.tools.WateringTool;
-import game.crops.Crop;
 import game.crops.CropWaterable;
-import game.statistics.StatisticUtils;
+import game.items.tools.WateringTool;
 
 /**
- * An Action that allows an Actor to water a {@link Crop}, provided they are
- * carrying a watering tool and have enough stamina for that crop's cost.
+ * An Action that allows an Actor to water a {@link game.crops.Crop}, provided
+ * they are carrying a watering tool and have enough stamina for that crop's
+ * cost.
+ * <p>
+ * It shares the tool, capability and stamina checks of
+ * {@link CapabilityToolAction}; the only differences are that the stamina
+ * cost comes from the crop rather than the tool, and the effect records the
+ * watering before applying the crop-specific outcome.
  * <p>
  * This is unrelated to A1's ground-level {@link WaterAction}, which turns
  * raw Dirt into a Puddle; this class nurtures an already-mature crop in
  * place.
  */
-public class WaterCropAction extends Action {
+public class WaterCropAction extends CapabilityToolAction<CropWaterable, WateringTool> {
 
     /** The map location of the crop to be watered. */
     private final Location cropLocation;
@@ -29,41 +30,41 @@ public class WaterCropAction extends Action {
      * @param cropLocation the Location of the crop to be watered
      */
     public WaterCropAction(Location cropLocation) {
+        super(cropLocation, CropWaterable.class, WateringTool.class,
+                "has no watering tool to water the " + cropLocation.getGround() + ".",
+                "cannot water the " + cropLocation.getGround() + ".");
         this.cropLocation = cropLocation;
     }
 
     /**
-     * Waters the crop: requires the actor to carry a {@link WateringTool} and
-     * to have enough stamina for the crop-specific cost. On success, the
-     * stamina is deducted, the watering is recorded on the crop, and the
-     * crop-specific effect is applied.
+     * Each crop sets its own watering cost, regardless of the tool used.
      *
-     * @see Action#execute(Actor, GameMap)
+     * @param tool the watering tool being used
+     * @param crop the crop being watered
+     * @return the crop's watering stamina cost
+     */
+    @Override
+    protected int staminaCost(WateringTool tool, CropWaterable crop) {
+        return crop.getWateringStaminaCost();
+    }
+
+    /**
+     * Records the watering on the crop, then applies the crop-specific effect.
+     *
      * @param actor the actor watering the crop
-     * @param map the map the actor is on
+     * @param location the Location of the crop
+     * @param crop the crop being watered
      * @return a description of what happened
      */
     @Override
-    public String execute(Actor actor, GameMap map) {
-        CropWaterable waterable = cropLocation.getGroundAs(CropWaterable.class);
-
-        if (actor.getInventory().getItemsAs(WateringTool.class).isEmpty()) {
-            return actor + " has no watering tool to water the " + cropLocation.getGround() + ".";
-        }
-
-        if (!StatisticUtils.trySpend(actor, ActorStatistics.STAMINA, waterable.getWateringStaminaCost())) {
-            return actor + " is too tired to water the " + cropLocation.getGround() + ".";
-        }
-
-        cropLocation.getGroundAs(Crop.class).recordWatering();
-
-        return waterable.water(actor, cropLocation);
+    protected String applyEffect(Actor actor, Location location, CropWaterable crop) {
+        crop.recordWatering();
+        return crop.water(actor, location);
     }
 
     /**
      * Describes this action in a format suitable for displaying in the menu.
      *
-     * @see Action#menuDescription(Actor)
      * @param actor the actor performing the action
      * @return a string, e.g. "Farmer Bob waters the Parsnip"
      */

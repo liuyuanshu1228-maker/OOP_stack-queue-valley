@@ -35,8 +35,7 @@ public class ParsnipItem extends FoodItem {
      */
     @Override
     public String consume(Actor actor) {
-        return actor + " eats the parsnip and is healed for "
-                + StatisticUtils.increaseAndDescribe(actor, ActorStatistics.HEALTH, HP_RESTORED, "HP") + ".";
+        return eatToHeal(actor, HP_RESTORED);
     }
 
     /**

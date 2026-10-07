@@ -3,8 +3,7 @@ package game.crops;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.RandomUtils;
-
-import java.util.List;
+import game.positions.LocationUtils;
 
 /**
  * A strawberry crop. It can be watered, which scatters strawberries onto
@@ -86,11 +85,8 @@ public class Strawberry extends Crop implements CropWaterable {
      */
     @Override
     public String water(Actor actor, Location location) {
-        List<Location> adjacentLocations = location.getNearbyLocations(1);
-
         for (int i = 0; i < STRAWBERRIES_PER_WATERING; i++) {
-            Location target = RandomUtils.pickRandom(adjacentLocations);
-            target.addItem(StrawberryItem.createRandom());
+            LocationUtils.dropItemNearby(location, StrawberryItem.createRandom());
         }
 
         return actor + " waters the " + this + ". Strawberries appear on the nearby tiles.";

@@ -33,11 +33,7 @@ public class TomatoItem extends FoodItem {
      */
     @Override
     public String consume(Actor actor) {
-        String maxHealthChange = StatisticUtils.increaseMaximumAndDescribe(actor, ActorStatistics.HEALTH, MAX_HP_INCREASE);
-        int healthAfter = actor.getStatistic(ActorStatistics.HEALTH);
-
-        return actor + " eats the tomato. Maximum HP increases by " + maxHealthChange
-                + ", and current HP is restored to " + healthAfter + ".";
+        return eatToRaiseMaxHealth(actor, MAX_HP_INCREASE);
     }
 
     /**

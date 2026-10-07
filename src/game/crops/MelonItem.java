@@ -1,9 +1,7 @@
 package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.actors.ActorStatistics;
 import game.items.food.ConsumableItem;
-import game.statistics.StatisticUtils;
 
 /**
  * A melon, produced by harvesting a {@link Melon} crop. It can be eaten to
@@ -31,10 +29,6 @@ public class MelonItem extends ConsumableItem {
      */
     @Override
     public String consume(Actor actor) {
-        String maxHealthChange = StatisticUtils.increaseMaximumAndDescribe(actor, ActorStatistics.HEALTH, MAX_HEALTH_INCREASE_AMOUNT);
-        int healthAfter = actor.getStatistic(ActorStatistics.HEALTH);
-
-        return actor + " eats the melon. Maximum HP increases by " + maxHealthChange
-                + ", and current HP is restored to " + healthAfter + ".";
+        return eatToRaiseMaxHealth(actor, MAX_HEALTH_INCREASE_AMOUNT);
     }
 }
