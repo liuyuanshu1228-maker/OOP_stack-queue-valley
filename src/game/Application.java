@@ -1,7 +1,6 @@
 package game;
 
 import edu.monash.fit2099.engine.displays.Display;
-import game.displays.FancyMessage;
 
 public class Application {
     public static void main(String[] args) {
