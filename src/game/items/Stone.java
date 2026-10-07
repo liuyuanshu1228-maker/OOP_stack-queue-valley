@@ -4,9 +4,9 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.trading.MerchantContext;
-import game.RandomUtils;
+import game.positions.area.Area;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -42,12 +42,12 @@ public class Stone extends SellableItem {
      */
     @Override
     protected String applySaleEffect(Actor seller, MerchantContext merchantContext) {
-        List<Location> nearby = merchantContext.getLocation().getNearbyLocations(1);
-        if (nearby.isEmpty()) {
+        Optional<Location> spot = Area.adjacentTo(merchantContext.getLocation()).randomTile();
+        if (spot.isEmpty()) {
             return "";
         }
         Ground built = groundFactory.get();
-        RandomUtils.pickRandom(nearby).setGround(built);
+        spot.get().setGround(built);
         return merchantContext.getMerchant() + " builds a " + built + " nearby.";
     }
 }
