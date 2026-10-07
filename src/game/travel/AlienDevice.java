@@ -5,7 +5,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import game.positions.LocationUtils;
+import game.positions.area.Area;
 import game.RandomUtils;
 
 /**
@@ -64,7 +64,7 @@ public class AlienDevice extends Item implements TravelMethod {
     @Override
     public Location chooseLanding(Actor actor, GameMap map, Location intended) {
         if (RandomUtils.rollPercent(MALFUNCTION_CHANCE_PERCENT)) {
-            return LocationUtils.randomEnterableLocation(map, actor).orElse(intended);
+            return Area.wholeMap(map).randomEnterableTile(actor).orElse(intended);
         }
         return intended;
     }
