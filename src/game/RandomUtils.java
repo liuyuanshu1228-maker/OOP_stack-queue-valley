@@ -16,6 +16,9 @@ import java.util.Random;
  */
 public class RandomUtils {
 
+    /** The scale that percentage chances are rolled against. */
+    private static final int PERCENT_SCALE = 100;
+
     /** The instance that every static method delegates to. */
     private static RandomUtils instance = new RandomUtils();
 
@@ -87,7 +90,7 @@ public class RandomUtils {
      * @return {@code true} if the roll succeeds, {@code false} otherwise
      */
     public boolean doRollPercent(int percent) {
-        return random.nextInt(100) < percent;
+        return random.nextInt(PERCENT_SCALE) < percent;
     }
 
     /**
