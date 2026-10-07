@@ -4,7 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.Stone;
-import game.positions.LocationUtils;
+import game.positions.area.Area;
 import game.RandomUtils;
 
 import java.util.Optional;
@@ -47,7 +47,7 @@ public class Rock extends BreakableGround {
         if (!RandomUtils.rollPercent(SHOCKWAVE_CHANCE_PERCENT)) {
             return "The rock crumbles quietly.";
         }
-        Optional<Location> landing = LocationUtils.randomEnterableNearby(location, actor);
+        Optional<Location> landing = Area.adjacentTo(location).randomEnterableTile(actor);
         if (landing.isEmpty()) {
             return "A shockwave ripples out, but there is nowhere to throw " + actor + ".";
         }
