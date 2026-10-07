@@ -8,7 +8,9 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.actions.BreakAction;
 import game.items.Fire;
 import game.positions.Breakable;
-import game.positions.LocationUtils;
+import game.positions.area.Area;
+import game.positions.area.Explosion;
+import game.positions.area.ItemDropper;
 import game.RandomUtils;
 
 /**
@@ -90,8 +92,8 @@ public class Geode extends Item implements Breakable {
             location.addItem(new Diamond());
             return actor + " breaks the " + this + ". It splits open, revealing a diamond!";
         }
-        LocationUtils.hurtActorsAround(location, EXPLOSION_DAMAGE);
-        LocationUtils.addItemToEachNearby(location,
+        new Explosion(EXPLOSION_DAMAGE).detonateOn(Area.centredOn(location));
+        new ItemDropper(Area.adjacentTo(location)).placeOnEveryTile(
                 () -> new Fire(FIRE_LIFETIME_TURNS, BURN_DAMAGE_PER_TURN, BURN_DURATION_TURNS));
         return actor + " breaks the " + this + ". It explodes, dealing " + EXPLOSION_DAMAGE
                 + " damage to everyone nearby and setting the ground alight!";

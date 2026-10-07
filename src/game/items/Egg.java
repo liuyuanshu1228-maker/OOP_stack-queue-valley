@@ -3,7 +3,7 @@ package game.items;
 import edu.monash.fit2099.engine.GameEngineException;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.positions.LocationUtils;
+import game.positions.area.Area;
 import game.trading.MerchantContext;
 import game.RandomUtils;
 
@@ -50,7 +50,7 @@ public class Egg extends SellableItem {
             return "";
         }
         Actor animal = animalFactory.get();
-        Optional<Location> spot = LocationUtils.randomEnterableNearby(merchantContext.getLocation(), animal);
+        Optional<Location> spot = Area.adjacentTo(merchantContext.getLocation()).randomEnterableTile(animal);
         if (spot.isEmpty()) {
             return "";
         }
