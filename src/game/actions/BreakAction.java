@@ -20,7 +20,10 @@ public class BreakAction extends Action {
     /** The map location of the target being broken. */
     private final Location location;
 
-    /** Context string (e.g. "in inventory", "North") used to distinguish identical targets in the menu. */
+    /**
+     * Context string (e.g. "in inventory", "North") used to distinguish identical targets
+     * in the menu.
+     */
     private final String whereItIs;
 
     /**

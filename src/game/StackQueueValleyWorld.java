@@ -17,6 +17,7 @@ import game.travel.AlienDevice;
 import game.items.mine.Geode;
 import game.items.tools.Hoe;
 import game.items.tools.Pickaxe;
+import game.positions.area.Area;
 import game.items.tools.WateringCan;
 import game.crops.Cauliflower;
 import game.positions.mine.CopperNode;
@@ -27,6 +28,7 @@ import game.crops.Melon;
 import game.crops.Parsnip;
 import game.positions.facilities.PreservesJar;
 import game.positions.mine.Rock;
+import game.random.RandomUtils;
 import game.crops.Strawberry;
 import game.travel.TeleportationCircle;
 import game.crops.Tomato;
@@ -114,13 +116,6 @@ public class StackQueueValleyWorld extends World {
     public void initialise() throws Exception {
         DefaultGroundCreator groundCreator = new DefaultGroundCreator();
         groundCreator.registerGround('.', Dirt::new);
-        groundCreator.registerGround('P', Parsnip::new);
-        groundCreator.registerGround('S', Strawberry::new);
-        groundCreator.registerGround('C', Cauliflower::new);
-        groundCreator.registerGround('M', Melon::new);
-        groundCreator.registerGround('T', Tomato::new);
-        groundCreator.registerGround('R', DryingRack::new);
-        groundCreator.registerGround('J', PreservesJar::new);
 
         List<String> inheritedFarm = Arrays.asList(
                 "..........",
@@ -134,7 +129,8 @@ public class StackQueueValleyWorld extends World {
 
         GameMap inheritedFarmMap = new GameMap("Inherited Farm", groundCreator, inheritedFarm);
         this.addGameMap(inheritedFarmMap);
-        GameMap minesMap = new GameMap(MINES_MAP_NAME, groundCreator, '.', MINES_WIDTH, MINES_HEIGHT);
+        GameMap minesMap = new GameMap(MINES_MAP_NAME, groundCreator, '.',
+                MINES_WIDTH, MINES_HEIGHT);
         this.addGameMap(minesMap);
 
         Location farmerStart = inheritedFarmMap.at(5, 3);
@@ -148,7 +144,8 @@ public class StackQueueValleyWorld extends World {
         occupiedLocations.add(farmerStart);
         Set<Location> minesOccupiedLocations = new HashSet<>();
 
-        linkMaps(inheritedFarmMap, minesMap, occupiedLocations, minesOccupiedLocations, Ladder::new, LADDER_LINKS);
+        linkMaps(inheritedFarmMap, minesMap, occupiedLocations, minesOccupiedLocations,
+                Ladder::new, LADDER_LINKS);
         linkMaps(inheritedFarmMap, minesMap, occupiedLocations, minesOccupiedLocations,
                 TeleportationCircle::new, CIRCLE_LINKS);
 
@@ -166,7 +163,8 @@ public class StackQueueValleyWorld extends World {
                 new Merchant(new ParsnipPurchase(), new TomatoPurchase(), new SwordPurchase()));
         placeActor(inheritedFarmMap, occupiedLocations, new Crow("Crow"));
 
-        Location alienDeviceFarmDestination = locate(inheritedFarmMap, ALIEN_DEVICE_DESTINATIONS.farm());
+        Location alienDeviceFarmDestination =
+                locate(inheritedFarmMap, ALIEN_DEVICE_DESTINATIONS.farm());
         Location alienDeviceMinesDestination = locate(minesMap, ALIEN_DEVICE_DESTINATIONS.mines());
         AlienDevice alienDevice = new AlienDevice();
         alienDevice.addDestination(TO_FARM, alienDeviceFarmDestination);
@@ -190,14 +188,16 @@ public class StackQueueValleyWorld extends World {
      *
      * @param farmMap the farm map
      * @param minesMap the mines map
-     * @param farmOccupiedLocations farm locations that must not be used; updated with the newly used ones
-     * @param minesOccupiedLocations mines locations that must not be used; updated with the newly used ones
+     * @param farmOccupiedLocations farm locations that must not be used; updated with
+     *                              the newly used ones
+     * @param minesOccupiedLocations mines locations that must not be used; updated with
+     *                               the newly used ones
      * @param groundFactory a supplier that creates a new instance of the travel ground to place
      * @param links the positions of each pair
      */
     private void linkMaps(GameMap farmMap, GameMap minesMap, Set<Location> farmOccupiedLocations,
-                          Set<Location> minesOccupiedLocations, Supplier<? extends TravelGround> groundFactory,
-                          List<Link> links) {
+                          Set<Location> minesOccupiedLocations,
+                          Supplier<? extends TravelGround> groundFactory, List<Link> links) {
         for (Link link : links) {
             Location farmLocation = locate(farmMap, link.farm());
             Location minesLocation = locate(minesMap, link.mines());
@@ -219,8 +219,7 @@ public class StackQueueValleyWorld extends World {
      * @param location the location to reserve together with its neighbours
      */
     private void reserveWithNeighbours(Set<Location> occupiedLocations, Location location) {
-        occupiedLocations.add(location);
-        occupiedLocations.addAll(location.getNearbyLocations(1));
+        occupiedLocations.addAll(Area.centredOn(location).tiles());
     }
 
     /**
@@ -235,7 +234,8 @@ public class StackQueueValleyWorld extends World {
      * @param count how many Grounds to place
      * @param groundFactory a supplier that creates a new instance of the Ground to place
      */
-    private void scatterGround(GameMap map, Set<Location> occupiedLocations, int count, Supplier<? extends Ground> groundFactory) {
+    private void scatterGround(GameMap map, Set<Location> occupiedLocations, int count,
+                               Supplier<? extends Ground> groundFactory) {
         for (int placed = 0; placed < count; placed++) {
             claimRandomFreeLocation(map, occupiedLocations).setGround(groundFactory.get());
         }
@@ -251,7 +251,8 @@ public class StackQueueValleyWorld extends World {
      * @param count how many Items to place
      * @param itemFactory a supplier that creates a new instance of the Item to place
      */
-    private void scatterItems(GameMap map, Set<Location> occupiedLocations, int count, Supplier<? extends Item> itemFactory) {
+    private void scatterItems(GameMap map, Set<Location> occupiedLocations, int count,
+                              Supplier<? extends Item> itemFactory) {
         for (int placed = 0; placed < count; placed++) {
             claimRandomFreeLocation(map, occupiedLocations).addItem(itemFactory.get());
         }
@@ -265,7 +266,8 @@ public class StackQueueValleyWorld extends World {
      * @param occupiedLocations locations that must not be used; updated with the newly used one
      * @param actor the Actor to place
      */
-    private void placeActor(GameMap map, Set<Location> occupiedLocations, Actor actor) throws Exception {
+    private void placeActor(GameMap map, Set<Location> occupiedLocations, Actor actor)
+            throws Exception {
         claimRandomFreeLocation(map, occupiedLocations).addActor(actor);
     }
 

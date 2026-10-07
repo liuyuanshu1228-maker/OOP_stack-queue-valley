@@ -5,8 +5,9 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
+import game.actions.Consumable;
 import game.actions.ConsumeAction;
-import game.statistics.StatisticUtils;
+import game.statistics.StatisticAdjuster;
 
 /**
  * Abstract base class for portable Items that can be consumed.
@@ -51,7 +52,9 @@ public abstract class ConsumableItem extends Item implements Consumable {
      */
     protected String eatToHeal(Actor actor, int amount) {
         return actor + " eats the " + this + " and is healed for "
-                + StatisticUtils.increaseAndDescribe(actor, ActorStatistics.HEALTH, amount, "HP") + ".";
+                + new StatisticAdjuster(actor)
+                        .increaseAndDescribe(ActorStatistics.HEALTH, amount, "HP")
+                + ".";
     }
 
     /**
@@ -60,11 +63,15 @@ public abstract class ConsumableItem extends Item implements Consumable {
      *
      * @param actor  the Actor eating this Item
      * @param amount the amount by which maximum HP increases
-     * @return a description such as "... eats the Melon. Maximum HP increases by 10 (100 -> 110), and current HP is restored to 110."
+     * @return a description such as "... eats the Melon. Maximum HP increases by 10
+     * (100 -> 110), and current HP is restored to 110."
      */
     protected String eatToRaiseMaxHealth(Actor actor, int amount) {
-        String maxHealthChange = StatisticUtils.increaseMaximumAndDescribe(actor, ActorStatistics.HEALTH, amount);
+        String maxHealthChange =
+                new StatisticAdjuster(actor)
+                        .increaseMaximumAndDescribe(ActorStatistics.HEALTH, amount);
         return actor + " eats the " + this + ". Maximum HP increases by " + maxHealthChange
-                + ", and current HP is restored to " + actor.getStatistic(ActorStatistics.HEALTH) + ".";
+                + ", and current HP is restored to "
+                + actor.getStatistic(ActorStatistics.HEALTH) + ".";
     }
 }

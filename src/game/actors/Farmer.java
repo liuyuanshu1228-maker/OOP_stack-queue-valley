@@ -53,8 +53,9 @@ public class Farmer extends Actor {
         }
 
         // Handle multi-turn Actions
-        if (lastAction.getNextAction() != null)
+        if (lastAction.getNextAction() != null) {
             return lastAction.getNextAction();
+        }
 
         printStatus(display);
 

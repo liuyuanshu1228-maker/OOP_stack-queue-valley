@@ -3,7 +3,7 @@ package game.items.food;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.items.Item;
-import game.statistics.StatisticUtils;
+import game.statistics.StatisticAdjuster;
 
 /**
  * A single "Preserved" processing layer, produced by a PreservesJar.
@@ -36,6 +36,7 @@ public class PreservedProduct extends ProcessedProduct {
     @Override
     protected String applyProcessingEffect(Actor actor) {
         return "The preserving restores "
-                + StatisticUtils.increaseAndDescribe(actor, ActorStatistics.HEALTH, HP_RESTORED, "HP") + ".";
+                + new StatisticAdjuster(actor).increaseAndDescribe(
+                        ActorStatistics.HEALTH, HP_RESTORED, "HP") + ".";
     }
 }

@@ -5,8 +5,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import game.crops.Harvestable;
-import game.statistics.StatisticUtils;
+import game.statistics.StatisticAdjuster;
 
 /**
  * An Action that allows an Actor to harvest a crop, either while standing on it
@@ -45,7 +44,8 @@ public class HarvestAction extends Action {
             return harvestable.cannotHarvestMessage(actor);
         }
 
-        if (!StatisticUtils.trySpend(actor, ActorStatistics.STAMINA, harvestable.getHarvestStaminaCost())) {
+        int cost = harvestable.getHarvestStaminaCost();
+        if (!new StatisticAdjuster(actor).trySpend(ActorStatistics.STAMINA, cost)) {
             return actor + " is too tired to harvest the " + location.getGround() + ".";
         }
 

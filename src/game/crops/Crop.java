@@ -4,7 +4,9 @@ import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
+import game.actions.CropWaterable;
 import game.actions.HarvestAction;
+import game.actions.Harvestable;
 import game.actions.WaterCropAction;
 import game.positions.FreelyWaterable;
 import game.positions.farm.Dirt;
@@ -64,6 +66,16 @@ public abstract class Crop extends Ground implements Harvestable, FreelyWaterabl
     @Override
     public void receiveFreeWatering() {
         recordWatering();
+    }
+
+    /**
+     * Whether a crop is growing on the given tile.
+     *
+     * @param location the tile to check
+     * @return true if the ground at the location is a crop
+     */
+    public static boolean isPlantedAt(Location location) {
+        return location.getGroundAs(Crop.class) != null;
     }
 
     /**

@@ -9,7 +9,7 @@ import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import game.RandomUtils;
+import game.random.RandomUtils;
 
 /**
  * Abstract base class for actors that wander randomly around the map each turn.

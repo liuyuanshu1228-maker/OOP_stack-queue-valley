@@ -2,7 +2,8 @@ package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.RandomUtils;
+import game.random.RandomUtils;
+import game.actions.CropWaterable;
 import game.positions.area.Area;
 import game.positions.area.ItemDropper;
 
@@ -22,7 +23,10 @@ public class Strawberry extends Crop implements CropWaterable {
     /** Number of strawberries produced by a harvest. */
     private static final int STRAWBERRIES_PER_HARVEST = 2;
 
-    /** Base chance (out of 100) that harvesting destroys the plant, before subtracting the watering count. */
+    /**
+     * Base chance (out of 100) that harvesting destroys the plant, before subtracting the
+     * watering count.
+     */
     private static final int BASE_DESTRUCTION_CHANCE_PERCENT = 50;
 
     /** Number of strawberries dropped nearby by a single watering. */
@@ -58,7 +62,8 @@ public class Strawberry extends Crop implements CropWaterable {
             actor.getInventory().add(StrawberryItem.createRandom());
         }
 
-        String message = actor + " harvests the " + this + " and picks up " + STRAWBERRIES_PER_HARVEST + " strawberries.";
+        String message = actor + " harvests the " + this + " and picks up "
+                + STRAWBERRIES_PER_HARVEST + " strawberries.";
 
         int destructionChancePercent = BASE_DESTRUCTION_CHANCE_PERCENT - getWateringCount();
         if (RandomUtils.rollPercent(destructionChancePercent)) {
@@ -87,7 +92,8 @@ public class Strawberry extends Crop implements CropWaterable {
     @Override
     public String water(Actor actor, Location location) {
         for (int i = 0; i < STRAWBERRIES_PER_WATERING; i++) {
-            new ItemDropper(Area.adjacentTo(location)).dropOnRandomTile(StrawberryItem.createRandom());
+            new ItemDropper(Area.adjacentTo(location))
+                    .dropOnRandomTile(StrawberryItem.createRandom());
         }
 
         return actor + " waters the " + this + ". Strawberries appear on the nearby tiles.";

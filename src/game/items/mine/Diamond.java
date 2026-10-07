@@ -2,9 +2,9 @@ package game.items.mine;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
+import game.actions.MerchantContext;
 import game.items.SellableItem;
-import game.trading.MerchantContext;
-import game.RandomUtils;
+import game.random.RandomUtils;
 
 import java.util.List;
 

@@ -3,9 +3,9 @@ package game.items;
 import edu.monash.fit2099.engine.GameEngineException;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
+import game.actions.MerchantContext;
 import game.positions.area.Area;
-import game.trading.MerchantContext;
-import game.RandomUtils;
+import game.random.RandomUtils;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -50,7 +50,8 @@ public class Egg extends SellableItem {
             return "";
         }
         Actor animal = animalFactory.get();
-        Optional<Location> spot = Area.adjacentTo(merchantContext.getLocation()).randomEnterableTile(animal);
+        Optional<Location> spot = Area.adjacentTo(merchantContext.getLocation())
+                .randomEnterableTile(animal);
         if (spot.isEmpty()) {
             return "";
         }
@@ -58,7 +59,8 @@ public class Egg extends SellableItem {
             spot.get().addActor(animal);
             return animal + " appears near " + merchantContext.getMerchant() + ".";
         } catch (GameEngineException e) {
-            return animal + " tries to appear near " + merchantContext.getMerchant() + ", but there is no room for it.";
+            return animal + " tries to appear near " + merchantContext.getMerchant()
+                    + ", but there is no room for it.";
         }
     }
 }

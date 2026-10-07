@@ -1,7 +1,7 @@
 package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
-import game.TimedStatus;
+import game.status.TimedStatus;
 
 /**
  * The poison inflicted by eating a rotten strawberry: 1 damage point per

@@ -1,7 +1,7 @@
 package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
-import game.TimedStatus;
+import game.status.TimedStatus;
 
 /**
  * The healing from eating a fresh strawberry: 1 HP restored per turn for 2

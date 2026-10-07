@@ -11,7 +11,7 @@ import game.positions.Breakable;
 import game.positions.area.Area;
 import game.positions.area.Explosion;
 import game.positions.area.ItemDropper;
-import game.RandomUtils;
+import game.random.RandomUtils;
 
 /**
  * A geode. It can be picked up and carried, and can be broken either from the

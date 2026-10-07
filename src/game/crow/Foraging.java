@@ -6,7 +6,8 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.creaturestate.CreatureState;
 import game.creaturestate.ItemCache;
-import game.RandomUtils;
+import game.positions.area.Area;
+import game.positions.area.ItemDropper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +18,9 @@ import java.util.Optional;
  * reaches it, carries it off to a hidden spot instead of eating it on the
  * spot.
  */
-public final class Foraging implements CreatureState {
+public class Foraging implements CreatureState {
 
-    /** The single shared instance of this stateless state. */
+    /** The shared instance used by the game; this state holds no per-creature data. */
     public static final Foraging INSTANCE = new Foraging();
 
     /** How far around a found item the crow searches for a hiding spot. */
@@ -28,7 +29,11 @@ public final class Foraging implements CreatureState {
     /** How far the hiding spot must be from where the item was found. */
     private static final int MIN_CACHE_DISTANCE = 2;
 
-    private Foraging() {
+    /**
+     * Creates this state. The game shares {@link #INSTANCE} because the state is
+     * stateless, but another instance (e.g. of a subclass) can be created freely.
+     */
+    public Foraging() {
     }
 
     /**
@@ -42,23 +47,25 @@ public final class Foraging implements CreatureState {
     @Override
     public String act(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
+        CrowSensing sensing = new CrowSensing(creature, here);
 
-        if (CrowSensing.hasForageableItems(here, creature)) {
+        if (sensing.isOnFood()) {
             return cache(creature, here);
         }
 
-        Optional<Location> itemLocation = CrowSensing.nearestFood(here, creature);
+        Optional<Location> itemLocation = sensing.nearestFood();
         if (itemLocation.isEmpty()) {
             return creature + " finds nothing worth foraging.";
         }
 
-        Optional<Location> step = CrowNavigation.stepToward(here, itemLocation.get(), creature);
+        Optional<Location> step = new CrowNavigation(creature, here).stepToward(itemLocation.get());
         if (step.isEmpty()) {
             return creature + " can't find a way toward the food.";
         }
 
         map.moveActor(creature, step.get());
-        return creature + " hops toward the food at " + itemLocation.get() + ", landing at " + step.get() + ".";
+        return creature + " hops toward the food at " + itemLocation.get()
+                + ", landing at " + step.get() + ".";
     }
 
     /**
@@ -70,44 +77,26 @@ public final class Foraging implements CreatureState {
      * @return a description of what happened
      */
     private String cache(Actor creature, Location here) {
-        Item item = pickForageableItem(here, creature);
-        List<Location> candidates = new ArrayList<>();
-        for (Location candidate : here.getNearbyLocations(CACHE_SEARCH_RADIUS)) {
-            if (!candidate.getItems().isEmpty()) {
-                continue;
-            }
-            if (CrowNavigation.chebyshevDistance(here, candidate) < MIN_CACHE_DISTANCE) {
-                continue;
-            }
-            candidates.add(candidate);
+        Item item = new CrowSensing(creature, here).forageableItemHere()
+                .orElseThrow(() -> new IllegalStateException(
+                        "cache() called with nothing forageable at " + here));
+        List<Location> tooClose = Area.within(here, MIN_CACHE_DISTANCE - 1).tiles();
+        Optional<Location> chosenSpot = Area.within(here, CACHE_SEARCH_RADIUS)
+                .filter(candidate -> candidate.getItems().isEmpty()
+                        && !tooClose.contains(candidate))
+                .randomTile();
+
+        if (chosenSpot.isEmpty()) {
+            return creature + " spots the " + item + " at " + here
+                    + ", but can't find anywhere to hide it.";
         }
 
-        if (candidates.isEmpty()) {
-            return creature + " spots the " + item + " at " + here + ", but can't find anywhere to hide it.";
-        }
-
-        Location hidingSpot = RandomUtils.pickRandom(candidates);
+        Location hidingSpot = chosenSpot.get();
         here.removeItem(item);
         hidingSpot.addItem(item);
         creature.asCapability(ItemCache.class).ifPresent(cache -> cache.remember(item));
-        return creature + " snatches the " + item + " from " + here + " and hides it at " + hidingSpot + ".";
-    }
-
-    /**
-     * Picks the first Item at here that the given creature hasn't already
-     * cached itself.
-     *
-     * @param here the Location to pick from
-     * @param creature the creature doing the picking
-     * @return the first forageable Item found
-     */
-    private Item pickForageableItem(Location here, Actor creature) {
-        for (Item item : here.getItems()) {
-            if (CrowSensing.isForageable(item, creature)) {
-                return item;
-            }
-        }
-        throw new IllegalStateException("cache() called with nothing forageable at " + here);
+        return creature + " snatches the " + item + " from " + here
+                + " and hides it at " + hidingSpot + ".";
     }
 
     /**
@@ -122,12 +111,12 @@ public final class Foraging implements CreatureState {
      */
     @Override
     public CreatureState nextState(Actor creature, GameMap map) {
-        Location here = map.locationOf(creature);
-        if (CrowSensing.isCrowded(here)) {
+        CrowSensing sensing = new CrowSensing(creature, map.locationOf(creature));
+        if (sensing.isCrowded()) {
             return Fleeing.INSTANCE;
         }
 
-        boolean foodNearby = CrowSensing.foodWithinRange(here, creature);
+        boolean foodNearby = sensing.foodWithinRange();
 
         if (!foodNearby) {
             return Perching.INSTANCE;
@@ -148,7 +137,7 @@ public final class Foraging implements CreatureState {
     @Override
     public String onEnter(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        Optional<Location> itemLocation = CrowSensing.nearestFood(here, creature);
+        Optional<Location> itemLocation = new CrowSensing(creature, here).nearestFood();
 
         if (itemLocation.isEmpty()) {
             return creature + " starts foraging the items at " + here
@@ -173,21 +162,12 @@ public final class Foraging implements CreatureState {
      * @return where each item landed, e.g. "Egg to (3, 4) on Inherited Farm"
      */
     private List<String> scatterNearbyItems(Location centre) {
-        List<Location> nearby = centre.getNearbyLocations(1);
-        List<Item> lifted = new ArrayList<>();
-
-        for (Location source : nearby) {
-            for (Item item : new ArrayList<>(source.getItems())) {
-                source.removeItem(item);
-                lifted.add(item);
-            }
-        }
-
+        ItemDropper dropper = new ItemDropper(Area.adjacentTo(centre));
         List<String> scattered = new ArrayList<>();
-        for (Item item : lifted) {
-            Location destination = RandomUtils.pickRandom(nearby);
-            destination.addItem(item);
-            scattered.add(item + " to " + destination);
+
+        for (Item item : dropper.liftAll()) {
+            dropper.dropOnRandomTile(item)
+                    .ifPresent(destination -> scattered.add(item + " to " + destination));
         }
 
         return scattered;

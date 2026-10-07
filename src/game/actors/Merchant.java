@@ -5,10 +5,10 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import game.actions.BuyAction;
+import game.actions.MerchantContext;
+import game.actions.Purchasable;
 import game.actions.SellAction;
-import game.trading.MerchantContext;
-import game.trading.Purchasable;
-import game.trading.Sellable;
+import game.actions.Sellable;
 import java.util.Arrays;
 
 /**

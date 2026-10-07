@@ -5,8 +5,9 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.actions.TravelMethod;
 import game.positions.area.Area;
-import game.RandomUtils;
+import game.random.RandomUtils;
 
 /**
  * An unreliable alien device. While it is carried it offers a choice of

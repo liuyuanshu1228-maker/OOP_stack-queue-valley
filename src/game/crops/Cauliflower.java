@@ -2,8 +2,10 @@ package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
+import game.actions.CropWaterable;
+import game.positions.area.Area;
 import game.positions.farm.Puddle;
-import game.RandomUtils;
+import game.random.RandomUtils;
 
 /**
  * A cauliflower crop. Watering it may turn the surrounding ground into
@@ -101,10 +103,9 @@ public class Cauliflower extends Crop implements CropWaterable {
         String message = actor + " waters the " + this + ".";
 
         if (RandomUtils.rollPercent(PUDDLE_CHANCE_PERCENT)) {
-            for (Location adjacentLocation : location.getNearbyLocations(1)) {
-                if (adjacentLocation.getGroundAs(Crop.class) == null) {
-                    adjacentLocation.setGround(new Puddle());
-                }
+            Area freeGround = Area.adjacentTo(location).filter(tile -> !isPlantedAt(tile));
+            for (Location adjacentLocation : freeGround.tiles()) {
+                adjacentLocation.setGround(new Puddle());
             }
             message += " The surrounding ground turns into puddles.";
         }

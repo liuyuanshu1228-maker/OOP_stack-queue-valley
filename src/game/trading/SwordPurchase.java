@@ -2,9 +2,11 @@ package game.trading;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
+import game.actions.MerchantContext;
+import game.actions.Purchasable;
 import game.items.Sword;
 import game.statistics.FarmerStatistics;
-import game.RandomUtils;
+import game.random.RandomUtils;
 
 /** Buying a Sword: 3000 coins, 50% chance the merchant gives nothing. */
 public class SwordPurchase implements Purchasable {

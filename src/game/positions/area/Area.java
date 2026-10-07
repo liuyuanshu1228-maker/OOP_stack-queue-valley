@@ -3,12 +3,14 @@ package game.positions.area;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import game.RandomUtils;
+import game.random.RandomUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 
 /**
  * A group of tiles on a map, and the choosing of tiles from it.
@@ -19,9 +21,10 @@ import java.util.Optional;
  * classes, such as {@link ItemDropper} and {@link Explosion}, so that this
  * class only changes when the way tiles are chosen changes.
  * <p>
- * Contract for subclasses: {@link #randomTile()} and
- * {@link #randomEnterableTile(Actor)} must only ever return a tile that is
- * one of {@link #tiles()}.
+ * Contract for subclasses: every method that chooses a tile
+ * ({@link #randomTile()}, {@link #randomEnterableTile(Actor)},
+ * {@link #nearestTo(Location)} and {@link #farthestFrom(Location)}) must only
+ * ever return a tile that is one of {@link #tiles()}.
  */
 public class Area {
 
@@ -41,13 +44,26 @@ public class Area {
     }
 
     /**
+     * Creates the area of tiles within the given distance of a Location, not
+     * including the Location itself. Distance is measured as a king moves on a
+     * chessboard, so the area is a square around the centre.
+     *
+     * @param centre the Location at the middle of the area
+     * @param radius how many tiles away from the centre the area reaches
+     * @return the tiles within the radius
+     */
+    public static Area within(Location centre, int radius) {
+        return new Area(centre.getNearbyLocations(radius));
+    }
+
+    /**
      * Creates the area of tiles adjacent to the given Location, not including it.
      *
      * @param centre the Location whose adjacent tiles form the area
      * @return the adjacent tiles
      */
     public static Area adjacentTo(Location centre) {
-        return new Area(centre.getNearbyLocations(ADJACENT_RADIUS));
+        return within(centre, ADJACENT_RADIUS);
     }
 
     /**
@@ -57,7 +73,7 @@ public class Area {
      * @return the centre and its adjacent tiles
      */
     public static Area centredOn(Location centre) {
-        List<Location> centreAndAdjacent = new ArrayList<>(centre.getNearbyLocations(ADJACENT_RADIUS));
+        List<Location> centreAndAdjacent = new ArrayList<>(adjacentTo(centre).tiles);
         centreAndAdjacent.add(centre);
         return new Area(centreAndAdjacent);
     }
@@ -86,6 +102,23 @@ public class Area {
     }
 
     /**
+     * Narrows this area down to the tiles that meet a condition. The tiles
+     * keep the order they have in this area.
+     *
+     * @param condition what a tile must satisfy to stay in the area
+     * @return a new area made of the tiles that satisfy the condition
+     */
+    public Area filter(Predicate<Location> condition) {
+        List<Location> matching = new ArrayList<>();
+        for (Location tile : tiles) {
+            if (condition.test(tile)) {
+                matching.add(tile);
+            }
+        }
+        return new Area(matching);
+    }
+
+    /**
      * Picks one tile of this area uniformly at random.
      *
      * @return a random tile of this area, or empty if the area has no tiles
@@ -104,12 +137,60 @@ public class Area {
      * @return a random enterable tile of this area, or empty if there is none
      */
     public Optional<Location> randomEnterableTile(Actor actor) {
-        List<Location> enterableTiles = new ArrayList<>();
+        return filter(tile -> tile.canActorEnter(actor)).randomTile();
+    }
+
+    /**
+     * Picks the tile of this area that is closest to a reference Location.
+     * If several tiles are equally close, the first of them in this area wins.
+     *
+     * @param reference the Location the distance is measured to
+     * @return the closest tile, or empty if the area has no tiles
+     */
+    public Optional<Location> nearestTo(Location reference) {
+        return firstWithHighestScore(tile -> -distanceBetween(tile, reference));
+    }
+
+    /**
+     * Picks the tile of this area that is furthest from a reference Location.
+     * If several tiles are equally far, the first of them in this area wins.
+     *
+     * @param reference the Location the distance is measured to
+     * @return the furthest tile, or empty if the area has no tiles
+     */
+    public Optional<Location> farthestFrom(Location reference) {
+        return firstWithHighestScore(tile -> distanceBetween(tile, reference));
+    }
+
+    /**
+     * Finds the first tile of this area that has the highest score.
+     *
+     * @param score how well a tile scores; a higher number is better
+     * @return the first best-scoring tile, or empty if the area has no tiles
+     */
+    private Optional<Location> firstWithHighestScore(ToIntFunction<Location> score) {
+        Location best = null;
+        int bestScore = Integer.MIN_VALUE;
         for (Location tile : tiles) {
-            if (tile.canActorEnter(actor)) {
-                enterableTiles.add(tile);
+            int tileScore = score.applyAsInt(tile);
+            if (tileScore > bestScore) {
+                bestScore = tileScore;
+                best = tile;
             }
         }
-        return new Area(enterableTiles).randomTile();
+        return Optional.ofNullable(best);
+    }
+
+    /**
+     * The distance between two Locations on the same map, measured as the
+     * number of steps a king would need on a chessboard (the same measure
+     * {@link Location#getNearbyLocations} uses for its square radius).
+     *
+     * @param a the first Location
+     * @param b the second Location
+     * @return the number of king's steps between a and b
+     */
+    private static int distanceBetween(Location a, Location b) {
+        return Math.max(Math.abs(a.x() - b.x()), Math.abs(a.y() - b.y()));
     }
 }

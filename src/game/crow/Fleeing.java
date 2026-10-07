@@ -21,15 +21,19 @@ import java.util.Optional;
  * remembers how many turns in a row it has been safe through its
  * {@link Composure} capability, since this state is shared between crows.
  */
-public final class Fleeing implements CreatureState {
+public class Fleeing implements CreatureState {
 
-    /** The single shared instance of this stateless state. */
+    /** The shared instance used by the game; this state holds no per-creature data. */
     public static final Fleeing INSTANCE = new Fleeing();
 
     /** How many consecutive safe turns it takes for the crow to fully calm down. */
     private static final int CALM_DOWN_TURNS = 3;
 
-    private Fleeing() {
+    /**
+     * Creates this state. The game shares {@link #INSTANCE} because the state is
+     * stateless, but another instance (e.g. of a subclass) can be created freely.
+     */
+    public Fleeing() {
     }
 
     /**
@@ -43,20 +47,22 @@ public final class Fleeing implements CreatureState {
     @Override
     public String act(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        Optional<Location> threat = CrowSensing.nearestActor(here);
+        Optional<Location> threat = new CrowSensing(creature, here).nearestActor();
         if (threat.isEmpty()) {
-            int safeTurns = creature.asCapability(Composure.class).map(Composure::getSafeTurns).orElse(0);
-            return creature + " keeps a wary eye out, catching its breath (safe for " + safeTurns + "/"
-                    + CALM_DOWN_TURNS + " turns before it calms down).";
+            int safeTurns = creature.asCapability(Composure.class)
+                    .map(Composure::getSafeTurns)
+                    .orElse(0);
+            return creature + " keeps a wary eye out, catching its breath (safe for "
+                    + safeTurns + "/" + CALM_DOWN_TURNS + " turns before it calms down).";
         }
 
-        Optional<Location> escape = CrowNavigation.stepAway(here, threat.get(), creature);
+        Optional<Location> escape = new CrowNavigation(creature, here).stepAway(threat.get());
         if (escape.isEmpty()) {
             return creature + " is cornered by " + threat.get().getActor() + " and flaps in place.";
         }
         map.moveActor(creature, escape.get());
-        return creature + " flees from " + threat.get().getActor() + " at " + threat.get() + ", landing at "
-                + escape.get() + ".";
+        return creature + " flees from " + threat.get().getActor() + " at " + threat.get()
+                + ", landing at " + escape.get() + ".";
     }
 
     /**
@@ -71,14 +77,14 @@ public final class Fleeing implements CreatureState {
      */
     @Override
     public CreatureState nextState(Actor creature, GameMap map) {
-        Location here = map.locationOf(creature);
-        boolean safe = CrowSensing.countActorsWithinRange(here) == 0;
+        CrowSensing sensing = new CrowSensing(creature, map.locationOf(creature));
+        boolean safe = sensing.isSafe();
         int safeTurns = updateComposure(creature, safe);
 
         if (safe && safeTurns >= CALM_DOWN_TURNS) {
             return Perching.INSTANCE;
         }
-        if (safe && CrowSensing.foodWithinRange(here, creature)) {
+        if (safe && sensing.foodWithinRange()) {
             return Foraging.INSTANCE;
         }
         return this;
@@ -107,8 +113,9 @@ public final class Fleeing implements CreatureState {
         String startledText = startled.isEmpty()
                 ? "no adjacent actor can be startled backwards"
                 : "startling actors backwards: " + startled;
-        return creature + " panics and takes flight at " + here + " (calm-down count reset to 0/" + CALM_DOWN_TURNS
-                + "); " + droppedText + "; " + startledText + "!";
+        return creature + " panics and takes flight at " + here
+                + " (calm-down count reset to 0/" + CALM_DOWN_TURNS + "); "
+                + droppedText + "; " + startledText + "!";
     }
 
     /**
@@ -142,12 +149,12 @@ public final class Fleeing implements CreatureState {
      */
     private List<String> startleNeighbours(Location here, GameMap map) {
         List<String> startled = new ArrayList<>();
-        for (Location neighbour : here.getNearbyLocations(1)) {
+        for (Location neighbour : Area.adjacentTo(here).tiles()) {
             if (!neighbour.containsAnActor()) {
                 continue;
             }
             Actor actor = neighbour.getActor();
-            Optional<Location> backStep = CrowNavigation.stepAway(neighbour, here, actor);
+            Optional<Location> backStep = new CrowNavigation(actor, neighbour).stepAway(here);
             if (backStep.isPresent()) {
                 map.moveActor(actor, backStep.get());
                 startled.add(actor + " to " + backStep.get());

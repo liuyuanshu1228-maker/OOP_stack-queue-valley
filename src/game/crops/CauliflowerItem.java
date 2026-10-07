@@ -2,7 +2,7 @@ package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import game.items.food.ConsumableItem;
-import game.RandomUtils;
+import game.random.RandomUtils;
 
 /**
  * A cauliflower, produced by harvesting a {@link Cauliflower} crop. It can

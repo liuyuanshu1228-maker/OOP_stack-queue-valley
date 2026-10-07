@@ -1,6 +1,6 @@
 package game.items;
 
-import game.RandomUtils;
+import game.random.RandomUtils;
 
 /**
  * Represents a Milk ('K') item produced by a Cow. Can be sold to the Merchant

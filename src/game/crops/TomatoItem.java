@@ -3,7 +3,7 @@ package game.crops;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import game.items.food.FoodItem;
-import game.statistics.StatisticUtils;
+import game.statistics.StatisticAdjuster;
 
 /**
  * A raw Tomato harvested from a {@link Tomato} crop.
@@ -45,6 +45,7 @@ public class TomatoItem extends FoodItem {
      */
     @Override
     public void applyFeedingBonus(Actor farmer) {
-        StatisticUtils.increaseMaximumWithoutRestoring(farmer, ActorStatistics.HEALTH, MAX_HP_INCREASE);
+        new StatisticAdjuster(farmer).increaseMaximumWithoutRestoring(
+                ActorStatistics.HEALTH, MAX_HP_INCREASE);
     }
 }

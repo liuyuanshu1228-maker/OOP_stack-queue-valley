@@ -2,6 +2,7 @@ package game.items.food;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
+import game.actions.Consumable;
 
 /**
  * Abstract base class for a single layer of processing applied to a product.
@@ -18,7 +19,8 @@ public abstract class ProcessedProduct extends ConsumableItem implements Process
     /**
      * Constructor.
      *
-     * @param nameModifier     the word prepended to the preceding product's name for this layer, e.g. "Preserved"
+     * @param nameModifier     the word prepended to the preceding product's name for this layer,
+     *                         e.g. "Preserved"
      * @param precedingProduct the complete product this layer wraps (raw or already processed)
      */
     public ProcessedProduct(String nameModifier, Item precedingProduct) {

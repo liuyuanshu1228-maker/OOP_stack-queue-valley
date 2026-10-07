@@ -4,7 +4,8 @@ import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.FeedAction;
-import game.actors.Feedable;
+import game.actions.Feedable;
+import game.actions.Food;
 
 /**
  * Abstract base class for portable Items that can be consumed, used as animal food,

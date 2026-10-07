@@ -3,9 +3,9 @@ package game.items;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
+import game.actions.MerchantContext;
+import game.actions.Sellable;
 import game.statistics.FarmerStatistics;
-import game.trading.MerchantContext;
-import game.trading.Sellable;
 
 
 /**
@@ -56,7 +56,8 @@ public abstract class SellableItem extends Item implements Sellable {
             return merchant + " takes the " + this + " from " + seller + " and pays nothing.";
         }
         seller.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.INCREASE, sellPrice);
-        String message = seller + " sells " + this + " to " + merchant + " for " + sellPrice + " coins.";
+        String message = seller + " sells " + this + " to " + merchant
+                + " for " + sellPrice + " coins.";
         String effect = applySaleEffect(seller, merchantContext);
         return effect.isEmpty() ? message : message + " " + effect;
     }

@@ -1,4 +1,4 @@
-package game.trading;
+package game.actions;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
@@ -13,7 +13,7 @@ import edu.monash.fit2099.engine.positions.Location;
  * chain (Sellable, Purchasable, SellableItem, CropPurchase, SellAction, BuyAction
  * and their subclasses).
  */
-public final class MerchantContext {
+public class MerchantContext {
 
     /** The Actor acting as the merchant in this trade. */
     private final Actor merchant;

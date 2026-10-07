@@ -1,4 +1,4 @@
-package game.trading;
+package game.actions;
 
 import edu.monash.fit2099.engine.actors.Actor;
 
@@ -24,6 +24,10 @@ public interface Purchasable {
     /**
      * Applies the effect of a successful purchase: charges the buyer
      * (or waives payment) and delivers the product.
+     * <p>
+     * Precondition: {@code buyer} has at least {@link #getPrice()} coins. The
+     * calling {@code BuyAction} checks this before calling, so implementations
+     * do not check it again.
      *
      * @param buyer           the Actor buying this product
      * @param merchantContext the Merchant selling it and its current Location

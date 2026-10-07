@@ -3,6 +3,7 @@ package game.travel;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.TravelAction;
+import game.actions.TravelMethod;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

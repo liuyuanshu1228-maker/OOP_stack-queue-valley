@@ -3,7 +3,7 @@ package game.items;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
-import game.trading.MerchantContext;
+import game.actions.MerchantContext;
 import game.positions.area.Area;
 
 import java.util.Optional;
@@ -20,7 +20,10 @@ public class Stone extends SellableItem {
     /** Coins paid by the Merchant when a Stone is sold. */
     private static final int SELL_PRICE = 10;
 
-    /** Factory that produces the Ground instance placed on a tile adjacent to the Merchant after the sale. */
+    /**
+     * Factory that produces the Ground instance placed on a tile adjacent to the Merchant
+     * after the sale.
+     */
     private final Supplier<Ground> groundFactory;
 
     /**
@@ -38,7 +41,8 @@ public class Stone extends SellableItem {
      *
      * @param seller          the Actor selling this item
      * @param merchantContext the Merchant buying it and its current Location
-     * @return a description of the Ground being built, or an empty string if there is no adjacent tile
+     * @return a description of the Ground being built, or an empty string if there is no
+     * adjacent tile
      */
     @Override
     protected String applySaleEffect(Actor seller, MerchantContext merchantContext) {

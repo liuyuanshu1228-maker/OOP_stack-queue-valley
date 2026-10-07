@@ -1,7 +1,7 @@
 package game.items;
 
 import edu.monash.fit2099.engine.actors.Actor;
-import game.TimedStatus;
+import game.status.TimedStatus;
 
 /**
  * The burn inflicted on an Actor by standing in {@link Fire}: a fixed amount

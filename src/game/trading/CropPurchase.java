@@ -3,9 +3,13 @@ package game.trading;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.statistics.StatisticOperations;
+import game.actions.MerchantContext;
+import game.actions.Purchasable;
 import game.crops.Crop;
+import game.positions.area.Area;
 import game.statistics.FarmerStatistics;
-import game.RandomUtils;
+
+import java.util.Optional;
 
 /**
  * Abstract base class for purchasing crops from a Merchant.
@@ -60,16 +64,16 @@ public abstract class CropPurchase implements Purchasable {
     @Override
     public final String purchase(Actor buyer, MerchantContext merchantContext) {
         Actor merchant = merchantContext.getMerchant();
-        var candidates = merchantContext.getLocation().getNearbyLocations(1).stream()
-                .filter(adjacent -> adjacent.getGroundAs(Crop.class) == null)
-                .toList();
+        Optional<Location> plantingSpot = Area.adjacentTo(merchantContext.getLocation())
+                .filter(adjacent -> !Crop.isPlantedAt(adjacent))
+                .randomTile();
 
-        if (candidates.isEmpty()) {
+        if (plantingSpot.isEmpty()) {
             return buyer + " tries to buy a " + productName
                     + ", but " + merchant + " has no room to plant it nearby.";
         }
 
-        Location plantedLocation = RandomUtils.pickRandom(candidates);
+        Location plantedLocation = plantingSpot.get();
         plantedLocation.setGround(createCrop());
 
         boolean waived = rollPaymentWaiver();
@@ -78,7 +82,9 @@ public abstract class CropPurchase implements Purchasable {
         }
 
         String message = applyPlantingEffect(buyer, merchant, plantedLocation);
-        return waived ? message + " " + merchant + " plants it for free, out of generosity." : message;
+        return waived
+                ? message + " " + merchant + " plants it for free, out of generosity."
+                : message;
     }
 
     /**
@@ -107,5 +113,6 @@ public abstract class CropPurchase implements Purchasable {
      * @param cropLocation the Location where the new crop was planted
      * @return a description of the purchase outcome
      */
-    protected abstract String applyPlantingEffect(Actor buyer, Actor merchant, Location cropLocation);
+    protected abstract String applyPlantingEffect(Actor buyer, Actor merchant,
+                                                  Location cropLocation);
 }

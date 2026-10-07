@@ -4,7 +4,6 @@ import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
-import game.travel.TravelMethod;
 
 /**
  * An Action that moves an Actor to a named destination using a
@@ -49,7 +48,8 @@ public class TravelAction extends Action {
     public String execute(Actor actor, GameMap map) {
         Location landing = method.chooseLanding(actor, map, destinationLocation);
         if (!landing.canActorEnter(actor)) {
-            return actor + " cannot travel to " + destinationName + ": the arrival point is blocked.";
+            return actor + " cannot travel to " + destinationName
+                    + ": the arrival point is blocked.";
         }
         map.moveActor(actor, landing);
         String message = actor + " travels to " + landing + ".";

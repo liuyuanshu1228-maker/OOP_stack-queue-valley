@@ -4,8 +4,6 @@ import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
-import game.trading.MerchantContext;
-import game.trading.Sellable;
 
 /**
  * An Action that allows an Actor to sell a {@link Sellable} Item to a Merchant.
@@ -56,6 +54,7 @@ public class SellAction extends Action {
      */
     @Override
     public String menuDescription(Actor actor) {
-        return actor + " sells " + item + " to " + merchantContext.getMerchant() + " for " + sellable.getSellPrice() + " coins.";
+        return actor + " sells " + item + " to " + merchantContext.getMerchant()
+                + " for " + sellable.getSellPrice() + " coins.";
     }
 }

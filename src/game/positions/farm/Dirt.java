@@ -50,7 +50,8 @@ public class Dirt extends Ground implements Tillable, Waterable {
      * @param actor     the Actor acting
      * @param location  the current Location
      * @param direction the direction of this Dirt from the Actor
-     * @return an ActionList containing TillAction and WaterAction if direction is empty, otherwise empty
+     * @return an ActionList containing TillAction and WaterAction if direction is empty,
+     * otherwise empty
      */
     @Override
     public ActionList allowableActions(Actor actor, Location location, String direction) {

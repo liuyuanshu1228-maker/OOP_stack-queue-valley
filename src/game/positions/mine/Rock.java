@@ -5,7 +5,7 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.Stone;
 import game.positions.area.Area;
-import game.RandomUtils;
+import game.random.RandomUtils;
 
 import java.util.Optional;
 

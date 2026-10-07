@@ -1,10 +1,10 @@
-package game.crops;
+package game.actions;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 
 /**
- * Capability interface for a {@link Crop} that can be watered by an Actor
+ * Capability interface for a {@link game.crops.Crop} that can be watered by an Actor
  * carrying a watering tool. Not every crop supports this (e.g. Tomato does
  * not); implementing classes define the crop-specific effect of being
  * watered.

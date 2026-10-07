@@ -4,9 +4,7 @@ import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
 import game.statistics.FarmerStatistics;
-import game.statistics.StatisticUtils;
-import game.trading.MerchantContext;
-import game.trading.Purchasable;
+import game.statistics.StatisticAdjuster;
 
 /**
  * An Action that allows an Actor to buy a {@link Purchasable} product from a
@@ -41,8 +39,10 @@ public class BuyAction extends Action {
      */
     @Override
     public String execute(Actor actor, GameMap map) {
-        if (!StatisticUtils.hasEnough(actor, FarmerStatistics.COINS, purchasable.getPrice())) {
-            return actor + " doesn't have enough coins to buy " + purchasable.getProductName() + ".";
+        StatisticAdjuster buyer = new StatisticAdjuster(actor);
+        if (!buyer.hasEnough(FarmerStatistics.COINS, purchasable.getPrice())) {
+            return actor + " doesn't have enough coins to buy "
+                    + purchasable.getProductName() + ".";
         }
         return purchasable.purchase(actor, merchantContext);
     }
@@ -55,6 +55,7 @@ public class BuyAction extends Action {
      */
     @Override
     public String menuDescription(Actor actor) {
-        return actor + " buys " + purchasable.getProductName() + " for " + purchasable.getPrice() + " coins.";
+        return actor + " buys " + purchasable.getProductName()
+                + " for " + purchasable.getPrice() + " coins.";
     }
 }

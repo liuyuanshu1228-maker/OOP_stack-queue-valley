@@ -3,7 +3,7 @@ package game.crops;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.Location;
-import game.statistics.StatisticUtils;
+import game.statistics.StatisticAdjuster;
 
 /**
  * A tomato crop. Unlike the other crops in this world, it can only be
@@ -51,7 +51,8 @@ public class Tomato extends Crop {
         }
         removeCrop(location);
 
-        StatisticUtils.increaseMaximumWithoutRestoring(actor, ActorStatistics.STAMINA, MAX_STAMINA_INCREASE);
+        new StatisticAdjuster(actor).increaseMaximumWithoutRestoring(
+                ActorStatistics.STAMINA, MAX_STAMINA_INCREASE);
 
         return actor + " harvests the " + this + ".";
     }

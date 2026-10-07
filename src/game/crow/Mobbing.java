@@ -7,7 +7,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.creaturestate.CreatureState;
 import game.positions.area.Area;
 import game.positions.area.ItemDropper;
-import game.RandomUtils;
+import game.random.RandomUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,12 +26,16 @@ import java.util.Optional;
  *   <li>→ {@link Perching} when no actors remain within sensing range</li>
  * </ul>
  */
-public final class Mobbing implements CreatureState {
+public class Mobbing implements CreatureState {
 
-    /** The single shared instance of this stateless state. */
+    /** The shared instance used by the game; this state holds no per-creature data. */
     public static final Mobbing INSTANCE = new Mobbing();
 
-    private Mobbing() {
+    /**
+     * Creates this state. The game shares {@link #INSTANCE} because the state is
+     * stateless, but another instance (e.g. of a subclass) can be created freely.
+     */
+    public Mobbing() {
     }
 
     /**
@@ -45,7 +49,7 @@ public final class Mobbing implements CreatureState {
     @Override
     public String act(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        Optional<Location> targetLoc = CrowSensing.nearestActor(here);
+        Optional<Location> targetLoc = new CrowSensing(creature, here).nearestActor();
 
         if (targetLoc.isEmpty()) {
             return creature + " mobs the area but finds no target.";
@@ -53,17 +57,17 @@ public final class Mobbing implements CreatureState {
 
         Location target = targetLoc.get();
 
-        if (CrowNavigation.chebyshevDistance(here, target) == 1) {
+        if (Area.adjacentTo(here).tiles().contains(target)) {
             return steal(creature, target.getActor());
         }
 
-        Optional<Location> step = CrowNavigation.stepToward(here, target, creature);
+        Optional<Location> step = new CrowNavigation(creature, here).stepToward(target);
         if (step.isEmpty()) {
             return creature + " cannot get closer to mob.";
         }
         map.moveActor(creature, step.get());
-        return creature + " swoops toward " + target.getActor() + " at " + target + " to mob them, landing at "
-                + step.get() + ".";
+        return creature + " swoops toward " + target.getActor() + " at " + target
+                + " to mob them, landing at " + step.get() + ".";
     }
 
     /**
@@ -96,12 +100,12 @@ public final class Mobbing implements CreatureState {
      */
     @Override
     public CreatureState nextState(Actor creature, GameMap map) {
-        Location here = map.locationOf(creature);
+        CrowSensing sensing = new CrowSensing(creature, map.locationOf(creature));
 
-        if (CrowSensing.isCrowded(here)) {
+        if (sensing.isCrowded()) {
             return Fleeing.INSTANCE;
         }
-        if (CrowSensing.countActorsWithinRange(here) == 0) {
+        if (sensing.isSafe()) {
             return Perching.INSTANCE;
         }
         return this;
@@ -119,20 +123,22 @@ public final class Mobbing implements CreatureState {
     @Override
     public String onEnter(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        Optional<Location> targetLoc = CrowSensing.nearestActor(here);
+        Optional<Location> targetLoc = new CrowSensing(creature, here).nearestActor();
 
         if (targetLoc.isEmpty()) {
             return creature + " swoops into an aggressive stance.";
         }
 
         Actor target = targetLoc.get().getActor();
-        List<Item> knockedLoose = new ItemDropper(Area.adjacentTo(targetLoc.get())).dropAllCarriedBy(target);
+        List<Item> knockedLoose = new ItemDropper(Area.adjacentTo(targetLoc.get()))
+                .dropAllCarriedBy(target);
 
         if (knockedLoose.isEmpty()) {
             return creature + " dives aggressively at " + target + ", but " + target
                     + " is carrying nothing to knock loose.";
         }
-        return creature + " dives aggressively at " + target + ", knocking everything they carry onto the tiles around "
+        return creature + " dives aggressively at " + target
+                + ", knocking everything they carry onto the tiles around "
                 + targetLoc.get() + ": " + knockedLoose + "!";
     }
 

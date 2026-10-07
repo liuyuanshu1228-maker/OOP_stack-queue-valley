@@ -1,5 +1,7 @@
 package game.actors;
 
+import game.actions.Feedable;
+
 /**
  * Abstract base class for farm animals that wander randomly around the map and can be fed.
  * Subclasses need only define their heal amount and the item(s) produced when fed.

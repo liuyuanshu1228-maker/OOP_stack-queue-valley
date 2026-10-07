@@ -6,7 +6,7 @@ import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.tools.HasStaminaCost;
-import game.statistics.StatisticUtils;
+import game.statistics.StatisticAdjuster;
 
 import java.util.List;
 
@@ -78,7 +78,8 @@ public abstract class CapabilityToolAction<C, T extends HasStaminaCost> extends 
             return actor + " " + noCapabilityMessage;
         }
 
-        if (!StatisticUtils.trySpend(actor, ActorStatistics.STAMINA, staminaCost(tools.get(0), capability))) {
+        int cost = staminaCost(tools.get(0), capability);
+        if (!new StatisticAdjuster(actor).trySpend(ActorStatistics.STAMINA, cost)) {
             return actor + " is too tired to do this.";
         }
 

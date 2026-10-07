@@ -2,7 +2,7 @@ package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import game.items.food.ConsumableItem;
-import game.RandomUtils;
+import game.random.RandomUtils;
 
 /**
  * A strawberry, produced by watering or harvesting a {@link Strawberry}

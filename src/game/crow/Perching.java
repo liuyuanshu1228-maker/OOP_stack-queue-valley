@@ -20,12 +20,16 @@ import java.util.Optional;
  * stays perching. {@link Mobbing} and {@link Fleeing} both settle back into
  * this state once their own conditions for leaving are met.
  */
-public final class Perching implements CreatureState {
+public class Perching implements CreatureState {
 
-    /** The single shared instance of this stateless state. */
+    /** The shared instance used by the game; this state holds no per-creature data. */
     public static final Perching INSTANCE = new Perching();
 
-    private Perching() {
+    /**
+     * Creates this state. The game shares {@link #INSTANCE} because the state is
+     * stateless, but another instance (e.g. of a subclass) can be created freely.
+     */
+    public Perching() {
     }
 
     /**
@@ -64,13 +68,13 @@ public final class Perching implements CreatureState {
      */
     @Override
     public CreatureState nextState(Actor creature, GameMap map) {
-        Location here = map.locationOf(creature);
+        CrowSensing sensing = new CrowSensing(creature, map.locationOf(creature));
 
-        if (CrowSensing.hasLoneTargetWithItems(here)) {
+        if (sensing.hasLoneTargetWithItems()) {
             return Mobbing.INSTANCE;
         }
 
-        if (CrowSensing.nearestFood(here, creature).isPresent()) {
+        if (sensing.nearestFood().isPresent()) {
             return Foraging.INSTANCE;
         }
 
@@ -99,10 +103,12 @@ public final class Perching implements CreatureState {
         }
 
         if (watered.isEmpty()) {
-            return creature + " settles back onto a perch at " + here + ", with no crops within 1 tile to water.";
+            return creature + " settles back onto a perch at " + here
+                    + ", with no crops within 1 tile to water.";
         }
         return creature + " settles back onto a perch at " + here
-                + ", and its droppings count as a free watering for every crop within 1 tile: " + watered + ".";
+                + ", and its droppings count as a free watering for every crop within 1 tile: "
+                + watered + ".";
     }
 
     /** @return the name of this state */

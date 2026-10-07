@@ -3,7 +3,7 @@ package game.items.food;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.items.Item;
-import game.statistics.StatisticUtils;
+import game.statistics.StatisticAdjuster;
 
 /**
  * A single "Dried" processing layer, produced by a DryingRack.
@@ -36,6 +36,7 @@ public class DriedProduct extends ProcessedProduct {
     @Override
     protected String applyProcessingEffect(Actor actor) {
         return "The drying restores "
-                + StatisticUtils.increaseAndDescribe(actor, ActorStatistics.STAMINA, STAMINA_RESTORED, "stamina") + ".";
+                + new StatisticAdjuster(actor).increaseAndDescribe(
+                        ActorStatistics.STAMINA, STAMINA_RESTORED, "stamina") + ".";
     }
 }

@@ -4,13 +4,13 @@ import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
-import game.items.food.Consumable;
 
 import java.util.Optional;
 
 /**
  * An Action that allows an Actor to consume a portable Item that implements Consumable.
- * Applies the Item's consume effect, removes the Item from the Actor's inventory, and ends the Actor's turn.
+ * Applies the Item's consume effect, removes the Item from the Actor's inventory, and ends
+ * the Actor's turn.
  */
 public class ConsumeAction extends Action {
 

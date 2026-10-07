@@ -5,9 +5,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
-import game.actors.Feedable;
-import game.items.food.Food;
-import game.statistics.StatisticUtils;
+import game.statistics.StatisticAdjuster;
 
 /**
  * An Action that allows the Farmer to feed an adjacent animal using a specific food Item.
@@ -48,7 +46,7 @@ public class FeedAction extends Action {
      */
     @Override
     public String execute(Actor actor, GameMap map) {
-        if (!StatisticUtils.trySpend(actor, ActorStatistics.STAMINA, STAMINA_COST)) {
+        if (!new StatisticAdjuster(actor).trySpend(ActorStatistics.STAMINA, STAMINA_COST)) {
             return actor + " is too tired to feed this animal.";
         }
 
@@ -78,7 +76,8 @@ public class FeedAction extends Action {
      * @param actor the actor who did the feeding
      */
     private void applyFoodBonus(Actor actor) {
-        food.asCapability(Food.class).ifPresent(foodCapability -> foodCapability.applyFeedingBonus(actor));
+        food.asCapability(Food.class)
+                .ifPresent(foodCapability -> foodCapability.applyFeedingBonus(actor));
     }
 
     /**

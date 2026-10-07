@@ -6,10 +6,11 @@ import edu.monash.fit2099.engine.positions.Location;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * Places Items on the tiles of an {@link Area}.
+ * Moves Items onto, and off, the tiles of an {@link Area}.
  */
 public class ItemDropper {
 
@@ -30,9 +31,28 @@ public class ItemDropper {
      * Does nothing if the area has no tiles.
      *
      * @param item the Item to place
+     * @return the tile the Item was placed on, or empty if the area has no tiles
      */
-    public void dropOnRandomTile(Item item) {
-        area.randomTile().ifPresent(tile -> tile.addItem(item));
+    public Optional<Location> dropOnRandomTile(Item item) {
+        Optional<Location> tile = area.randomTile();
+        tile.ifPresent(chosen -> chosen.addItem(item));
+        return tile;
+    }
+
+    /**
+     * Removes every Item lying on the tiles of the area.
+     *
+     * @return the Items that were removed, in tile order
+     */
+    public List<Item> liftAll() {
+        List<Item> lifted = new ArrayList<>();
+        for (Location tile : area.tiles()) {
+            for (Item item : new ArrayList<>(tile.getItems())) {
+                tile.removeItem(item);
+                lifted.add(item);
+            }
+        }
+        return lifted;
     }
 
     /**
