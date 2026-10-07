@@ -25,7 +25,7 @@ public class RandomUtils {
     /**
      * Creates an instance backed by an unseeded {@link Random}.
      */
-    protected RandomUtils() {
+    public RandomUtils() {
         this(new Random());
     }
 
@@ -35,7 +35,7 @@ public class RandomUtils {
      *
      * @param random the source of randomness to use
      */
-    protected RandomUtils(Random random) {
+    public RandomUtils(Random random) {
         this.random = random;
     }
 
@@ -86,7 +86,7 @@ public class RandomUtils {
      * @param percent the chance of success, out of 100
      * @return {@code true} if the roll succeeds, {@code false} otherwise
      */
-    protected boolean doRollPercent(int percent) {
+    public boolean doRollPercent(int percent) {
         return random.nextInt(100) < percent;
     }
 
@@ -98,7 +98,7 @@ public class RandomUtils {
      * @param bound the upper bound (exclusive); must be positive
      * @return a random integer in the range [0, bound)
      */
-    protected int doRandomInt(int bound) {
+    public int doRandomInt(int bound) {
         return random.nextInt(bound);
     }
 }
