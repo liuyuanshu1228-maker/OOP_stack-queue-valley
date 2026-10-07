@@ -1,0 +1,65 @@
+package game.positions.area;
+
+import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.items.Item;
+import edu.monash.fit2099.engine.positions.Location;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
+/**
+ * Places Items on the tiles of an {@link Area}.
+ */
+public class ItemDropper {
+
+    /** The area whose tiles receive the Items. */
+    private final Area area;
+
+    /**
+     * Creates a dropper that places Items on the given area.
+     *
+     * @param area the area to place Items on
+     */
+    public ItemDropper(Area area) {
+        this.area = area;
+    }
+
+    /**
+     * Places the given Item on a randomly chosen tile of the area.
+     * Does nothing if the area has no tiles.
+     *
+     * @param item the Item to place
+     */
+    public void dropOnRandomTile(Item item) {
+        area.randomTile().ifPresent(tile -> tile.addItem(item));
+    }
+
+    /**
+     * Removes every Item the given Actor is carrying and places each one on a
+     * randomly chosen tile of the area.
+     *
+     * @param actor the Actor whose inventory is emptied
+     * @return the Items that were dropped, in the order they were carried
+     */
+    public List<Item> dropAllCarriedBy(Actor actor) {
+        List<Item> carried = new ArrayList<>(actor.getInventory().getItems());
+        for (Item item : carried) {
+            actor.getInventory().remove(item);
+            dropOnRandomTile(item);
+        }
+        return carried;
+    }
+
+    /**
+     * Places a new Item on every tile of the area. Each tile gets its own
+     * Item, created by the given factory.
+     *
+     * @param itemFactory a supplier that creates a new instance of the Item to place
+     */
+    public void placeOnEveryTile(Supplier<? extends Item> itemFactory) {
+        for (Location tile : area.tiles()) {
+            tile.addItem(itemFactory.get());
+        }
+    }
+}
