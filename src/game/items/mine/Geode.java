@@ -93,7 +93,7 @@ public class Geode extends Item implements Breakable {
             return actor + " breaks the " + this + ". It splits open, revealing a diamond!";
         }
         new Explosion(EXPLOSION_DAMAGE).detonateOn(Area.centredOn(location));
-        new ItemDropper(Area.adjacentTo(location)).placeOnEveryTile(
+        ItemDropper.adjacentTo(location).placeOnEveryTile(
                 () -> new Fire(FIRE_LIFETIME_TURNS, BURN_DAMAGE_PER_TURN, BURN_DURATION_TURNS));
         return actor + " breaks the " + this + ". It explodes, dealing " + EXPLOSION_DAMAGE
                 + " damage to everyone nearby and setting the ground alight!";

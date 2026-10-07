@@ -3,7 +3,6 @@ package game.actors;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.Milk;
-import game.positions.area.Area;
 import game.positions.area.ItemDropper;
 
 /**
@@ -41,7 +40,7 @@ public class Cow extends Animal {
     public String feed(Actor farmer, Location farmerLocation) {
         this.heal(HEAL_AMOUNT);
 
-        new ItemDropper(Area.adjacentTo(farmerLocation)).dropOnRandomTile(new Milk());
+        ItemDropper.adjacentTo(farmerLocation).dropOnRandomTile(new Milk());
 
         return this + " moos contentedly.";
     }
