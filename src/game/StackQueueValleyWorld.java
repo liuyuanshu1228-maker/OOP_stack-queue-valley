@@ -50,21 +50,33 @@ import java.util.function.Supplier;
  */
 public class StackQueueValleyWorld extends World {
 
+    /** Number of Parsnip crops scattered on the farm at the start of the game. */
     private static final int PARSNIP_COUNT = 5;
+    /** Number of Strawberry crops scattered on the farm at the start of the game. */
     private static final int STRAWBERRY_COUNT = 5;
+    /** Number of Cauliflower crops scattered on the farm at the start of the game. */
     private static final int CAULIFLOWER_COUNT = 5;
+    /** Number of Melon crops scattered on the farm at the start of the game. */
     private static final int MELON_COUNT = 5;
+    /** Number of Tomato crops scattered on the farm at the start of the game. */
     private static final int TOMATO_COUNT = 5;
 
+    /** The name of the mines map. */
     private static final String MINES_MAP_NAME = "The Mines";
+    /** The width, in tiles, of the mines map. */
     private static final int MINES_WIDTH = 12;
+    /** The height, in tiles, of the mines map. */
     private static final int MINES_HEIGHT = 8;
+    /** Number of rocks scattered in the mines at the start of the game. */
     private static final int ROCK_COUNT = 8;
+    /** Number of copper nodes scattered in the mines at the start of the game. */
     private static final int COPPER_NODE_COUNT = 4;
+    /** Number of geodes scattered in the mines at the start of the game. */
     private static final int GEODE_COUNT = 3;
 
     /** Destination names shown in the travel menus. */
     private static final String TO_FARM = "the farm";
+    /** Destination name of the mines, shown in the travel menus. */
     private static final String TO_MINES = "the mines";
 
     /**

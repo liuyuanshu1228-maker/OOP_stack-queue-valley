@@ -10,7 +10,9 @@ import game.random.RandomUtils;
  */
 public class CauliflowerItem extends ConsumableItem {
 
+    /** HP restored to the actor when a Cauliflower is eaten. */
     private static final int HEAL_AMOUNT = 25;
+    /** Chance (out of 100) that eating a Cauliflower adds another Cauliflower to the inventory. */
     private static final int BONUS_CHANCE_PERCENT = 50;
 
     /**

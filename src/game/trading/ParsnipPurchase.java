@@ -13,7 +13,9 @@ import game.crops.Parsnip;
  */
 public class ParsnipPurchase extends CropPurchase {
 
+    /** Coins charged for a Parsnip crop. */
     private static final int PRICE = 250;
+    /** Number of Parsnips dropped next to the crop when it is bought. */
     private static final int PARSNIPS_PRODUCED = 3;
 
     /**

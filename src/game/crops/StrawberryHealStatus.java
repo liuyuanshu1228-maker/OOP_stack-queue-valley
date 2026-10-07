@@ -9,7 +9,9 @@ import game.status.TimedStatus;
  */
 public class StrawberryHealStatus extends TimedStatus {
 
+    /** HP restored to the actor on each turn the status lasts. */
     public static final int HEAL_PER_TURN = 1;
+    /** Number of turns the healing lasts. */
     public static final int DURATION_TURNS = 2;
 
     private final Actor healedActor;
@@ -32,6 +34,9 @@ public class StrawberryHealStatus extends TimedStatus {
         healedActor.heal(HEAL_PER_TURN);
     }
 
+    /**
+     * @return the name of this status, as shown next to the actor (Recovering)
+     */
     @Override
     public String toString() {
         return "Recovering";

@@ -9,7 +9,9 @@ import game.random.RandomUtils;
 /** Buying a Tomato crop: 500 coins, 50% chance the merchant plants it free. */
 public class TomatoPurchase extends CropPurchase {
 
+    /** Coins charged for a Tomato crop. */
     private static final int PRICE = 500;
+    /** Chance (out of 100) that the Merchant plants the crop without taking payment. */
     private static final int WAIVE_CHANCE_PERCENT = 50;
 
     /**
