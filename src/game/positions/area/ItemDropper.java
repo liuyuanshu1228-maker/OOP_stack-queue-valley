@@ -27,6 +27,17 @@ public class ItemDropper {
     }
 
     /**
+     * Creates a dropper that places Items on the tiles adjacent to the given
+     * Location (but not on the Location itself).
+     *
+     * @param centre the Location whose adjacent tiles receive the Items
+     * @return a dropper for the tiles around the given Location
+     */
+    public static ItemDropper adjacentTo(Location centre) {
+        return new ItemDropper(Area.adjacentTo(centre));
+    }
+
+    /**
      * Places the given Item on a randomly chosen tile of the area.
      * Does nothing if the area has no tiles.
      *

@@ -70,7 +70,7 @@ by name, and every tile by its coordinates (e.g. `(5, 3) on Inherited Farm`)
 | **Perching** | Default/idle: hops to a random enterable adjacent tile. | Its droppings count as a free watering (`FreelyWaterable.receiveFreeWatering()`) for **every** crop on its own tile and the 8 tiles around it — a cross-feature hook into REQ1, reached through a `game.positions.FreelyWaterable` capability rather than a direct dependency on `Crop`, so `game.crow` has no compile-time dependency on `game.crops`. The message lists every crop watered, e.g. `... a free watering for every crop within 1 tile: [Parsnip, Melon].` |
 | **Foraging** | *New behaviour.* If standing over an unclaimed item, hides it (see below); otherwise steps toward the nearest forageable item within sensing range. | Swoops in on the target item and scatters every *other* item within 1 tile of it onto random nearby tiles, as if startled by the sudden arrival. |
 | **Mobbing** | *New behaviour.* Pursues the nearest actor turn after turn; once adjacent, steals one random item from that actor's inventory into the crow's **own** inventory; otherwise steps toward the target. | The dive knocks **everything** the target is carrying onto random tiles around the target; unlike stealing, the crow keeps none of it. The message lists every item knocked loose, e.g. `... knocking everything they carry onto the tiles around (5, 3) on Inherited Farm: [Hoe, Watering Can, Pickaxe]!` |
-| **Fleeing** | *New behaviour.* Steps directly away from the nearest actor (`LocationUtils.stepAway`), or stays put if cornered. | Resets its safe-turn counter, drops its *entire* inventory (including anything stolen while Mobbing) onto random nearby tiles, and startles every adjacent actor one tile backwards. |
+| **Fleeing** | *New behaviour.* Steps directly away from the nearest actor (`CrowNavigation.stepAway`), or stays put if cornered. | Resets its safe-turn counter, drops its *entire* inventory (including anything stolen while Mobbing) onto random nearby tiles, and startles every adjacent actor one tile backwards. |
 
 **Which states introduce genuinely new behaviour:** the spec explicitly
 disqualifies "wandering" and "attacking whatever is next to it", which is
@@ -104,7 +104,7 @@ each state in isolation.
 
 Emptying an inventory onto the surrounding tiles (used by both Mobbing's and
 Fleeing's transition effects) is a single shared helper,
-`LocationUtils.dropInventoryNearby`, so the two effects never drift apart.
+`ItemDropper.dropAllCarriedBy`, so the two effects never drift apart.
 
 ### Transition graph
 
@@ -136,7 +136,7 @@ All conditions are computed by `CrowSensing` (package-private helper shared
 by all four states, so each state's transition logic stays a one-line
 expression instead of repeating the same neighbour-tile scanning): counting
 actors within a 2-tile sensing radius (`Crow.SENSING_RADIUS`), searching for the nearest forageable
-item via `LocationUtils.nearestWhere`, and (for Fleeing) a consecutive
+item via `CrowNavigation.nearestWhere`, and (for Fleeing) a consecutive
 "safe turns" counter kept through the `Composure` capability. **No
 `Random` is ever consulted to pick the next state** — randomness is only
 used *within* `act()`/`onEnter()` for flavour (which tile to hide an item

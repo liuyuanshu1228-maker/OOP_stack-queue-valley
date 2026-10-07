@@ -2,10 +2,9 @@ package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.random.RandomUtils;
 import game.actions.CropWaterable;
-import game.positions.area.Area;
 import game.positions.area.ItemDropper;
+import game.random.RandomUtils;
 
 /**
  * A strawberry crop. It can be watered, which scatters strawberries onto
@@ -92,8 +91,7 @@ public class Strawberry extends Crop implements CropWaterable {
     @Override
     public String water(Actor actor, Location location) {
         for (int i = 0; i < STRAWBERRIES_PER_WATERING; i++) {
-            new ItemDropper(Area.adjacentTo(location))
-                    .dropOnRandomTile(StrawberryItem.createRandom());
+            ItemDropper.adjacentTo(location).dropOnRandomTile(StrawberryItem.createRandom());
         }
 
         return actor + " waters the " + this + ". Strawberries appear on the nearby tiles.";

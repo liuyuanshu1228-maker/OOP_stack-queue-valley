@@ -3,7 +3,6 @@ package game.actors;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.Egg;
-import game.positions.area.Area;
 import game.positions.area.ItemDropper;
 import game.random.RandomUtils;
 
@@ -46,9 +45,10 @@ public class Chicken extends Animal {
     public String feed(Actor farmer, Location farmerLocation) {
         this.heal(HEAL_AMOUNT);
 
-        new ItemDropper(Area.adjacentTo(farmerLocation)).dropOnRandomTile(layEgg());
+        ItemDropper dropper = ItemDropper.adjacentTo(farmerLocation);
+        dropper.dropOnRandomTile(layEgg());
         if (RandomUtils.rollPercent(BONUS_EGG_CHANCE_PERCENT)) {
-            new ItemDropper(Area.adjacentTo(farmerLocation)).dropOnRandomTile(layEgg());
+            dropper.dropOnRandomTile(layEgg());
         }
 
         return this + " clucks happily.";

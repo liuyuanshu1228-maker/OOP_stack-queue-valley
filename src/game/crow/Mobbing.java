@@ -130,8 +130,7 @@ public class Mobbing implements CreatureState {
         }
 
         Actor target = targetLoc.get().getActor();
-        List<Item> knockedLoose = new ItemDropper(Area.adjacentTo(targetLoc.get()))
-                .dropAllCarriedBy(target);
+        List<Item> knockedLoose = ItemDropper.adjacentTo(targetLoc.get()).dropAllCarriedBy(target);
 
         if (knockedLoose.isEmpty()) {
             return creature + " dives aggressively at " + target + ", but " + target

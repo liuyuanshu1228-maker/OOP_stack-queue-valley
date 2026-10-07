@@ -92,7 +92,7 @@ public class RandomUtils {
      * @param percent the chance of success, out of 100
      * @return {@code true} if the roll succeeds, {@code false} otherwise
      */
-    public boolean doRollPercent(int percent) {
+    protected boolean doRollPercent(int percent) {
         return doRandomInt(PERCENT_SCALE) < percent;
     }
 
@@ -104,7 +104,7 @@ public class RandomUtils {
      * @param bound the upper bound (exclusive); must be positive
      * @return a random integer in the range [0, bound)
      */
-    public int doRandomInt(int bound) {
+    protected int doRandomInt(int bound) {
         return random.nextInt(bound);
     }
 }

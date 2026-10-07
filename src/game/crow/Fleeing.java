@@ -104,7 +104,7 @@ public class Fleeing implements CreatureState {
         creature.asCapability(Composure.class).ifPresent(Composure::resetComposure);
         Location here = map.locationOf(creature);
 
-        List<Item> dropped = new ItemDropper(Area.adjacentTo(here)).dropAllCarriedBy(creature);
+        List<Item> dropped = ItemDropper.adjacentTo(here).dropAllCarriedBy(creature);
         List<String> startled = startleNeighbours(here, map);
 
         String droppedText = dropped.isEmpty()

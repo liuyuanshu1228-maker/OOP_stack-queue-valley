@@ -3,7 +3,6 @@ package game.travel;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.Fire;
-import game.positions.area.Area;
 import game.positions.area.ItemDropper;
 
 /**
@@ -35,7 +34,7 @@ public class TeleportationCircle extends TravelGround {
      */
     @Override
     public String onArrival(Actor actor, Location landing) {
-        new ItemDropper(Area.adjacentTo(landing)).placeOnEveryTile(
+        ItemDropper.adjacentTo(landing).placeOnEveryTile(
                 () -> new Fire(FIRE_LIFETIME_TURNS, BURN_DAMAGE_PER_TURN, BURN_DURATION_TURNS));
         return "The ground around " + actor + " bursts into flames!";
     }
