@@ -64,9 +64,8 @@ public abstract class CropPurchase implements Purchasable {
     @Override
     public final String purchase(Actor buyer, MerchantContext merchantContext) {
         Actor merchant = merchantContext.getMerchant();
-        Optional<Location> plantingSpot = Area.adjacentTo(merchantContext.getLocation())
-                .filter(adjacent -> !Crop.isPlantedAt(adjacent))
-                .randomTile();
+        Optional<Location> plantingSpot =
+                Crop.unplantedTilesOf(Area.adjacentTo(merchantContext.getLocation())).randomTile();
 
         if (plantingSpot.isEmpty()) {
             return buyer + " tries to buy a " + productName

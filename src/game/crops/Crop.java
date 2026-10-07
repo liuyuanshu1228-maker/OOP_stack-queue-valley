@@ -9,7 +9,11 @@ import game.actions.HarvestAction;
 import game.actions.Harvestable;
 import game.actions.WaterCropAction;
 import game.positions.FreelyWaterable;
+import game.positions.area.Area;
 import game.positions.farm.Dirt;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract base class for all crops.
@@ -76,6 +80,23 @@ public abstract class Crop extends Ground implements Harvestable, FreelyWaterabl
      */
     public static boolean isPlantedAt(Location location) {
         return location.getGroundAs(Crop.class) != null;
+    }
+
+    /**
+     * Narrows an area down to the tiles where no crop is growing. The tiles
+     * keep the order they have in the given area.
+     *
+     * @param area the area to narrow down
+     * @return a new area made of the tiles of the given area that hold no crop
+     */
+    public static Area unplantedTilesOf(Area area) {
+        List<Location> unplanted = new ArrayList<>();
+        for (Location tile : area.tiles()) {
+            if (!isPlantedAt(tile)) {
+                unplanted.add(tile);
+            }
+        }
+        return new Area(unplanted);
     }
 
     /**
