@@ -3,7 +3,8 @@ package game.crops;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.Location;
-import game.positions.LocationUtils;
+import game.positions.area.Area;
+import game.positions.area.ItemDropper;
 import game.RandomUtils;
 import game.statistics.StatisticUtils;
 
@@ -59,7 +60,7 @@ public class Parsnip extends Crop implements CropWaterable {
         removeCrop(location);
 
         if (RandomUtils.rollPercent(BONUS_SPAWN_CHANCE_PERCENT)) {
-            LocationUtils.dropItemNearby(location, new ParsnipItem());
+            new ItemDropper(Area.adjacentTo(location)).dropOnRandomTile(new ParsnipItem());
         }
 
         return actor + " harvests the " + this + ".";

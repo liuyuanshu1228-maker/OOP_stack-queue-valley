@@ -3,7 +3,8 @@ package game.crops;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.Location;
-import game.positions.LocationUtils;
+import game.positions.area.Area;
+import game.positions.area.Explosion;
 import game.RandomUtils;
 import game.statistics.StatisticUtils;
 
@@ -62,7 +63,7 @@ public class Melon extends Crop implements CropWaterable {
 
         if (RandomUtils.rollPercent(EXPLOSION_CHANCE_PERCENT)) {
             int damage = Math.max(0, BASE_EXPLOSION_DAMAGE - getWateringCount());
-            LocationUtils.hurtActorsAround(location, damage);
+            new Explosion(damage).detonateOn(Area.centredOn(location));
             return actor + " harvests the " + this + ". It explodes, dealing " + damage + " damage to everyone nearby!";
         }
 
