@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
 
 /**
  * A group of tiles on a map, and the choosing of tiles from it.
@@ -30,6 +29,12 @@ public class Area {
 
     /** How far from a centre tile an "adjacent" tile may be. */
     private static final int ADJACENT_RADIUS = 1;
+
+    /** Direction for {@link #firstAtExtremeDistance}: the greatest distance wins. */
+    private static final int FARTHEST = 1;
+
+    /** Direction for {@link #firstAtExtremeDistance}: the smallest distance wins. */
+    private static final int NEAREST = -1;
 
     /** The tiles of this area. */
     private final List<Location> tiles;
@@ -148,7 +153,7 @@ public class Area {
      * @return the closest tile, or empty if the area has no tiles
      */
     public Optional<Location> nearestTo(Location reference) {
-        return firstWithHighestScore(tile -> -distanceBetween(tile, reference));
+        return firstAtExtremeDistance(reference, NEAREST);
     }
 
     /**
@@ -159,20 +164,23 @@ public class Area {
      * @return the furthest tile, or empty if the area has no tiles
      */
     public Optional<Location> farthestFrom(Location reference) {
-        return firstWithHighestScore(tile -> distanceBetween(tile, reference));
+        return firstAtExtremeDistance(reference, FARTHEST);
     }
 
     /**
-     * Finds the first tile of this area that has the highest score.
+     * Finds the first tile of this area that is the nearest to, or the
+     * farthest from, a reference Location.
      *
-     * @param score how well a tile scores; a higher number is better
-     * @return the first best-scoring tile, or empty if the area has no tiles
+     * @param reference the Location the distance is measured to
+     * @param direction {@link #FARTHEST} to look for the greatest distance, or
+     *                  {@link #NEAREST} to look for the smallest
+     * @return the first tile at the extreme distance, or empty if the area has no tiles
      */
-    private Optional<Location> firstWithHighestScore(ToIntFunction<Location> score) {
+    private Optional<Location> firstAtExtremeDistance(Location reference, int direction) {
         Location best = null;
         int bestScore = Integer.MIN_VALUE;
         for (Location tile : tiles) {
-            int tileScore = score.applyAsInt(tile);
+            int tileScore = direction * distanceBetween(tile, reference);
             if (tileScore > bestScore) {
                 bestScore = tileScore;
                 best = tile;
