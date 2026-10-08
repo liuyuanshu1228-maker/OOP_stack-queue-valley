@@ -37,10 +37,10 @@ public class FeedAction extends Action {
     }
 
     /**
-     * Performs the feeding attempt. If the Actor has enough stamina, deducts it,
-     * removes the food from inventory, and applies both the animal's Feedable
-     * effect and the food's Food bonus effect; otherwise, fails without any
-     * side effects.
+     * Performs the feeding attempt. The animal is checked first: if it cannot be
+     * fed, or the Actor does not have enough stamina, nothing is spent. Otherwise
+     * deducts the stamina, removes the food from the inventory, and applies both
+     * the animal's Feedable effect and the food's Food bonus effect.
      *
      * @param actor the actor performing the action
      * @param map the map the actor is on
@@ -48,30 +48,19 @@ public class FeedAction extends Action {
      */
     @Override
     public String execute(Actor actor, GameMap map) {
+        Optional<Feedable> feedable = animal.asCapability(Feedable.class);
+        if (feedable.isEmpty()) {
+            return actor + " cannot feed " + animal + ".";
+        }
         if (!new StatisticAdjuster(actor).trySpend(ActorStatistics.STAMINA, STAMINA_COST)) {
             return actor + " is too tired to feed this animal.";
         }
 
         actor.getInventory().remove(food);
 
-        String feedResult = feedAnimal(actor, map);
+        String feedResult = feedable.get().feed(actor, map.locationOf(actor));
         applyFoodBonus(actor);
         return feedResult;
-    }
-
-    /**
-     * Applies the animal's Feedable effect, if it has one.
-     *
-     * @param actor the actor doing the feeding
-     * @param map the map the actor is on
-     * @return a description of the animal's reaction, or an empty string if it has none
-     */
-    private String feedAnimal(Actor actor, GameMap map) {
-        Optional<Feedable> feedable = animal.asCapability(Feedable.class);
-        if (feedable.isEmpty()) {
-            return "";
-        }
-        return feedable.get().feed(actor, map.locationOf(actor));
     }
 
     /**
