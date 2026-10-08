@@ -39,9 +39,11 @@ https://docs.google.com/spreadsheets/d/14k_CRD-zLqx8Qtg6DL1X_qB89g8ZwoPe-r2XALmm
 A group of three, so this requirement is satisfied with **one** creature — a
 `Crow` (`src/game/crow/Crow.java`) — with exactly **four** states. Each state
 is its own class under `src/game/crow`, implementing a shared
-`game.creaturestate.CreatureState` interface (`act`, `nextState`, `onEnter`). States
-are stateless singletons (a private constructor and a public `INSTANCE`
-field, the classic State-pattern/flyweight shape); any data that varies per
+`game.creaturestate.CreatureState` interface (`act`, `nextState`, `onEnter`).
+States hold no per-creature data, so the game shares one public `INSTANCE` of each
+(the State-pattern/flyweight shape). The state classes are not `final` and have
+public constructors, so a variant (for example a subclass with a different
+transition rule) can be created without changing them. Any data that varies per
 creature — which items it's hidden, how many consecutive turns it's felt
 safe — lives on the `Crow` object itself, via two small capability
 interfaces (`ItemCache`, `Composure`), not on the state objects. This is
@@ -136,7 +138,8 @@ All conditions are computed by `CrowSensing` (package-private helper shared
 by all four states, so each state's transition logic stays a one-line
 expression instead of repeating the same neighbour-tile scanning): counting
 actors within a 2-tile sensing radius (`Crow.SENSING_RADIUS`), searching for the nearest forageable
-item via `CrowNavigation.nearestWhere`, and (for Fleeing) a consecutive
+item (`CrowSensing.nearestFood()`, which uses `Area.nearestTo`), and (for Fleeing) a
+consecutive
 "safe turns" counter kept through the `Composure` capability. **No
 `Random` is ever consulted to pick the next state** — randomness is only
 used *within* `act()`/`onEnter()` for flavour (which tile to hide an item
@@ -225,9 +228,9 @@ the crow never left Fleeing — which is why the radius is 2.
   capability interfaces, so `Crow` only takes on exactly the per-creature
   data a particular state actually needs, rather than one fat interface
   every `Actor` would have to implement in full.
-  - **DIP** — `CreatureStateAction` depends only on the `StatefulCreature`/
-    `CreatureState` abstractions, never on `Crow` or on any concrete state by
-    name. There is no `instanceof`/`switch`-on-type dispatch anywhere in the
-    state machine. Likewise, `Perching`'s free-watering effect depends only on
-    the `FreelyWaterable` capability, never on the concrete `Crop` class,
-    keeping `game.crow` and `game.crops` fully decoupled.
+- **DIP** — `CreatureStateAction` depends only on the `StatefulCreature`/
+  `CreatureState` abstractions, never on `Crow` or on any concrete state by
+  name. There is no `instanceof`/`switch`-on-type dispatch anywhere in the
+  state machine. Likewise, `Perching`'s free-watering effect depends only on
+  the `FreelyWaterable` capability, never on the concrete `Crop` class,
+  keeping `game.crow` and `game.crops` fully decoupled.
