@@ -69,14 +69,14 @@ by name, and every tile by its coordinates (e.g. `(5, 3) on Inherited Farm`)
 
 | State | Ordinary turn (`act`) | Transition effect (`onEnter`) |
 |---|---|---|
-| **Perching** | Default/idle: hops to a random enterable adjacent tile. | Its droppings count as a free watering (`FreelyWaterable.receiveFreeWatering()`) for **every** crop on its own tile and the 8 tiles around it — a cross-feature hook into REQ1, reached through a `game.positions.FreelyWaterable` capability rather than a direct dependency on `Crop`, so `game.crow` has no compile-time dependency on `game.crops`. The message lists every crop watered, e.g. `... a free watering for every crop within 1 tile: [Parsnip, Melon].` |
+| **Perching** | Default/idle: hops to a random enterable adjacent tile, chosen by an engine `Behaviour` (`WanderBehaviour`, the same one the Chicken, Cow and Merchant use). | Its droppings count as a free watering (`FreelyWaterable.receiveFreeWatering()`) for **every** crop on its own tile and the 8 tiles around it — a cross-feature hook into REQ1, reached through a `game.positions.FreelyWaterable` capability rather than a direct dependency on `Crop`, so `game.crow` has no compile-time dependency on `game.crops`. The message lists every crop watered, e.g. `... a free watering for every crop within 1 tile: [Parsnip, Melon].` |
 | **Foraging** | *New behaviour.* If standing over an unclaimed item, hides it (see below); otherwise steps toward the nearest forageable item within sensing range. | Swoops in on the target item and scatters every *other* item within 1 tile of it onto random nearby tiles, as if startled by the sudden arrival. |
 | **Mobbing** | *New behaviour.* Pursues the nearest actor turn after turn; once adjacent, steals one random item from that actor's inventory into the crow's **own** inventory; otherwise steps toward the target. | The dive knocks **everything** the target is carrying onto random tiles around the target; unlike stealing, the crow keeps none of it. The message lists every item knocked loose, e.g. `... knocking everything they carry onto the tiles around (5, 3) on Inherited Farm: [Hoe, Watering Can, Pickaxe]!` |
 | **Fleeing** | *New behaviour.* Steps directly away from the nearest actor (`CrowNavigation.stepAway`), or stays put if cornered. | Resets its safe-turn counter, drops its *entire* inventory (including anything stolen while Mobbing) onto random nearby tiles, and startles every adjacent actor one tile backwards. |
 
 **Which states introduce genuinely new behaviour:** the spec explicitly
 disqualifies "wandering" and "attacking whatever is next to it", which is
-why Perching (random wander) is *not* counted. The other three each add a
+why Perching (random wander, done by the shared `WanderBehaviour`) is *not* counted. The other three each add a
 behaviour that did not exist anywhere in the codebase before REQ5:
 
 - **Foraging** — seek out the nearest item, then carry it off and hide it
@@ -155,6 +155,24 @@ turn's ordinary behaviour; otherwise it calls `act()`. `Crow.playTurn()`
 simply returns `new CreatureStateAction()` every turn (unless it has fallen
 unconscious).
 
+### Engine `Behaviour` for wandering
+
+The engine's `Behaviour<Actor, Action>` is how a non-player actor decides what
+to do on its own turn. `game.behaviours.WanderBehaviour` implements it: it picks,
+uniformly at random, one adjacent tile the actor is able to enter and returns
+the `MoveActorAction` for it (or `null` if there is none). It is shared by:
+
+- `WanderingActor`, the base class of the Chicken, Cow and Merchant, which
+  receives its behaviour when it is created (a `WanderBehaviour` by default,
+  or any other `Behaviour` through the second constructor);
+- the crow's `Perching` state, which uses it for its ordinary turn, so the
+  "take one random step" rule is written once for the whole game.
+
+The player's moves stay `Action`s, and the crow's own turn is still one
+`CreatureStateAction`. Foraging, Mobbing and Fleeing keep `CrowNavigation` for
+stepping toward and away from a target, because those steps depend on which
+state the crow is in and on what it senses.
+
 ### How to test it in game
 
 The crow senses everything within **2 tiles** (a 5x5 square around it,
@@ -199,15 +217,6 @@ pick an item up and stay next to the crow. The same message appears if,
 while Mobbing, the nearest actor becomes the Chicken, Cow or Merchant, who
 carry nothing.
 
-**Simulation check:** we drove the real `StackQueueValleyWorld` for 20 games
-of 100 turns each, with the Chicken, Cow and Merchant wandering as normal and
-the Farmer wandering at random and picking up any item it stepped on. All
-eight transitions in the graph occurred, all four states appeared in 19 of
-the 20 games, and every entry into Mobbing (35 of 35) knocked items loose.
-With the original 5-tile radius, the 10x7 farm was almost entirely inside
-the crow's range, so the animals and Merchant always counted as a crowd and
-the crow never left Fleeing — which is why the radius is 2.
-
 ### SOLID
 
 - **SRP** — each `CreatureState` implementation owns exactly one state's
@@ -228,6 +237,9 @@ the crow never left Fleeing — which is why the radius is 2.
   capability interfaces, so `Crow` only takes on exactly the per-creature
   data a particular state actually needs, rather than one fat interface
   every `Actor` would have to implement in full.
+- **DIP** — `Perching` and `WanderingActor` depend on the engine's `Behaviour`
+  interface, not on `WanderBehaviour`, which is only their default; any other
+  `Behaviour` can be passed in through their constructors.
 - **DIP** — `CreatureStateAction` depends only on the `StatefulCreature`/
   `CreatureState` abstractions, never on `Crow` or on any concrete state by
   name. There is no `instanceof`/`switch`-on-type dispatch anywhere in the
