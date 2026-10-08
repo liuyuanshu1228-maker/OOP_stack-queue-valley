@@ -6,6 +6,8 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import game.creaturestate.CreatureState;
 import game.creaturestate.StatefulCreature;
 
+import java.util.Optional;
+
 /**
  * An Action that advances a {@link StatefulCreature}'s state machine by one
  * turn: if the current state's conditions call for a transition, switches
@@ -29,7 +31,11 @@ public class CreatureStateAction extends Action {
      */
     @Override
     public String execute(Actor actor, GameMap map) {
-        StatefulCreature creature = actor.asCapability(StatefulCreature.class).orElseThrow();
+        Optional<StatefulCreature> found = actor.asCapability(StatefulCreature.class);
+        if (found.isEmpty()) {
+            throw new IllegalStateException(actor + " is not a stateful creature.");
+        }
+        StatefulCreature creature = found.get();
         CreatureState current = creature.getState();
         CreatureState next = current.nextState(actor, map);
 

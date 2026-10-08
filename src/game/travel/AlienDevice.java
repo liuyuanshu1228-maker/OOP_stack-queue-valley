@@ -9,6 +9,8 @@ import game.actions.TravelMethod;
 import game.positions.area.Area;
 import game.random.RandomUtils;
 
+import java.util.Optional;
+
 /**
  * An unreliable alien device. While it is carried it offers a choice of
  * destinations, wherever the carrier happens to be, but each use has a chance
@@ -65,7 +67,10 @@ public class AlienDevice extends Item implements TravelMethod {
     @Override
     public Location chooseLanding(Actor actor, GameMap map, Location intended) {
         if (RandomUtils.rollPercent(MALFUNCTION_CHANCE_PERCENT)) {
-            return Area.wholeMap(map).randomEnterableTile(actor).orElse(intended);
+            Optional<Location> landing = Area.wholeMap(map).randomEnterableTile(actor);
+            if (landing.isPresent()) {
+                return landing.get();
+            }
         }
         return intended;
     }

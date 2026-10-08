@@ -4,6 +4,8 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import game.actions.Consumable;
 
+import java.util.Optional;
+
 /**
  * Abstract base class for a single layer of processing applied to a product.
  * Each ProcessedProduct wraps exactly one preceding product (which may itself
@@ -37,9 +39,8 @@ public abstract class ProcessedProduct extends ConsumableItem implements Process
      */
     @Override
     public final String consume(Actor actor) {
-        String precedingMessage = precedingProduct.asCapability(Consumable.class)
-                .map(consumable -> consumable.consume(actor))
-                .orElse("");
+        Optional<Consumable> preceding = precedingProduct.asCapability(Consumable.class);
+        String precedingMessage = preceding.isPresent() ? preceding.get().consume(actor) : "";
         String ownMessage = applyProcessingEffect(actor);
         return precedingMessage.isEmpty() ? ownMessage : precedingMessage + " " + ownMessage;
     }

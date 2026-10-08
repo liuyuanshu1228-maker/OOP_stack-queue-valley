@@ -10,6 +10,7 @@ import game.actions.Purchasable;
 import game.actions.SellAction;
 import game.actions.Sellable;
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Represents a wandering Merchant ('$') who offers buying and selling actions
@@ -57,8 +58,10 @@ public class Merchant extends WanderingActor {
         }
 
         for (Item item : otherActor.getInventory().getItems()) {
-            item.asCapability(Sellable.class).ifPresent(sellable ->
-                    actions.add(new SellAction(item, sellable, merchantContext)));
+            Optional<Sellable> sellable = item.asCapability(Sellable.class);
+            if (sellable.isPresent()) {
+                actions.add(new SellAction(item, sellable.get(), merchantContext));
+            }
         }
         return actions;
     }

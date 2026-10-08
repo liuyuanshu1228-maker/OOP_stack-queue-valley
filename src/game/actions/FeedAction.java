@@ -7,6 +7,8 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import game.statistics.StatisticAdjuster;
 
+import java.util.Optional;
+
 /**
  * An Action that allows the Farmer to feed an adjacent animal using a specific food Item.
  * Requires at least 2 stamina; consumes the food item and applies both the animal's
@@ -65,9 +67,11 @@ public class FeedAction extends Action {
      * @return a description of the animal's reaction, or an empty string if it has none
      */
     private String feedAnimal(Actor actor, GameMap map) {
-        return animal.asCapability(Feedable.class)
-                .map(feedable -> feedable.feed(actor, map.locationOf(actor)))
-                .orElse("");
+        Optional<Feedable> feedable = animal.asCapability(Feedable.class);
+        if (feedable.isEmpty()) {
+            return "";
+        }
+        return feedable.get().feed(actor, map.locationOf(actor));
     }
 
     /**
@@ -76,8 +80,10 @@ public class FeedAction extends Action {
      * @param actor the actor who did the feeding
      */
     private void applyFoodBonus(Actor actor) {
-        food.asCapability(Food.class)
-                .ifPresent(foodCapability -> foodCapability.applyFeedingBonus(actor));
+        Optional<Food> foodCapability = food.asCapability(Food.class);
+        if (foodCapability.isPresent()) {
+            foodCapability.get().applyFeedingBonus(actor);
+        }
     }
 
     /**

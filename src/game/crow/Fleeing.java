@@ -49,9 +49,8 @@ public class Fleeing implements CreatureState {
         Location here = map.locationOf(creature);
         Optional<Location> threat = new CrowSensing(creature, here).nearestActor();
         if (threat.isEmpty()) {
-            int safeTurns = creature.asCapability(Composure.class)
-                    .map(Composure::getSafeTurns)
-                    .orElse(0);
+            Optional<Composure> composure = creature.asCapability(Composure.class);
+            int safeTurns = composure.isPresent() ? composure.get().getSafeTurns() : 0;
             return creature + " keeps a wary eye out, catching its breath (safe for "
                     + safeTurns + "/" + CALM_DOWN_TURNS + " turns before it calms down).";
         }
@@ -101,7 +100,10 @@ public class Fleeing implements CreatureState {
      */
     @Override
     public String onEnter(Actor creature, GameMap map) {
-        creature.asCapability(Composure.class).ifPresent(Composure::resetComposure);
+        Optional<Composure> composure = creature.asCapability(Composure.class);
+        if (composure.isPresent()) {
+            composure.get().resetComposure();
+        }
         Location here = map.locationOf(creature);
 
         List<Item> dropped = ItemDropper.adjacentTo(here).dropAllCarriedBy(creature);

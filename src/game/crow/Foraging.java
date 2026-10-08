@@ -7,7 +7,9 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.creaturestate.CreatureState;
 import game.creaturestate.ItemCache;
 import game.positions.area.Area;
+import game.positions.area.BareOfItems;
 import game.positions.area.ItemDropper;
+import game.positions.area.OutsideOf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,13 +79,14 @@ public class Foraging implements CreatureState {
      * @return a description of what happened
      */
     private String cache(Actor creature, Location here) {
-        Item item = new CrowSensing(creature, here).forageableItemHere()
-                .orElseThrow(() -> new IllegalStateException(
-                        "cache() called with nothing forageable at " + here));
-        List<Location> tooClose = Area.within(here, MIN_CACHE_DISTANCE - 1).tiles();
+        Optional<Item> forageable = new CrowSensing(creature, here).forageableItemHere();
+        if (forageable.isEmpty()) {
+            throw new IllegalStateException("cache() called with nothing forageable at " + here);
+        }
+        Item item = forageable.get();
         Optional<Location> chosenSpot = Area.within(here, CACHE_SEARCH_RADIUS)
-                .filter(candidate -> candidate.getItems().isEmpty()
-                        && !tooClose.contains(candidate))
+                .filter(new OutsideOf(Area.within(here, MIN_CACHE_DISTANCE - 1)))
+                .filter(new BareOfItems())
                 .randomTile();
 
         if (chosenSpot.isEmpty()) {
@@ -94,7 +97,10 @@ public class Foraging implements CreatureState {
         Location hidingSpot = chosenSpot.get();
         here.removeItem(item);
         hidingSpot.addItem(item);
-        creature.asCapability(ItemCache.class).ifPresent(cache -> cache.remember(item));
+        Optional<ItemCache> cache = creature.asCapability(ItemCache.class);
+        if (cache.isPresent()) {
+            cache.get().remember(item);
+        }
         return creature + " snatches the " + item + " from " + here
                 + " and hides it at " + hidingSpot + ".";
     }
@@ -166,8 +172,10 @@ public class Foraging implements CreatureState {
         List<String> scattered = new ArrayList<>();
 
         for (Item item : dropper.liftAll()) {
-            dropper.dropOnRandomTile(item)
-                    .ifPresent(destination -> scattered.add(item + " to " + destination));
+            Optional<Location> destination = dropper.dropOnRandomTile(item);
+            if (destination.isPresent()) {
+                scattered.add(item + " to " + destination.get());
+            }
         }
 
         return scattered;
