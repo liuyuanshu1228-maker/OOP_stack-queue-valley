@@ -49,7 +49,7 @@ equal (`equals`/`hashCode`), so creating another instance of a state never chang
 how the state machine behaves. Any data that varies per
 creature — which items it's hidden, how many consecutive turns it's felt
 safe — lives on the `Crow` object itself, via two small capability
-interfaces (`ItemCache`, `Composure`, `Roosting`), not on the state objects. This is
+interfaces (`ItemCache`, `Composure`), not on the state objects. This is
 what lets every crow on the map safely share the same four state instances.
 
 **Where to find it in game:** run `game.Application`. The crow is shown as
@@ -72,10 +72,10 @@ by name, and every tile by its coordinates (e.g. `(5, 3) on Inherited Farm`)
 
 | State | Ordinary turn (`act`) | Transition effect (`onEnter`) |
 |---|---|---|
-| **Perching** | Default/idle: hops to a random enterable adjacent tile, chosen by an engine `Behaviour` (`WanderBehaviour`, the same one the Chicken, Cow and Merchant use). | Its droppings count as a free watering (`FreelyWaterable.receiveFreeWatering()`) for **every** crop on its own tile and the 8 tiles around it — a cross-feature hook into REQ1, reached through a `game.positions.FreelyWaterable` capability rather than a direct dependency on `Crop`, so `game.crow` has no compile-time dependency on `game.crops`. The message lists every crop watered, e.g. `... a free watering for every crop within 1 tile: [Parsnip, Melon].` The crow also remembers this tile as its perch (`Roosting`), where Fleeing will head. |
+| **Perching** | Default/idle: hops to a random enterable adjacent tile, chosen by an engine `Behaviour` (`WanderBehaviour`, the same one the Chicken, Cow and Merchant use). | Its droppings count as a free watering (`FreelyWaterable.receiveFreeWatering()`) for **every** crop on its own tile and the 8 tiles around it — a cross-feature hook into REQ1, reached through a `game.positions.FreelyWaterable` capability rather than a direct dependency on `Crop`, so `game.crow` has no compile-time dependency on `game.crops`. The message lists every crop watered, e.g. `... a free watering for every crop within 1 tile: [Parsnip, Melon].` |
 | **Foraging** | *New behaviour.* If standing over an unclaimed item, hides it (see below); otherwise steps toward the nearest forageable item within sensing range. | Swoops in on the target item and scatters every *other* item within 1 tile of it onto random nearby tiles, as if startled by the sudden arrival. |
 | **Mobbing** | *New behaviour.* Pursues the nearest actor turn after turn; once adjacent, steals one random item from that actor's inventory into the crow's **own** inventory; otherwise steps toward the target. | The dive knocks **everything** the target is carrying onto random tiles around the target; unlike stealing, the crow keeps none of it. The message lists every item knocked loose, e.g. `... knocking everything they carry onto the tiles around (5, 3) on Inherited Farm: [Hoe, Watering Can, Pickaxe]!` |
-| **Fleeing** | *New behaviour.* Retreats to the perch it last settled on (`Roosting`): each turn it steps toward that perch, but only onto a tile no closer to the nearest actor (`CrowNavigation.stepTowardKeepingClear`); with no perch, or when no such step exists, it steps directly away from the nearest actor (`CrowNavigation.stepAway`), or stays put if cornered. | Resets its safe-turn counter, drops its *entire* inventory (including anything stolen while Mobbing) onto random nearby tiles, and startles every adjacent actor one tile backwards. |
+| **Fleeing** | *New behaviour.* Steps directly away from the nearest actor (`CrowNavigation.stepAway`), or stays put if cornered. | Resets its safe-turn counter, drops its *entire* inventory (including anything stolen while Mobbing) onto random nearby tiles, and startles every adjacent actor one tile backwards. |
 
 **Which states introduce genuinely new behaviour:** the spec explicitly
 disqualifies "wandering" and "attacking whatever is next to it", which is
@@ -84,12 +84,10 @@ behaviour that did not exist anywhere in the codebase before REQ5:
 
 - **Foraging** — seek out the nearest item, then carry it off and hide it
   somewhere else. This is the spec's own example of a qualifying behaviour.
-- **Fleeing** — a retreat to a remembered place: the crow remembers the perch
-  it last settled on (`Roosting`) and every turn steps toward it, as long as
-  the step does not bring it closer to the nearest actor. Before REQ5 no actor
-  remembered a place and went back to it; the codebase could only move an
-  actor *toward* a target (`stepToward`), *away* from one (`stepAway`, added
-  for this state as the fallback) or at random.
+- **Fleeing** — directed retreat: every turn, pick the adjacent tile that
+  moves the crow *furthest* from the closest actor. Before REQ5 the codebase
+  could only move an actor *toward* a target (`stepToward`) or at random;
+  `stepAway` was added for this state.
 - **Mobbing** — a multi-turn pursuit of one actor that ends in taking an item
   into the crow's own inventory. This is deliberately different from the
   Merchant's Diamond theft in REQ3: that is a one-off side effect of a trade
@@ -166,8 +164,7 @@ current state for `nextState()`; if that is a different state (compared with
 new state's `onEnter()` *instead of* that turn's ordinary behaviour; otherwise it
 calls `act()`. `Crow` extends `game.actors.ConsciousActor`, whose `playTurn()`
 makes an actor with no hit points fall unconscious and do nothing; on every other
-turn `Crow.playConsciousTurn()` prints what the crow is carrying (as the Farmer's
-status does) and returns `new CreatureStateAction()`. The
+turn `Crow.playConsciousTurn()` simply returns `new CreatureStateAction()`. The
 same `ConsciousActor` base is shared by the Farmer and every `WanderingActor`, so
 the unconscious check is written once.
 
@@ -249,7 +246,7 @@ carry nothing.
   `CreatureStateAction` uses one; all four honour the same three-method
   contract with no surprising preconditions.
 - **ISP** — `CreatureState` is a tight three-method interface;
-  `StatefulCreature`, `ItemCache`, `Composure` and `Roosting` are each separate, small
+  `StatefulCreature`, `ItemCache` and `Composure` are each separate, small
   capability interfaces, so `Crow` only takes on exactly the per-creature
   data a particular state actually needs, rather than one fat interface
   every `Actor` would have to implement in full.

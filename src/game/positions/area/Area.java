@@ -167,26 +167,6 @@ public class Area {
     }
 
     /**
-     * Keeps the tiles of this area that are no closer to a reference Location
-     * than an origin Location is.
-     *
-     * @param reference the Location the distance is measured to
-     * @param origin the Location whose distance to the reference is the limit
-     * @return a new Area with the tiles that are at least as far from the
-     * reference as the origin is
-     */
-    public Area noCloserTo(Location reference, Location origin) {
-        int limit = distanceBetween(origin, reference);
-        List<Location> kept = new ArrayList<>();
-        for (Location tile : tiles) {
-            if (distanceBetween(tile, reference) >= limit) {
-                kept.add(tile);
-            }
-        }
-        return new Area(kept);
-    }
-
-    /**
      * Finds the first tile of this area that is the nearest to, or the
      * farthest from, a reference Location.
      *

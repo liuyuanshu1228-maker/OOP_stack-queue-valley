@@ -8,13 +8,11 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.behaviours.WanderBehaviour;
 import game.creaturestate.BaseCreatureState;
 import game.creaturestate.CreatureState;
-import game.creaturestate.Roosting;
 import game.positions.FreelyWaterable;
 import game.positions.area.Area;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * The crow's default, idle state: wanders aimlessly around the map, watching
@@ -112,10 +110,6 @@ public class Perching extends BaseCreatureState {
     @Override
     public String onEnter(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        Optional<Roosting> roosting = creature.asCapability(Roosting.class);
-        if (roosting.isPresent()) {
-            roosting.get().setPerch(here);
-        }
         List<FreelyWaterable> watered = new ArrayList<>();
         for (Location location : Area.centredOn(here).tiles()) {
             FreelyWaterable waterable = location.getGroundAs(FreelyWaterable.class);

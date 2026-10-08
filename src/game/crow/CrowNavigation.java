@@ -49,20 +49,6 @@ class CrowNavigation {
     }
 
     /**
-     * Picks the adjacent tile (that the actor could step onto) which brings
-     * the actor closest to the target, without bringing it any closer to the
-     * threat than it already is.
-     *
-     * @param target the Location being approached
-     * @param threat the Location that must not be approached
-     * @return the best adjacent Location to step to, or empty if no such tile
-     * gets any closer to the target than staying put
-     */
-    Optional<Location> stepTowardKeepingClear(Location target, Location threat) {
-        return onlyIfMoving(options().noCloserTo(threat, from).nearestTo(target));
-    }
-
-    /**
      * Picks the adjacent tile (that the actor could step onto) which takes
      * the actor furthest away from the threat.
      *

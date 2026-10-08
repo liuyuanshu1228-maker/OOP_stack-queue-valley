@@ -5,25 +5,21 @@ import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
-import edu.monash.fit2099.engine.positions.Location;
 import game.actions.CreatureStateAction;
 import game.actors.ConsciousActor;
 import game.creaturestate.Composure;
 import game.creaturestate.CreatureState;
 import game.creaturestate.ItemCache;
-import game.creaturestate.Roosting;
 import game.creaturestate.StatefulCreature;
 
 import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
  * A crow: a stateful creature that cycles between {@link Perching},
  * {@link Foraging}, {@link Mobbing}, and {@link Fleeing}.
  */
-public class Crow extends ConsciousActor implements StatefulCreature, ItemCache, Composure, Roosting {
+public class Crow extends ConsciousActor implements StatefulCreature, ItemCache, Composure {
 
     /** The crow's starting (and maximum) hit points. */
     private static final int STARTING_HP = 30;
@@ -44,9 +40,6 @@ public class Crow extends ConsciousActor implements StatefulCreature, ItemCache,
 
     /** Number of consecutive turns this crow has felt safe (no actors within sensing range). */
     private int safeTurns = 0;
-
-    /** The perch this crow last settled on, or null if it has not settled yet. */
-    private Location perch;
 
     /**
      * Creates a new Crow.
@@ -123,28 +116,8 @@ public class Crow extends ConsciousActor implements StatefulCreature, ItemCache,
     }
 
     /**
-     * Returns the perch this crow last settled on.
-     *
-     * @return the perch, or empty if the crow has not settled yet
-     */
-    @Override
-    public Optional<Location> getPerch() {
-        return Optional.ofNullable(perch);
-    }
-
-    /**
-     * Remembers the perch this crow has just settled on.
-     *
-     * @param perch the Location the crow settled on
-     */
-    @Override
-    public void setPerch(Location perch) {
-        this.perch = perch;
-    }
-
-    /**
-     * Selects the action to perform on a conscious turn: reports what the crow
-     * is carrying, then advances its state machine by one step.
+     * Selects the action to perform on a conscious turn: advances its state
+     * machine by one step.
      *
      * @param actions collection of possible Actions for this Actor
      * @param lastAction the Action this Actor took last turn
@@ -155,22 +128,6 @@ public class Crow extends ConsciousActor implements StatefulCreature, ItemCache,
     @Override
     protected Action playConsciousTurn(ActionList actions, Action lastAction,
                                        GameMap map, Display display) {
-        printInventory(display);
         return new CreatureStateAction();
-    }
-
-    /**
-     * Prints what this crow is carrying, so stolen items can be followed from
-     * turn to turn.
-     *
-     * @param display the I/O object to which the inventory is printed
-     */
-    private void printInventory(Display display) {
-        List<Item> items = this.getInventory().getItems();
-        if (items.isEmpty()) {
-            display.println(this + " is carrying nothing.");
-        } else {
-            display.println(this + " is carrying: " + items);
-        }
     }
 }
