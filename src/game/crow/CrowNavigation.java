@@ -3,11 +3,11 @@ package game.crow;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.positions.area.Area;
+import game.positions.area.EnterableBy;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * The steps an actor can take from where it stands: one tile toward, or away
@@ -45,7 +45,7 @@ class CrowNavigation {
      * tile is enterable or gets any closer than staying put
      */
     Optional<Location> stepToward(Location target) {
-        return improvingStep(options -> options.nearestTo(target));
+        return onlyIfMoving(options().nearestTo(target));
     }
 
     /**
@@ -57,22 +57,35 @@ class CrowNavigation {
      * tile is enterable or gets any further away than staying put
      */
     Optional<Location> stepAway(Location threat) {
-        return improvingStep(options -> options.farthestFrom(threat));
+        return onlyIfMoving(options().farthestFrom(threat));
     }
 
     /**
-     * Chooses a step from the enterable adjacent tiles, but only if it beats
-     * staying put. Staying put is listed first among the options, and the
-     * first best option wins, so a step has to be strictly better than
-     * staying to be chosen.
+     * The tiles the actor could end its turn on: the tile it stands on, listed
+     * first, followed by the adjacent tiles it is able to enter. Staying put is
+     * listed first and the first best option wins, so a step has to be
+     * strictly better than staying to be chosen.
      *
-     * @param choose how to pick the best option out of an area
-     * @return the chosen adjacent Location, or empty if staying put is best
+     * @return the options for a step, starting with staying put
      */
-    private Optional<Location> improvingStep(Function<Area, Optional<Location>> choose) {
+    private Area options() {
         List<Location> options = new ArrayList<>();
         options.add(from);
-        options.addAll(Area.adjacentTo(from).filter(tile -> tile.canActorEnter(actor)).tiles());
-        return choose.apply(new Area(options)).filter(best -> !best.equals(from));
+        options.addAll(Area.adjacentTo(from).filter(new EnterableBy(actor)).tiles());
+        return new Area(options);
+    }
+
+    /**
+     * Turns the best option into a step: staying put is not a step.
+     *
+     * @param best the best option, if any
+     * @return the best option if it is a tile other than the one the actor
+     * stands on, otherwise empty
+     */
+    private Optional<Location> onlyIfMoving(Optional<Location> best) {
+        if (best.isPresent() && !best.get().equals(from)) {
+            return best;
+        }
+        return Optional.empty();
     }
 }

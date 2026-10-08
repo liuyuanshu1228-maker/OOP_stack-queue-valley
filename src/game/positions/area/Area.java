@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 /**
  * A group of tiles on a map, and the choosing of tiles from it.
@@ -113,10 +112,10 @@ public class Area {
      * @param condition what a tile must satisfy to stay in the area
      * @return a new area made of the tiles that satisfy the condition
      */
-    public Area filter(Predicate<Location> condition) {
+    public Area filter(TileCondition condition) {
         List<Location> matching = new ArrayList<>();
         for (Location tile : tiles) {
-            if (condition.test(tile)) {
+            if (condition.isMetBy(tile)) {
                 matching.add(tile);
             }
         }
@@ -142,7 +141,7 @@ public class Area {
      * @return a random enterable tile of this area, or empty if there is none
      */
     public Optional<Location> randomEnterableTile(Actor actor) {
-        return filter(tile -> tile.canActorEnter(actor)).randomTile();
+        return filter(new EnterableBy(actor)).randomTile();
     }
 
     /**

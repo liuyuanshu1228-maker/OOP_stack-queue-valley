@@ -46,7 +46,9 @@ public class ItemDropper {
      */
     public Optional<Location> dropOnRandomTile(Item item) {
         Optional<Location> tile = area.randomTile();
-        tile.ifPresent(chosen -> chosen.addItem(item));
+        if (tile.isPresent()) {
+            tile.get().addItem(item);
+        }
         return tile;
     }
 

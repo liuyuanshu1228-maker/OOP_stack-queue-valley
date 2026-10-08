@@ -3,8 +3,8 @@ package game.crow;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
-import game.creaturestate.ItemCache;
 import game.positions.area.Area;
+import game.positions.area.HoldsActor;
 
 import java.util.Optional;
 
@@ -43,15 +43,10 @@ class CrowSensing {
      * Finds an Item at the creature's own Location that is worth foraging.
      *
      * @return the first forageable Item here, or empty if there is none
-     * @see #isForageable(Item)
+     * @see ForageableItems
      */
     Optional<Item> forageableItemHere() {
-        for (Item item : here.getItems()) {
-            if (isForageable(item)) {
-                return Optional.of(item);
-            }
-        }
-        return Optional.empty();
+        return new ForageableItems(creature).firstAt(here);
     }
 
     /**
@@ -60,7 +55,7 @@ class CrowSensing {
      * @return true if there is at least one forageable Item here
      */
     boolean isOnFood() {
-        return hasForageableItems(here);
+        return forageableItemHere().isPresent();
     }
 
     /**
@@ -80,7 +75,7 @@ class CrowSensing {
      * @return the closest Location with forageable food, or empty if there is none
      */
     Optional<Location> nearestFood() {
-        return withinRange().filter(this::hasForageableItems).nearestTo(here);
+        return withinRange().filter(new ForageableItems(creature)).nearestTo(here);
     }
 
     /**
@@ -89,7 +84,7 @@ class CrowSensing {
      * @return the number of actors within sensing range, not counting one standing here
      */
     int actorsWithinRange() {
-        return withinRange().filter(Location::containsAnActor).tiles().size();
+        return withinRange().filter(new HoldsActor()).tiles().size();
     }
 
     /**
@@ -117,7 +112,7 @@ class CrowSensing {
      * @return the closest Location holding an actor, or empty if there is none
      */
     Optional<Location> nearestActor() {
-        return withinRange().filter(Location::containsAnActor).nearestTo(here);
+        return withinRange().filter(new HoldsActor()).nearestTo(here);
     }
 
     /**
@@ -127,10 +122,10 @@ class CrowSensing {
      * @return true if there is a lone actor nearby with a non-empty inventory
      */
     boolean hasLoneTargetWithItems() {
+        Optional<Location> target = nearestActor();
         return actorsWithinRange() == 1
-                && nearestActor()
-                .map(location -> !location.getActor().getInventory().getItems().isEmpty())
-                .orElse(false);
+                && target.isPresent()
+                && !target.get().getActor().getInventory().getItems().isEmpty();
     }
 
     /**
@@ -138,33 +133,5 @@ class CrowSensing {
      */
     private Area withinRange() {
         return Area.within(here, Crow.SENSING_RADIUS);
-    }
-
-    /**
-     * Whether the given Item is worth foraging: one that the creature hasn't
-     * already hidden away itself.
-     *
-     * @param item the Item to check
-     * @return true if the creature has not cached this Item
-     */
-    private boolean isForageable(Item item) {
-        return creature.asCapability(ItemCache.class)
-                .map(cache -> !cache.remembers(item))
-                .orElse(true);
-    }
-
-    /**
-     * Whether there is an Item at the given Location worth foraging.
-     *
-     * @param location the Location to check
-     * @return true if there is at least one forageable Item at that Location
-     */
-    private boolean hasForageableItems(Location location) {
-        for (Item item : location.getItems()) {
-            if (isForageable(item)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

@@ -6,6 +6,7 @@ import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.actions.MerchantContext;
 import game.actions.Purchasable;
 import game.crops.Crop;
+import game.crops.Unplanted;
 import game.positions.area.Area;
 import game.statistics.FarmerStatistics;
 
@@ -65,7 +66,7 @@ public abstract class CropPurchase implements Purchasable {
     public final String purchase(Actor buyer, MerchantContext merchantContext) {
         Actor merchant = merchantContext.getMerchant();
         Optional<Location> plantingSpot =
-                Crop.unplantedTilesOf(Area.adjacentTo(merchantContext.getLocation())).randomTile();
+                Area.adjacentTo(merchantContext.getLocation()).filter(new Unplanted()).randomTile();
 
         if (plantingSpot.isEmpty()) {
             return buyer + " tries to buy a " + productName

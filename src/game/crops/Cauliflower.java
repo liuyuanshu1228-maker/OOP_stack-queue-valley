@@ -103,7 +103,7 @@ public class Cauliflower extends Crop implements CropWaterable {
         String message = actor + " waters the " + this + ".";
 
         if (RandomUtils.rollPercent(PUDDLE_CHANCE_PERCENT)) {
-            for (Location adjacentLocation : unplantedTilesOf(Area.adjacentTo(location)).tiles()) {
+            for (Location adjacentLocation : Area.adjacentTo(location).filter(new Unplanted()).tiles()) {
                 adjacentLocation.setGround(new Puddle());
             }
             message += " The surrounding ground turns into puddles.";
