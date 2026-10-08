@@ -17,7 +17,7 @@ public class StrawberryItem extends ConsumableItem {
     private final boolean rotten;
 
     /**
-     * Constructor.
+     * Creates a new StrawberryItem.
      *
      * @param rotten whether this strawberry is rotten
      */

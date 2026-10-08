@@ -20,7 +20,7 @@ public class Rock extends BreakableGround {
     private static final int SHOCKWAVE_CHANCE_PERCENT = 50;
 
     /**
-     * Constructor.
+     * Creates a new Rock.
      */
     public Rock() {
         super('#', "Rock");

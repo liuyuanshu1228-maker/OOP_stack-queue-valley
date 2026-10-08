@@ -17,7 +17,7 @@ public class TomatoItem extends FoodItem {
     private static final int MAX_HP_INCREASE = 2;
 
     /**
-     * Constructor.
+     * Creates a new TomatoItem.
      */
     public TomatoItem() {
         super("Tomato", 'o');

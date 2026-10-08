@@ -12,7 +12,7 @@ public class WateringCan extends Item implements WateringTool {
     private static final int STAMINA_COST = 2;
 
     /**
-     * Constructor.
+     * Creates a new WateringCan.
      */
     public WateringCan() {
         super("Watering Can", 'w');

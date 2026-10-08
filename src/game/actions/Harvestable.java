@@ -23,7 +23,7 @@ public interface Harvestable {
      * Applies the effect of a successful harvest to the given Actor and Location.
      * Assumes stamina has already been verified as sufficient by the caller.
      *
-     * @param actor    the Actor performing the harvest
+     * @param actor the Actor performing the harvest
      * @param location the Location of the crop being harvested
      * @return a description of the outcome, to be displayed to the player
      */

@@ -111,9 +111,9 @@ public class StackQueueValleyWorld extends World {
     private static final Link ALIEN_DEVICE_DESTINATIONS = new Link(new Spot(5, 3), new Spot(6, 4));
 
     /**
-     * Constructor.
+     * Creates a new StackQueueValleyWorld.
      *
-     * @param display the Display that will display this World.
+     * @param display the Display that will display this World
      */
     public StackQueueValleyWorld(Display display) {
         super(display);

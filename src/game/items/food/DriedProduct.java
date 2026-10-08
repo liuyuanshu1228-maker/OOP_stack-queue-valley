@@ -19,7 +19,7 @@ public class DriedProduct extends ProcessedProduct {
     private static final String MODIFIER = "Dried";
 
     /**
-     * Constructor.
+     * Creates a new DriedProduct.
      *
      * @param precedingProduct the complete product this layer wraps
      */

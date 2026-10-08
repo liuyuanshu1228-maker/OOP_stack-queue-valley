@@ -16,7 +16,7 @@ import game.positions.Waterable;
 public class Dirt extends Ground implements Tillable, Waterable {
 
     /**
-     * Constructor.
+     * Creates a new Dirt.
      */
     public Dirt() {
         super('.', "Dirt");
@@ -47,8 +47,8 @@ public class Dirt extends Ground implements Tillable, Waterable {
      * WaterAction, offered only while the Actor is standing on it, not on
      * adjacent tiles.
      *
-     * @param actor     the Actor acting
-     * @param location  the current Location
+     * @param actor the Actor acting
+     * @param location the current Location
      * @param direction the direction of this Dirt from the Actor
      * @return an ActionList containing TillAction and WaterAction if direction is empty,
      * otherwise empty

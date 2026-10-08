@@ -16,7 +16,7 @@ public class Ladder extends TravelGround {
     private static final int FALL_DAMAGE = 25;
 
     /**
-     * Constructor.
+     * Creates a new Ladder.
      */
     public Ladder() {
         super('H', "Ladder");

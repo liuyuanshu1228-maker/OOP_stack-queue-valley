@@ -11,7 +11,7 @@ import edu.monash.fit2099.engine.items.Item;
 public class Sword extends Item {
 
     /**
-     * Constructor for Sword. Initializes the portable Sword item with display character '!'.
+     * Creates a new Sword. Initializes the portable Sword item with display character '!'.
      */
     public Sword() {
         super("Sword", '!');

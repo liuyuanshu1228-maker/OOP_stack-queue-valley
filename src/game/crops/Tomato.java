@@ -21,7 +21,7 @@ public class Tomato extends Crop {
     private static final int MAX_STAMINA_INCREASE = 1;
 
     /**
-     * Constructor.
+     * Creates a new Tomato.
      */
     public Tomato() {
         super('T', "Tomato");

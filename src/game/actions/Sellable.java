@@ -22,7 +22,7 @@ public interface Sellable {
      * inventory. The calling {@code SellAction} does this before calling, so
      * implementations do not remove it themselves.
      *
-     * @param seller          the Actor selling this item
+     * @param seller the Actor selling this item
      * @param merchantContext the merchant buying it and its current Location
      * @return a description of the outcome
      */

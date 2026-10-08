@@ -18,7 +18,7 @@ public class ConsumeAction extends Action {
     private final Item item;
 
     /**
-     * Constructor.
+     * Creates a new ConsumeAction.
      *
      * @param item the Item to be consumed
      */
@@ -29,8 +29,8 @@ public class ConsumeAction extends Action {
     /**
      * Applies the Item's Consumable effect and removes it from the Actor's inventory.
      *
-     * @param actor The actor performing the action.
-     * @param map   The map the actor is on.
+     * @param actor the actor performing the action
+     * @param map the map the actor is on
      * @return a description of the outcome, to be displayed to the player
      */
     @Override
@@ -49,7 +49,7 @@ public class ConsumeAction extends Action {
     /**
      * Describes what this Action will do if chosen in the menu.
      *
-     * @param actor The actor performing the action.
+     * @param actor the actor performing the action
      * @return the action description to be displayed on the menu
      */
     @Override

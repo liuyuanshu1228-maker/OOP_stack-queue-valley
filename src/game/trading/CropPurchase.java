@@ -23,10 +23,10 @@ public abstract class CropPurchase implements Purchasable {
     private final int price;
 
     /**
-     * Constructor for CropPurchase.
+     * Creates a new CropPurchase.
      *
      * @param productName the name of the crop being purchased
-     * @param price       the cost of the crop in coins
+     * @param price the cost of the crop in coins
      */
     protected CropPurchase(String productName, int price) {
         this.productName = productName;
@@ -58,7 +58,7 @@ public abstract class CropPurchase implements Purchasable {
      * Merchant to plant the crop (returning early if none exists), then charges
      * the buyer (unless waived) and triggers any crop-specific planting effect.
      *
-     * @param buyer           the Actor buying this crop
+     * @param buyer the Actor buying this crop
      * @param merchantContext the Merchant selling it and its current Location
      * @return a description of the purchase outcome
      */
@@ -108,8 +108,8 @@ public abstract class CropPurchase implements Purchasable {
      * Applies any additional side effect after the crop is planted and returns the base
      * purchase outcome message.
      *
-     * @param buyer        the Actor buying the crop
-     * @param merchant     the Merchant selling the crop
+     * @param buyer the Actor buying the crop
+     * @param merchant the Merchant selling the crop
      * @param cropLocation the Location where the new crop was planted
      * @return a description of the purchase outcome
      */

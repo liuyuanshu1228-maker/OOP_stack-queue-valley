@@ -17,7 +17,7 @@ import game.positions.farm.Dirt;
 public abstract class BreakableGround extends Ground implements Breakable {
 
     /**
-     * Constructor.
+     * Creates a new BreakableGround.
      *
      * @param displayChar character to display for this ground
      * @param name the name of this ground

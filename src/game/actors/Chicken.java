@@ -21,7 +21,7 @@ public class Chicken extends Animal {
     private static final int BONUS_EGG_CHANCE_PERCENT = 50;
 
     /**
-     * Constructor.
+     * Creates a new Chicken.
      * <p>
      * Uses 'n' rather than the more obvious 'c', which is already taken by
      * the Cauliflower item in this world.
@@ -37,7 +37,7 @@ public class Chicken extends Animal {
      * exceeding its maximum HP) and drops one Egg on a tile adjacent to the
      * Farmer, with a 50% chance of a second Egg being dropped as well.
      *
-     * @param farmer         the Actor doing the feeding
+     * @param farmer the Actor doing the feeding
      * @param farmerLocation the Location of the Farmer
      * @return a description of the outcome, to be displayed to the player
      */

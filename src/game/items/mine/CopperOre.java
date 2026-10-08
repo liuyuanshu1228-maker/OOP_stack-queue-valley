@@ -9,7 +9,7 @@ import edu.monash.fit2099.engine.items.Item;
 public class CopperOre extends Item {
 
     /**
-     * Constructor.
+     * Creates a new CopperOre.
      */
     public CopperOre() {
         super("Copper ore", 'c');

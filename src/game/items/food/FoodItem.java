@@ -17,9 +17,9 @@ import game.actions.Food;
 public abstract class FoodItem extends ConsumableItem implements Food, Processable {
 
     /**
-     * Constructor.
+     * Creates a new FoodItem.
      *
-     * @param name        the name of this Item
+     * @param name the name of this Item
      * @param displayChar the character to display for this Item
      */
     public FoodItem(String name, char displayChar) {
@@ -31,7 +31,7 @@ public abstract class FoodItem extends ConsumableItem implements Food, Processab
      * another Actor, namely a FeedAction if that Actor is Feedable.
      *
      * @param otherActor the other Actor
-     * @param location   the location of the other Actor
+     * @param location the location of the other Actor
      * @return an ActionList containing a FeedAction if otherActor is Feedable, otherwise empty
      */
     @Override

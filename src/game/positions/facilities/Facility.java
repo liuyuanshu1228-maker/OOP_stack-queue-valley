@@ -17,10 +17,10 @@ import game.positions.ProcessingFacility;
 public abstract class Facility extends Ground implements ProcessingFacility {
 
     /**
-     * Constructor.
+     * Creates a new Facility.
      *
      * @param displayChar character to display for this facility
-     * @param name        the name of this facility
+     * @param name the name of this facility
      */
     public Facility(char displayChar, String name) {
         super(displayChar, name);
@@ -30,8 +30,8 @@ public abstract class Facility extends Ground implements ProcessingFacility {
      * Returns the list of Actions this facility offers the Actor, namely one
      * ProcessAction for every Processable Item the Actor is carrying.
      *
-     * @param actor     the Actor who might process an Item at this facility
-     * @param location  the current Location
+     * @param actor the Actor who might process an Item at this facility
+     * @param location the current Location
      * @param direction the direction of this facility from the Actor
      * @return an ActionList containing a ProcessAction for each Processable Item carried
      */

@@ -19,7 +19,7 @@ public class ParsnipItem extends FoodItem {
     private static final int MAX_STAMINA_INCREASE = 1;
 
     /**
-     * Constructor.
+     * Creates a new ParsnipItem.
      */
     public ParsnipItem() {
         super("Parsnip", 'p');

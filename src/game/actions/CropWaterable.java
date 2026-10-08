@@ -31,7 +31,7 @@ public interface CropWaterable {
      * Applies the effect of watering this crop to the given Actor and Location.
      * Assumes stamina has already been verified as sufficient by the caller.
      *
-     * @param actor    the Actor watering the crop
+     * @param actor the Actor watering the crop
      * @param location the Location of the crop being watered
      * @return a description of the outcome, to be displayed to the player
      */

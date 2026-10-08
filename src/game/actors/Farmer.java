@@ -26,7 +26,7 @@ public class Farmer extends Actor {
     private static final int STARTING_COINS = 10000;
 
     /**
-     * Constructor.
+     * Creates a new Farmer.
      *
      * @param name the farmer's name
      */
@@ -42,10 +42,10 @@ public class Farmer extends Actor {
      * otherwise presents the player with a menu of the allowable actions.
      *
      * @see Actor#playTurn(ActionList, Action, GameMap, Display)
-     * @param actions    collection of possible Actions for this Actor
+     * @param actions collection of possible Actions for this Actor
      * @param lastAction the Action this Actor took last turn
-     * @param map        the map containing the Actor
-     * @param display    the I/O object to which messages may be written
+     * @param map the map containing the Actor
+     * @param display the I/O object to which messages may be written
      * @return the Action to be performed
      */
     @Override

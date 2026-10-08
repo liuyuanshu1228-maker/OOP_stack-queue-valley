@@ -9,7 +9,7 @@ import game.items.food.DriedProduct;
 public class DryingRack extends Facility {
 
     /**
-     * Constructor.
+     * Creates a new DryingRack.
      */
     public DryingRack() {
         super('R', "Drying Rack");

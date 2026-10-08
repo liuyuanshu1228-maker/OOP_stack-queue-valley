@@ -14,7 +14,7 @@ public class MelonItem extends ConsumableItem {
     private static final int MAX_HEALTH_INCREASE_AMOUNT = 10;
 
     /**
-     * Constructor.
+     * Creates a new MelonItem.
      */
     public MelonItem() {
         super("Melon", 'm');

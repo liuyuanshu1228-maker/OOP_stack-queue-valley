@@ -29,7 +29,7 @@ public interface Purchasable {
      * calling {@code BuyAction} checks this before calling, so implementations
      * do not check it again.
      *
-     * @param buyer           the Actor buying this product
+     * @param buyer the Actor buying this product
      * @param merchantContext the Merchant selling it and its current Location
      * @return a description of the outcome
      */

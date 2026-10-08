@@ -19,7 +19,7 @@ public class TeleportationCircle extends TravelGround {
     private static final int BURN_DURATION_TURNS = 3;
 
     /**
-     * Constructor.
+     * Creates a new TeleportationCircle.
      */
     public TeleportationCircle() {
         super('O', "Teleportation circle");

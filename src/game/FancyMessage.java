@@ -45,7 +45,7 @@ public class FancyMessage {
     private final String text;
 
     /**
-     * Constructor.
+     * Creates a new FancyMessage.
      *
      * @param text the message to print, with lines separated by newline characters
      */

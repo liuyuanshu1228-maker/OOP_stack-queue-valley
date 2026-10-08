@@ -9,11 +9,11 @@ import game.actions.Feedable;
 public abstract class Animal extends WanderingActor implements Feedable {
 
     /**
-     * Constructor for Animal.
+     * Creates a new Animal.
      *
-     * @param name        the name of the Animal
+     * @param name the name of the Animal
      * @param displayChar the character that will represent the Animal in the display
-     * @param hitPoints   the Animal's starting hit points
+     * @param hitPoints the Animal's starting hit points
      */
     public Animal(String name, char displayChar, int hitPoints) {
         super(name, displayChar, hitPoints);

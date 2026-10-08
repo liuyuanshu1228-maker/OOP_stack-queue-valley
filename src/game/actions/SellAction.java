@@ -21,10 +21,10 @@ public class SellAction extends Action {
     private final MerchantContext merchantContext;
 
     /**
-     * Constructor for SellAction.
+     * Creates a new SellAction.
      *
-     * @param item            the Item in the actor's inventory to be sold
-     * @param sellable        the Sellable capability of the item
+     * @param item the Item in the actor's inventory to be sold
+     * @param sellable the Sellable capability of the item
      * @param merchantContext the Merchant buying the item and its current Location
      */
     public SellAction(Item item, Sellable sellable, MerchantContext merchantContext) {
@@ -37,7 +37,7 @@ public class SellAction extends Action {
      * Removes the sold item from the actor's inventory and executes the sale logic.
      *
      * @param actor the Actor performing the action
-     * @param map   the map the Actor is on
+     * @param map the map the Actor is on
      * @return a description of the sale outcome
      */
     @Override

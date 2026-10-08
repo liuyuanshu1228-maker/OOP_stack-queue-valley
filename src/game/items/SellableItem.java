@@ -19,11 +19,11 @@ public abstract class SellableItem extends Item implements Sellable {
     private final int sellPrice;
 
     /**
-     * Constructor for SellableItem. Initializes a portable item with the given sell price.
+     * Creates a new SellableItem. Initializes a portable item with the given sell price.
      *
-     * @param name        the name of the item
+     * @param name the name of the item
      * @param displayChar the character used to display the item on the map
-     * @param sellPrice   the number of coins the Merchant pays for the item
+     * @param sellPrice the number of coins the Merchant pays for the item
      */
     protected SellableItem(String name, char displayChar, int sellPrice) {
         super(name, displayChar);
@@ -45,7 +45,7 @@ public abstract class SellableItem extends Item implements Sellable {
      * Completes the sale of this item: unless the Merchant refuses to pay, the seller
      * is paid and any item-specific side effect is applied.
      *
-     * @param seller          the Actor selling this item
+     * @param seller the Actor selling this item
      * @param merchantContext the Merchant buying it and its current Location
      * @return a description of the sale outcome
      */
@@ -76,7 +76,7 @@ public abstract class SellableItem extends Item implements Sellable {
      * Applies any item-specific side effect after the seller has been paid.
      * Defaults to no effect; subclasses may override.
      *
-     * @param seller          the Actor selling this item
+     * @param seller the Actor selling this item
      * @param merchantContext the Merchant buying it and its current Location
      * @return a description of the side effect, or an empty string if nothing happened
      */

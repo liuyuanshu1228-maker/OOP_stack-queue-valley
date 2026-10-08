@@ -24,7 +24,7 @@ public class WaterCropAction extends CapabilityToolAction<CropWaterable, Waterin
     private final Location cropLocation;
 
     /**
-     * Constructor.
+     * Creates a new WaterCropAction.
      *
      * @param cropLocation the Location of the crop to be watered
      */

@@ -19,7 +19,7 @@ public class PreservedProduct extends ProcessedProduct {
     private static final String MODIFIER = "Preserved";
 
     /**
-     * Constructor.
+     * Creates a new PreservedProduct.
      *
      * @param precedingProduct the complete product this layer wraps
      */

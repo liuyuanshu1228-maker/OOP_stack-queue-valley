@@ -17,7 +17,7 @@ public class Cow extends Animal {
     private static final int HEAL_AMOUNT = 5;
 
     /**
-     * Constructor.
+     * Creates a new Cow.
      * <p>
      * Uses 'B' rather than the more obvious 'C', which is already taken by
      * the Cauliflower crop in this world.
@@ -32,7 +32,7 @@ public class Cow extends Animal {
      * Applies the effect of feeding this Cow: restores 5 HP (without exceeding
      * its maximum HP) and drops one Milk on a tile adjacent to the Farmer.
      *
-     * @param farmer         the Actor doing the feeding
+     * @param farmer the Actor doing the feeding
      * @param farmerLocation the Location of the Farmer
      * @return a description of the outcome, to be displayed to the player
      */

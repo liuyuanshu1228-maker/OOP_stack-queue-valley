@@ -12,7 +12,7 @@ public class Hoe extends Item implements TillingTool {
     private static final int STAMINA_COST = 2;
 
     /**
-     * Constructor.
+     * Creates a new Hoe.
      */
     public Hoe() {
         super("Hoe", 'h');

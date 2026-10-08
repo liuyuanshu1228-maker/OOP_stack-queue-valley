@@ -25,7 +25,7 @@ public class AlienDevice extends Item implements TravelMethod {
     private final DestinationList destinations = new DestinationList();
 
     /**
-     * Constructor.
+     * Creates a new AlienDevice.
      */
     public AlienDevice() {
         super("Alien device", 'a');

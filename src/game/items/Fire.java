@@ -22,7 +22,7 @@ public class Fire extends Item {
     private int remainingTurns;
 
     /**
-     * Constructor.
+     * Creates a new Fire.
      *
      * @param lifetimeTurns how many turns this fire burns before going out
      * @param burnDamagePerTurn the damage per turn of the burn it inflicts

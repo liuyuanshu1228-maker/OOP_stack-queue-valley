@@ -25,23 +25,23 @@ public abstract class WanderingActor extends Actor {
     private final Behaviour<Actor, Action> behaviour;
 
     /**
-     * Constructor for a WanderingActor that wanders at random.
+     * Creates a WanderingActor that wanders at random.
      *
-     * @param name        the name of the Actor
+     * @param name the name of the Actor
      * @param displayChar the character that will represent the Actor in the display
-     * @param hitPoints   the Actor's starting hit points
+     * @param hitPoints the Actor's starting hit points
      */
     public WanderingActor(String name, char displayChar, int hitPoints) {
         this(name, displayChar, hitPoints, new WanderBehaviour());
     }
 
     /**
-     * Constructor for a WanderingActor that moves according to the given behaviour.
+     * Creates a WanderingActor that moves according to the given behaviour.
      *
-     * @param name        the name of the Actor
+     * @param name the name of the Actor
      * @param displayChar the character that will represent the Actor in the display
-     * @param hitPoints   the Actor's starting hit points
-     * @param behaviour   decides where the Actor goes on its turn
+     * @param hitPoints the Actor's starting hit points
+     * @param behaviour decides where the Actor goes on its turn
      */
     public WanderingActor(String name, char displayChar, int hitPoints,
                           Behaviour<Actor, Action> behaviour) {
@@ -54,10 +54,10 @@ public abstract class WanderingActor extends Actor {
      * Falls unconscious if out of hit points; otherwise does what its
      * behaviour decides, or nothing if the behaviour finds no valid move.
      *
-     * @param actions    collection of possible Actions for this Actor
+     * @param actions collection of possible Actions for this Actor
      * @param lastAction the Action this Actor took last turn
-     * @param map        the map containing the Actor
-     * @param display    the I/O object to which messages may be written
+     * @param map the map containing the Actor
+     * @param display the I/O object to which messages may be written
      * @return the Action to be performed
      */
     @Override

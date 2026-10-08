@@ -41,7 +41,7 @@ public class Geode extends Item implements Breakable {
     private static final String ON_THE_GROUND = "on the ground";
 
     /**
-     * Constructor.
+     * Creates a new Geode.
      */
     public Geode() {
         super("Geode", 'g');

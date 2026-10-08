@@ -21,7 +21,7 @@ public abstract class TimedStatus implements Status {
     private int remainingTurns;
 
     /**
-     * Constructor.
+     * Creates a new TimedStatus.
      *
      * @param durationTurns how many turns this status lasts
      */

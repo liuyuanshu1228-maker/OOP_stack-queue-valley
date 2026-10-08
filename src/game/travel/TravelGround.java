@@ -17,7 +17,7 @@ public abstract class TravelGround extends Ground implements TravelMethod {
     private final DestinationList destinations = new DestinationList();
 
     /**
-     * Constructor.
+     * Creates a new TravelGround.
      *
      * @param displayChar character to display for this ground
      * @param name the name of this ground

@@ -19,7 +19,7 @@ public class ParsnipPurchase extends CropPurchase {
     private static final int PARSNIPS_PRODUCED = 3;
 
     /**
-     * Constructor for ParsnipPurchase. Initializes the purchase option with a price of 250 coins.
+     * Creates a new ParsnipPurchase. Initializes the purchase option with a price of 250 coins.
      */
     public ParsnipPurchase() {
         super("Parsnip crop", PRICE);
@@ -38,8 +38,8 @@ public class ParsnipPurchase extends CropPurchase {
     /**
      * Drops 3 {@link ParsnipItem} instances on randomly chosen tiles adjacent to the planted crop.
      *
-     * @param buyer        the Actor buying the crop
-     * @param merchant     the Merchant selling the crop
+     * @param buyer the Actor buying the crop
+     * @param merchant the Merchant selling the crop
      * @param cropLocation the Location where the Parsnip crop was planted
      * @return a description of the purchase outcome
      */

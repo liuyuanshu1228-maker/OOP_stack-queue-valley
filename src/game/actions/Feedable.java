@@ -14,7 +14,7 @@ public interface Feedable {
      * Applies this animal's heal effect and produces its animal-specific
      * item(s) on tile(s) adjacent to the Farmer's location.
      *
-     * @param farmer         the Actor doing the feeding
+     * @param farmer the Actor doing the feeding
      * @param farmerLocation the Location of the Farmer (where drops appear nearby)
      * @return a description of the outcome, to be displayed to the player
      */

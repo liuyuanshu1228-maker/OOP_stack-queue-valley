@@ -17,9 +17,9 @@ import game.statistics.StatisticAdjuster;
 public abstract class ConsumableItem extends Item implements Consumable {
 
     /**
-     * Constructor.
+     * Creates a new ConsumableItem.
      *
-     * @param name        the name of this Item
+     * @param name the name of this Item
      * @param displayChar the character to display for this Item
      */
     public ConsumableItem(String name, char displayChar) {
@@ -32,7 +32,7 @@ public abstract class ConsumableItem extends Item implements Consumable {
      * namely consuming it.
      *
      * @param owner the Actor carrying this Item
-     * @param map   the map the owner is currently on
+     * @param map the map the owner is currently on
      * @return an ActionList containing a ConsumeAction for this Item
      */
     @Override
@@ -46,7 +46,7 @@ public abstract class ConsumableItem extends Item implements Consumable {
      * Shared effect for food that heals when eaten: restores HP to the Actor,
      * capped at their maximum, and describes the actual change.
      *
-     * @param actor  the Actor eating this Item
+     * @param actor the Actor eating this Item
      * @param amount the HP to restore
      * @return a description such as "... eats the Parsnip and is healed for 1 HP (99 -> 100)."
      */
@@ -61,7 +61,7 @@ public abstract class ConsumableItem extends Item implements Consumable {
      * Shared effect for food that raises maximum HP when eaten. Raising a
      * maximum also restores the current value to it, so the message reports both.
      *
-     * @param actor  the Actor eating this Item
+     * @param actor the Actor eating this Item
      * @param amount the amount by which maximum HP increases
      * @return a description such as "... eats the Melon. Maximum HP increases by 10
      * (100 -> 110), and current HP is restored to 110."

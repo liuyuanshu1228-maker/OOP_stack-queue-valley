@@ -16,7 +16,7 @@ public class CauliflowerItem extends ConsumableItem {
     private static final int BONUS_CHANCE_PERCENT = 50;
 
     /**
-     * Constructor.
+     * Creates a new CauliflowerItem.
      */
     public CauliflowerItem() {
         super("Cauliflower", 'c');

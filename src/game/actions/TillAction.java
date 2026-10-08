@@ -13,7 +13,7 @@ import game.positions.Tillable;
 public class TillAction extends CapabilityToolAction<Tillable, TillingTool> {
 
     /**
-     * Constructor.
+     * Creates a new TillAction.
      *
      * @param location the Location whose Ground is to be tilled
      */
@@ -39,7 +39,7 @@ public class TillAction extends CapabilityToolAction<Tillable, TillingTool> {
     /**
      * Describes what this Action will do if chosen in the menu.
      *
-     * @param actor The actor performing the action.
+     * @param actor the actor performing the action
      * @return the action description to be displayed on the menu
      */
     @Override

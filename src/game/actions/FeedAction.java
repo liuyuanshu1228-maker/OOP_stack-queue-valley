@@ -26,9 +26,9 @@ public class FeedAction extends Action {
     private final Actor animal;
 
     /**
-     * Constructor.
+     * Creates a new FeedAction.
      *
-     * @param food   the food Item to be used for feeding
+     * @param food the food Item to be used for feeding
      * @param animal the Actor (animal) to be fed
      */
     public FeedAction(Item food, Actor animal) {
@@ -42,8 +42,8 @@ public class FeedAction extends Action {
      * effect and the food's Food bonus effect; otherwise, fails without any
      * side effects.
      *
-     * @param actor The actor performing the action.
-     * @param map   The map the actor is on.
+     * @param actor the actor performing the action
+     * @param map the map the actor is on
      * @return a description of the outcome, to be displayed to the player
      */
     @Override
@@ -89,7 +89,7 @@ public class FeedAction extends Action {
     /**
      * Describes what this Action will do if chosen in the menu.
      *
-     * @param actor The actor performing the action.
+     * @param actor the actor performing the action
      * @return the action description to be displayed on the menu
      */
     @Override

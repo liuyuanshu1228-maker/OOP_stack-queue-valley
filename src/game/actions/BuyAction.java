@@ -19,9 +19,9 @@ public class BuyAction extends Action {
     private final MerchantContext merchantContext;
 
     /**
-     * Constructor for BuyAction.
+     * Creates a new BuyAction.
      *
-     * @param purchasable     the Purchasable product being offered
+     * @param purchasable the Purchasable product being offered
      * @param merchantContext the Merchant selling the product and its current Location
      */
     public BuyAction(Purchasable purchasable, MerchantContext merchantContext) {
@@ -34,7 +34,7 @@ public class BuyAction extends Action {
      * if so, executes the purchase logic.
      *
      * @param actor the Actor performing the action
-     * @param map   the map the Actor is on
+     * @param map the map the Actor is on
      * @return a description of what happened suitable for display
      */
     @Override

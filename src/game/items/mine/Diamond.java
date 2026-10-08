@@ -20,7 +20,7 @@ public class Diamond extends SellableItem {
     private static final int THEFT_CHANCE_PERCENT = 50;
 
     /**
-     * Constructor for Diamond. Initializes the portable Diamond item with display character 'd'.
+     * Creates a new Diamond. Initializes the portable Diamond item with display character 'd'.
      */
     public Diamond() {
         super("Diamond", 'd', SELL_PRICE);
@@ -30,7 +30,7 @@ public class Diamond extends SellableItem {
      * Rolls a 50% chance for the Merchant to steal a random item from the seller's inventory.
      * The stolen item is removed from the game.
      *
-     * @param seller          the Actor selling this item
+     * @param seller the Actor selling this item
      * @param merchantContext the Merchant buying it and its current Location
      * @return a description of the theft, or an empty string if nothing was stolen
      */

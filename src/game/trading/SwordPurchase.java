@@ -40,7 +40,7 @@ public class SwordPurchase implements Purchasable {
      * Deducts the Sword price from the buyer and either adds a new {@link Sword}
      * to the buyer's inventory or results in the Merchant pocketing the coins (50% chance).
      *
-     * @param buyer           the Actor buying this product
+     * @param buyer the Actor buying this product
      * @param merchantContext the Merchant selling it and its current Location
      * @return a description of the purchase outcome
      */

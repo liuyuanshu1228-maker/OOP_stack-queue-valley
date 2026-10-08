@@ -9,7 +9,7 @@ import edu.monash.fit2099.engine.items.Item;
 public class Pickaxe extends Item implements BreakingTool {
 
     /**
-     * Constructor.
+     * Creates a new Pickaxe.
      */
     public Pickaxe() {
         super("Pickaxe", 'p');

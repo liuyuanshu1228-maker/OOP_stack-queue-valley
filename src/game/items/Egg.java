@@ -27,7 +27,7 @@ public class Egg extends SellableItem {
     private final Supplier<Actor> animalFactory;
 
     /**
-     * Constructor for Egg.
+     * Creates a new Egg.
      *
      * @param animalFactory a factory that produces the Actor spawned when this Egg is sold
      */
@@ -40,7 +40,7 @@ public class Egg extends SellableItem {
      * Rolls a 50% chance for an animal to spawn on an enterable tile adjacent to the Merchant.
      * Nothing happens if there is no valid tile.
      *
-     * @param seller          the Actor selling this item
+     * @param seller the Actor selling this item
      * @param merchantContext the Merchant buying it and its current Location
      * @return a description of the spawn, or an empty string if no animal appeared
      */

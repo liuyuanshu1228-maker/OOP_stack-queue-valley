@@ -22,7 +22,7 @@ public class MerchantContext {
     private final Location location;
 
     /**
-     * Constructor.
+     * Creates a new MerchantContext.
      *
      * @param merchant the Actor acting as the merchant in this trade
      * @param location the merchant's current Location

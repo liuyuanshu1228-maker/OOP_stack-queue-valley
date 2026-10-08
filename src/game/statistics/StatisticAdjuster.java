@@ -17,7 +17,7 @@ public class StatisticAdjuster {
     private final Actor actor;
 
     /**
-     * Constructor.
+     * Creates a new StatisticAdjuster.
      *
      * @param actor the Actor whose statistics are adjusted
      */
@@ -31,7 +31,7 @@ public class StatisticAdjuster {
      * default auto-restore behaviour.
      *
      * @param statistic the statistic to modify, e.g. ActorStatistics.STAMINA
-     * @param amount    the amount by which the maximum increases
+     * @param amount the amount by which the maximum increases
      */
     public void increaseMaximumWithoutRestoring(Enum<?> statistic, int amount) {
         int currentValueBeforeMaxIncrease = actor.getStatistic(statistic);
@@ -43,7 +43,7 @@ public class StatisticAdjuster {
      * Checks whether the Actor has at least the given amount of the given statistic.
      *
      * @param statistic the statistic to check, e.g. ActorStatistics.STAMINA
-     * @param amount    the minimum amount required
+     * @param amount the minimum amount required
      * @return true if the Actor has the statistic and its current value is at least amount
      */
     public boolean hasEnough(Enum<?> statistic, int amount) {
@@ -55,7 +55,7 @@ public class StatisticAdjuster {
      * has enough of it; otherwise leaves the Actor unchanged.
      *
      * @param statistic the statistic to deduct from, e.g. ActorStatistics.STAMINA
-     * @param amount    the amount to deduct
+     * @param amount the amount to deduct
      * @return true if the amount was deducted, false if the Actor did not have enough
      */
     public boolean trySpend(Enum<?> statistic, int amount) {
@@ -71,8 +71,8 @@ public class StatisticAdjuster {
      * and describes the actual change, e.g. "5 HP (80 -> 85)".
      *
      * @param statistic the statistic to increase, e.g. ActorStatistics.HEALTH
-     * @param amount    the requested increase
-     * @param unit      the unit shown after the amount, e.g. "HP" or "stamina"
+     * @param amount the requested increase
+     * @param unit the unit shown after the amount, e.g. "HP" or "stamina"
      * @return a description of the actual change in the statistic's current value
      */
     public String increaseAndDescribe(Enum<?> statistic, int amount, String unit) {
@@ -87,7 +87,7 @@ public class StatisticAdjuster {
      * maximum, e.g. "2 (10 -> 12)".
      *
      * @param statistic the statistic to modify, e.g. ActorStatistics.HEALTH
-     * @param amount    the amount by which the maximum increases
+     * @param amount the amount by which the maximum increases
      * @return a description of the change in the statistic's maximum value
      */
     public String increaseMaximumAndDescribe(Enum<?> statistic, int amount) {
@@ -100,8 +100,8 @@ public class StatisticAdjuster {
      * Formats a change in a statistic as "amount unit (before -> after)".
      *
      * @param before the value before the change
-     * @param after  the value after the change
-     * @param unit   the unit shown after the amount, or an empty string for none
+     * @param after the value after the change
+     * @param unit the unit shown after the amount, or an empty string for none
      * @return the formatted description
      */
     private String describeChange(int before, int after, String unit) {

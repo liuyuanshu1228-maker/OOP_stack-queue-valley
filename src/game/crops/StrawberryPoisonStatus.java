@@ -17,7 +17,7 @@ public class StrawberryPoisonStatus extends TimedStatus {
     private final Actor poisonedActor;
 
     /**
-     * Constructor.
+     * Creates a new StrawberryPoisonStatus.
      *
      * @param poisonedActor the actor being poisoned
      */

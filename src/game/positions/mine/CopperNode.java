@@ -15,7 +15,7 @@ import game.positions.area.Area;
 public class CopperNode extends BreakableGround {
 
     /**
-     * Constructor.
+     * Creates a new CopperNode.
      */
     public CopperNode() {
         super('N', "Copper node");

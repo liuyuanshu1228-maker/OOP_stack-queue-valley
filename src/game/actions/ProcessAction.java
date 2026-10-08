@@ -20,10 +20,10 @@ public class ProcessAction extends Action {
     private final Item product;
 
     /**
-     * Constructor.
+     * Creates a new ProcessAction.
      *
      * @param facility the ProcessingFacility to use
-     * @param product  the Item to be processed
+     * @param product the Item to be processed
      */
     public ProcessAction(ProcessingFacility facility, Item product) {
         this.facility = facility;
@@ -34,8 +34,8 @@ public class ProcessAction extends Action {
      * Replaces the selected product in the Actor's inventory with a new
      * processed layer produced by the facility.
      *
-     * @param actor The actor performing the action.
-     * @param map   The map the actor is on.
+     * @param actor the actor performing the action
+     * @param map the map the actor is on
      * @return a description of the outcome, to be displayed to the player
      */
     @Override
@@ -53,7 +53,7 @@ public class ProcessAction extends Action {
      * Jar both adjacent to the Actor) are not shown as identical menu
      * entries.
      *
-     * @param actor The actor performing the action.
+     * @param actor the actor performing the action
      * @return the action description to be displayed on the menu
      */
     @Override

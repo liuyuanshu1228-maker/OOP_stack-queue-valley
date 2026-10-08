@@ -17,7 +17,7 @@ import game.positions.Waterable;
 public class WaterAction extends CapabilityToolAction<Waterable, WateringTool> {
 
     /**
-     * Constructor.
+     * Creates a new WaterAction.
      *
      * @param location the Location whose Ground is to be watered
      */
@@ -43,7 +43,7 @@ public class WaterAction extends CapabilityToolAction<Waterable, WateringTool> {
     /**
      * Describes what this Action will do if chosen in the menu.
      *
-     * @param actor The actor performing the action.
+     * @param actor the actor performing the action
      * @return the action description to be displayed on the menu
      */
     @Override

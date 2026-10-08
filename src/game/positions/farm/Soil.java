@@ -8,7 +8,7 @@ import edu.monash.fit2099.engine.positions.Ground;
 public class Soil extends Ground {
 
     /**
-     * Constructor.
+     * Creates a new Soil.
      */
     public Soil() {
         super(',', "Soil");

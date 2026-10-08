@@ -26,7 +26,7 @@ public class Merchant extends WanderingActor {
     private final Purchasable[] catalog;
 
     /**
-     * Constructor for Merchant. The purchasable offerings are injected by the caller,
+     * Creates a new Merchant. The purchasable offerings are injected by the caller,
      * so Merchant depends only on the Purchasable abstraction rather than on concrete
      * products (Dependency Inversion), and different Merchants can carry different
      * catalogs without modifying this class (Open/Closed).
@@ -44,8 +44,8 @@ public class Merchant extends WanderingActor {
      * currently in the other Actor's inventory.
      *
      * @param otherActor the Actor that might perform an action
-     * @param direction  String representing the direction of the other Actor
-     * @param map        current GameMap
+     * @param direction String representing the direction of the other Actor
+     * @param map current GameMap
      * @return a collection of available BuyAction and SellAction instances
      */
     @Override

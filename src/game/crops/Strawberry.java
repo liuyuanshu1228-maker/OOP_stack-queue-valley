@@ -32,7 +32,7 @@ public class Strawberry extends Crop implements CropWaterable {
     private static final int STRAWBERRIES_PER_WATERING = 2;
 
     /**
-     * Constructor.
+     * Creates a new Strawberry.
      */
     public Strawberry() {
         super('S', "Strawberry");
@@ -61,7 +61,7 @@ public class Strawberry extends Crop implements CropWaterable {
             actor.getInventory().add(StrawberryItem.createRandom());
         }
 
-        String message = actor + " harvests the " + this + " and picks up "
+        String message = actor + " harvests the " + this + " and gets "
                 + STRAWBERRIES_PER_HARVEST + " strawberries.";
 
         int destructionChancePercent = BASE_DESTRUCTION_CHANCE_PERCENT - getWateringCount();

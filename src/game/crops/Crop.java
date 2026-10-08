@@ -34,7 +34,7 @@ public abstract class Crop extends Ground implements Harvestable, FreelyWaterabl
     private int wateringCount = 0;
 
     /**
-     * Constructor.
+     * Creates a new Crop.
      *
      * @param displayChar character to display for this crop
      * @param name the name of this crop

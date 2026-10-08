@@ -31,7 +31,7 @@ public class Parsnip extends Crop implements CropWaterable {
     private static final int BONUS_SPAWN_CHANCE_PERCENT = 50;
 
     /**
-     * Constructor.
+     * Creates a new Parsnip.
      */
     public Parsnip() {
         super('P', "Parsnip");

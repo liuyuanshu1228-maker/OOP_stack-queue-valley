@@ -40,7 +40,7 @@ public abstract class CapabilityToolAction<C, T extends HasStaminaCost> extends 
     private final String noCapabilityMessage;
 
     /**
-     * Constructor.
+     * Creates a new CapabilityToolAction.
      *
      * @param location the Location to act on
      * @param capabilityType the capability type required of the Ground
@@ -62,8 +62,8 @@ public abstract class CapabilityToolAction<C, T extends HasStaminaCost> extends 
      * exposes the required capability, deducts the stamina cost, and
      * delegates to the subclass-specific effect.
      *
-     * @param actor The actor performing the action.
-     * @param map   The map the actor is on.
+     * @param actor the actor performing the action
+     * @param map the map the actor is on
      * @return a description of the outcome, to be displayed to the player
      */
     @Override

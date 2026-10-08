@@ -35,7 +35,7 @@ public class Melon extends Crop implements CropWaterable {
     private static final int MAX_STAMINA_INCREASE_AMOUNT = 1;
 
     /**
-     * Constructor.
+     * Creates a new Melon.
      */
     public Melon() {
         super('M', "Melon");

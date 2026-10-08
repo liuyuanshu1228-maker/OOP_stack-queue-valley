@@ -14,7 +14,7 @@ public class Milk extends SellableItem {
     private static final int NO_PAYMENT_CHANCE_PERCENT = 50;
 
     /**
-     * Constructor for Milk. Initializes the portable Milk item with display character 'K'.
+     * Creates a new Milk. Initializes the portable Milk item with display character 'K'.
      */
     public Milk() {
         super("Milk", 'K', SELL_PRICE);

@@ -17,7 +17,7 @@ public class StrawberryHealStatus extends TimedStatus {
     private final Actor healedActor;
 
     /**
-     * Constructor.
+     * Creates a new StrawberryHealStatus.
      *
      * @param healedActor the actor being healed
      */

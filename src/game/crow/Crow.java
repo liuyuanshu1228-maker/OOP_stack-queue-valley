@@ -43,7 +43,7 @@ public class Crow extends Actor implements StatefulCreature, ItemCache, Composur
     private int safeTurns = 0;
 
     /**
-     * Constructor.
+     * Creates a new Crow.
      *
      * @param name the crow's name
      */
@@ -121,10 +121,10 @@ public class Crow extends Actor implements StatefulCreature, ItemCache, Composur
      * of health, otherwise advances its state machine by one step.
      *
      * @see Actor#playTurn(ActionList, Action, GameMap, Display)
-     * @param actions    collection of possible Actions for this Actor
+     * @param actions collection of possible Actions for this Actor
      * @param lastAction the Action this Actor took last turn
-     * @param map        the map containing the Actor
-     * @param display    the I/O object to which messages may be written
+     * @param map the map containing the Actor
+     * @param display the I/O object to which messages may be written
      * @return the Action to be performed
      */
     @Override

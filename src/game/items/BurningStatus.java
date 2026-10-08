@@ -20,7 +20,7 @@ public class BurningStatus extends TimedStatus {
     private final int damagePerTurn;
 
     /**
-     * Constructor. Use {@link #applyTo(Actor, int, int)} to set an Actor alight.
+     * Creates a new BurningStatus. Use {@link #applyTo(Actor, int, int)} to set an Actor alight.
      *
      * @param burningActor the actor being burned
      * @param damagePerTurn the damage dealt to the actor each turn

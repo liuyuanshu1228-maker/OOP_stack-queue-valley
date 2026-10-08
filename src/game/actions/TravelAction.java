@@ -22,7 +22,7 @@ public class TravelAction extends Action {
     private final TravelMethod method;
 
     /**
-     * Constructor.
+     * Creates a new TravelAction.
      *
      * @param destinationName the name shown to the player in the menu
      * @param destinationLocation the fixed Location to travel to
@@ -40,8 +40,8 @@ public class TravelAction extends Action {
      * another Actor is standing there), the Actor stays where they are and
      * nothing else happens.
      *
-     * @param actor The actor performing the action.
-     * @param map The map the actor is on.
+     * @param actor the actor performing the action
+     * @param map the map the actor is on
      * @return a description of the outcome, to be displayed to the player
      */
     @Override
@@ -64,7 +64,7 @@ public class TravelAction extends Action {
     /**
      * Describes what this Action will do if chosen in the menu.
      *
-     * @param actor The actor performing the action.
+     * @param actor the actor performing the action
      * @return the action description to be displayed on the menu
      */
     @Override

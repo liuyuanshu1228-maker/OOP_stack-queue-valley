@@ -27,7 +27,7 @@ public class Stone extends SellableItem {
     private final Supplier<Ground> groundFactory;
 
     /**
-     * Constructor for Stone.
+     * Creates a new Stone.
      *
      * @param groundFactory a factory that produces the Ground placed when this Stone is sold
      */
@@ -39,7 +39,7 @@ public class Stone extends SellableItem {
     /**
      * Builds a new Ground on a randomly chosen tile adjacent to the Merchant.
      *
-     * @param seller          the Actor selling this item
+     * @param seller the Actor selling this item
      * @param merchantContext the Merchant buying it and its current Location
      * @return a description of the Ground being built, or an empty string if there is no
      * adjacent tile

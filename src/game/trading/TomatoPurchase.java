@@ -15,7 +15,7 @@ public class TomatoPurchase extends CropPurchase {
     private static final int WAIVE_CHANCE_PERCENT = 50;
 
     /**
-     * Constructor for TomatoPurchase. Initializes the purchase option with a price of 500 coins.
+     * Creates a new TomatoPurchase. Initializes the purchase option with a price of 500 coins.
      */
     public TomatoPurchase() {
         super("Tomato crop", PRICE);
@@ -44,8 +44,8 @@ public class TomatoPurchase extends CropPurchase {
     /**
      * Returns the base purchase message after the Tomato crop is planted.
      *
-     * @param buyer        the Actor buying the crop
-     * @param merchant     the Merchant selling the crop
+     * @param buyer the Actor buying the crop
+     * @param merchant the Merchant selling the crop
      * @param cropLocation the Location where the Tomato crop was planted
      * @return a description of the purchase outcome
      */

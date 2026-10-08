@@ -18,7 +18,7 @@ public class HarvestAction extends Action {
     private final Location location;
 
     /**
-     * Constructor.
+     * Creates a new HarvestAction.
      *
      * @param location the Location of the crop to be harvested
      */
@@ -32,8 +32,8 @@ public class HarvestAction extends Action {
      * it and delegates to the crop's Harvestable effect; if not, fails without
      * any side effects.
      *
-     * @param actor The actor performing the action.
-     * @param map   The map the actor is on.
+     * @param actor the actor performing the action
+     * @param map the map the actor is on
      * @return a description of the outcome, to be displayed to the player
      */
     @Override
@@ -55,7 +55,7 @@ public class HarvestAction extends Action {
     /**
      * Describes what this Action will do if chosen in the menu.
      *
-     * @param actor The actor performing the action.
+     * @param actor the actor performing the action
      * @return the action description to be displayed on the menu
      */
     @Override

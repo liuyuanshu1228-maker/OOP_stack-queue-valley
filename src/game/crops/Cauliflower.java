@@ -30,7 +30,7 @@ public class Cauliflower extends Crop implements CropWaterable {
     private static final int PUDDLE_CHANCE_PERCENT = 50;
 
     /**
-     * Constructor.
+     * Creates a new Cauliflower.
      */
     public Cauliflower() {
         super('C', "Cauliflower");

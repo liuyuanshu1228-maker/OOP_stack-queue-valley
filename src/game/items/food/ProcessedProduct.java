@@ -19,9 +19,9 @@ public abstract class ProcessedProduct extends ConsumableItem implements Process
     private final Item precedingProduct;
 
     /**
-     * Constructor.
+     * Creates a new ProcessedProduct.
      *
-     * @param nameModifier     the word prepended to the preceding product's name for this layer,
+     * @param nameModifier the word prepended to the preceding product's name for this layer,
      *                         e.g. "Preserved"
      * @param precedingProduct the complete product this layer wraps (raw or already processed)
      */
