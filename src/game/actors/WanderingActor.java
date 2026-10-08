@@ -19,7 +19,7 @@ import game.behaviours.WanderBehaviour;
  * decides whether it can act at all, so a variant that moves differently needs a
  * different behaviour, not a different class hierarchy.
  */
-public abstract class WanderingActor extends Actor {
+public abstract class WanderingActor extends ConsciousActor {
 
     /** Decides where this actor goes on its turn. */
     private final Behaviour<Actor, Action> behaviour;
@@ -50,8 +50,7 @@ public abstract class WanderingActor extends Actor {
     }
 
     /**
-     * Selects and returns an Action to perform on the current turn.
-     * Falls unconscious if out of hit points; otherwise does what its
+     * Selects the Action to perform on a conscious turn: does what its
      * behaviour decides, or nothing if the behaviour finds no valid move.
      *
      * @param actions collection of possible Actions for this Actor
@@ -61,12 +60,8 @@ public abstract class WanderingActor extends Actor {
      * @return the Action to be performed
      */
     @Override
-    public Action playTurn(ActionList actions, Action lastAction, GameMap map, Display display) {
-        if (!this.isConscious()) {
-            this.unconscious(map);
-            return new DoNothingAction();
-        }
-
+    protected Action playConsciousTurn(ActionList actions, Action lastAction,
+                                       GameMap map, Display display) {
         Action chosen = behaviour.operate(this, map.locationOf(this));
         if (chosen == null) {
             return new DoNothingAction();

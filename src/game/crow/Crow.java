@@ -2,12 +2,11 @@ package game.crow;
 
 import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actions.ActionList;
-import edu.monash.fit2099.engine.actions.DoNothingAction;
-import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import game.actions.CreatureStateAction;
+import game.actors.ConsciousActor;
 import game.creaturestate.Composure;
 import game.creaturestate.CreatureState;
 import game.creaturestate.ItemCache;
@@ -20,7 +19,7 @@ import java.util.Set;
  * A crow: a stateful creature that cycles between {@link Perching},
  * {@link Foraging}, {@link Mobbing}, and {@link Fleeing}.
  */
-public class Crow extends Actor implements StatefulCreature, ItemCache, Composure {
+public class Crow extends ConsciousActor implements StatefulCreature, ItemCache, Composure {
 
     /** The crow's starting (and maximum) hit points. */
     private static final int STARTING_HP = 30;
@@ -117,10 +116,9 @@ public class Crow extends Actor implements StatefulCreature, ItemCache, Composur
     }
 
     /**
-     * Selects the action to perform on this turn: falls unconscious if out
-     * of health, otherwise advances its state machine by one step.
+     * Selects the action to perform on a conscious turn: advances its state
+     * machine by one step.
      *
-     * @see Actor#playTurn(ActionList, Action, GameMap, Display)
      * @param actions collection of possible Actions for this Actor
      * @param lastAction the Action this Actor took last turn
      * @param map the map containing the Actor
@@ -128,12 +126,8 @@ public class Crow extends Actor implements StatefulCreature, ItemCache, Composur
      * @return the Action to be performed
      */
     @Override
-    public Action playTurn(ActionList actions, Action lastAction, GameMap map, Display display) {
-        if (!this.isConscious()) {
-            this.unconscious(map);
-            return new DoNothingAction();
-        }
-
+    protected Action playConsciousTurn(ActionList actions, Action lastAction,
+                                       GameMap map, Display display) {
         return new CreatureStateAction();
     }
 }
