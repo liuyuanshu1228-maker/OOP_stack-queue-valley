@@ -10,9 +10,10 @@ import java.util.Optional;
 
 /**
  * An Action that advances a {@link StatefulCreature}'s state machine by one
- * turn: if the current state's conditions call for a transition, switches
- * to the next state and applies its entry effect; otherwise performs the
- * current state's ordinary behaviour.
+ * turn: if the current state's conditions call for a different state, switches
+ * to it and applies its entry effect; otherwise performs the current state's
+ * ordinary behaviour. States are compared with {@code equals}, so whether a
+ * transition happens depends on which state is returned, not on which object.
  * <p>
  * This is deliberately generic: it knows nothing about any specific
  * creature or state, only the {@link StatefulCreature}/{@link CreatureState}
@@ -39,7 +40,7 @@ public class CreatureStateAction extends Action {
         CreatureState current = creature.getState();
         CreatureState next = current.nextState(actor, map);
 
-        if (next != current) {
+        if (!next.equals(current)) {
             creature.setState(next);
             return "[" + current + " -> " + next + "] " + next.onEnter(actor, map);
         }

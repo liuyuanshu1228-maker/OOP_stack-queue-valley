@@ -11,7 +11,8 @@ import edu.monash.fit2099.engine.positions.GameMap;
  * comes next, and the one-off effect that fires at the moment the creature
  * transitions into it. States are expected to be stateless/shared (the
  * classic State pattern): any data that varies per creature belongs on the
- * creature itself, not on the state instance.
+ * creature itself, not on the state instance. Implementations should extend
+ * {@link BaseCreatureState}, which makes two states of the same class equal.
  */
 public interface CreatureState {
 
@@ -28,8 +29,8 @@ public interface CreatureState {
 
     /**
      * Decides which state the creature should be in next, based on the
-     * creature's current situation. Returning {@code this} means the
-     * creature stays in this state.
+     * creature's current situation. Returning {@code this}, or any state equal
+     * to it, means the creature stays in this state.
      *
      * @param creature the creature whose next state is being decided
      * @param map the map the creature is on

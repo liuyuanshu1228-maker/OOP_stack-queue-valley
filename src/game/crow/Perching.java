@@ -6,6 +6,7 @@ import edu.monash.fit2099.engine.behaviours.Behaviour;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.behaviours.WanderBehaviour;
+import game.creaturestate.BaseCreatureState;
 import game.creaturestate.CreatureState;
 import game.positions.FreelyWaterable;
 import game.positions.area.Area;
@@ -23,7 +24,7 @@ import java.util.List;
  * stays perching. {@link Mobbing} and {@link Fleeing} both settle back into
  * this state once their own conditions for leaving are met.
  */
-public class Perching implements CreatureState {
+public class Perching extends BaseCreatureState {
 
     /** The shared instance used by the game; this state holds no per-creature data. */
     public static final Perching INSTANCE = new Perching();

@@ -4,6 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.creaturestate.BaseCreatureState;
 import game.creaturestate.CreatureState;
 import game.creaturestate.ItemCache;
 import game.positions.area.Area;
@@ -20,7 +21,7 @@ import java.util.Optional;
  * reaches it, carries it off to a hidden spot instead of eating it on the
  * spot.
  */
-public class Foraging implements CreatureState {
+public class Foraging extends BaseCreatureState {
 
     /** The shared instance used by the game; this state holds no per-creature data. */
     public static final Foraging INSTANCE = new Foraging();

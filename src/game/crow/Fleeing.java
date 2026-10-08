@@ -5,6 +5,7 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.creaturestate.Composure;
+import game.creaturestate.BaseCreatureState;
 import game.creaturestate.CreatureState;
 import game.positions.area.Area;
 import game.positions.area.ItemDropper;
@@ -21,7 +22,7 @@ import java.util.Optional;
  * remembers how many turns in a row it has been safe through its
  * {@link Composure} capability, since this state is shared between crows.
  */
-public class Fleeing implements CreatureState {
+public class Fleeing extends BaseCreatureState {
 
     /** The shared instance used by the game; this state holds no per-creature data. */
     public static final Fleeing INSTANCE = new Fleeing();

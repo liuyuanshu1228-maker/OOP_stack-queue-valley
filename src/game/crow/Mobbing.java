@@ -4,6 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.creaturestate.BaseCreatureState;
 import game.creaturestate.CreatureState;
 import game.positions.area.Area;
 import game.positions.area.ItemDropper;
@@ -26,7 +27,7 @@ import java.util.Optional;
  *   <li>→ {@link Perching} when no actors remain within sensing range</li>
  * </ul>
  */
-public class Mobbing implements CreatureState {
+public class Mobbing extends BaseCreatureState {
 
     /** The shared instance used by the game; this state holds no per-creature data. */
     public static final Mobbing INSTANCE = new Mobbing();
