@@ -43,7 +43,10 @@ is its own class under `src/game/crow`, implementing a shared
 States hold no per-creature data, so the game shares one public `INSTANCE` of each
 (the State-pattern/flyweight shape). The state classes are not `final` and have
 public constructors, so a variant (for example a subclass with a different
-transition rule) can be created without changing them. Any data that varies per
+transition rule) can be created without changing them. Every state extends
+`game.creaturestate.BaseCreatureState`, which makes two states of the same class
+equal (`equals`/`hashCode`), so creating another instance of a state never changes
+how the state machine behaves. Any data that varies per
 creature — which items it's hidden, how many consecutive turns it's felt
 safe — lives on the `Crow` object itself, via two small capability
 interfaces (`ItemCache`, `Composure`), not on the state objects. This is
@@ -156,11 +159,14 @@ is a new class, without changing `Area`.
 
 A single, generic `CreatureStateAction` (`src/game/actions/CreatureStateAction.java`)
 is the only Action a stateful creature ever performs: it asks the creature's
-current state for `nextState()`; if that differs from the current state, it
-switches to it and calls the new state's `onEnter()` *instead of* that
-turn's ordinary behaviour; otherwise it calls `act()`. `Crow.playTurn()`
-simply returns `new CreatureStateAction()` every turn (unless it has fallen
-unconscious).
+current state for `nextState()`; if that is a different state (compared with
+`equals`, so by state type rather than by object), it switches to it and calls the
+new state's `onEnter()` *instead of* that turn's ordinary behaviour; otherwise it
+calls `act()`. `Crow` extends `game.actors.ConsciousActor`, whose `playTurn()`
+makes an actor with no hit points fall unconscious and do nothing; on every other
+turn `Crow.playConsciousTurn()` simply returns `new CreatureStateAction()`. The
+same `ConsciousActor` base is shared by the Farmer and every `WanderingActor`, so
+the unconscious check is written once.
 
 ### Engine `Behaviour` for wandering
 
@@ -233,7 +239,7 @@ carry nothing.
 - **OCP** — adding a fifth state means writing one new class and wiring the
   relevant *existing* states' `nextState()` to recognise it (unavoidable for
   any explicit transition graph); `CreatureStateAction`, `StatefulCreature`
-  and `Crow.playTurn()` never change. A second, unrelated stateful creature
+  and `Crow.playConsciousTurn()` never change. A second, unrelated stateful creature
   could reuse `CreatureStateAction`/`StatefulCreature`/`CreatureState`
   completely unmodified.
 - **LSP** — any `CreatureState` can substitute for another everywhere
