@@ -107,6 +107,9 @@ public class StackQueueValleyWorld extends World {
             new Link(new Spot(9, 0), new Spot(11, 0)),
             new Link(new Spot(0, 6), new Spot(0, 7)));
 
+    /** Where the Farmer starts on the farm. */
+    private static final Spot FARMER_START = new Spot(5, 3);
+
     /** The fixed destinations of the alien device, on the farm and in the mines. */
     private static final Link ALIEN_DEVICE_DESTINATIONS = new Link(new Spot(5, 3), new Spot(6, 4));
 
@@ -145,7 +148,7 @@ public class StackQueueValleyWorld extends World {
                 MINES_WIDTH, MINES_HEIGHT);
         this.addGameMap(minesMap);
 
-        Location farmerStart = inheritedFarmMap.at(5, 3);
+        Location farmerStart = locate(inheritedFarmMap, FARMER_START);
         Farmer farmer = new Farmer("Bob");
         this.addPlayer(farmer, farmerStart);
         farmer.getInventory().add(new Hoe());
