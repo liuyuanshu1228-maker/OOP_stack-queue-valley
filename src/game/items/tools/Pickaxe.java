@@ -12,7 +12,7 @@ public class Pickaxe extends Item implements BreakingTool {
      * Creates a new Pickaxe.
      */
     public Pickaxe() {
-        super("Pickaxe", 'p');
+        super("Pickaxe", 'x');
         this.makePortable();
     }
 }

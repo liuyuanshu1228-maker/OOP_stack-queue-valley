@@ -12,7 +12,7 @@ public class CopperOre extends Item {
      * Creates a new CopperOre.
      */
     public CopperOre() {
-        super("Copper ore", 'c');
+        super("Copper ore", 'u');
         this.makePortable();
     }
 }
