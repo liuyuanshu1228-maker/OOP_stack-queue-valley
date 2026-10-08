@@ -137,13 +137,20 @@ Fleeing   --[otherwise]-------------------------------------------> Fleeing (sta
 All conditions are computed by `CrowSensing` (package-private helper shared
 by all four states, so each state's transition logic stays a one-line
 expression instead of repeating the same neighbour-tile scanning): counting
-actors within a 2-tile sensing radius (`Crow.SENSING_RADIUS`), searching for the nearest forageable
-item (`CrowSensing.nearestFood()`, which uses `Area.nearestTo`), and (for Fleeing) a
-consecutive
-"safe turns" counter kept through the `Composure` capability. **No
-`Random` is ever consulted to pick the next state** — randomness is only
-used *within* `act()`/`onEnter()` for flavour (which tile to hide an item
-on, which item to steal), never to decide which state comes next.
+actors within a 2-tile sensing radius (`Crow.SENSING_RADIUS`), searching for the
+nearest forageable item (`CrowSensing.nearestFood()`, which uses
+`Area.nearestTo`), and (for Fleeing) a consecutive "safe turns" counter kept
+through the `Composure` capability. **No `Random` is ever consulted to pick the
+next state** — randomness is only used *within* `act()`/`onEnter()` for flavour
+(which tile to hide an item on, which item to steal), never to decide which
+state comes next.
+
+Tiles are narrowed with small `TileCondition` objects, one class per condition,
+passed to `Area.filter(...)`: `HoldsActor` (a tile with an actor on it),
+`EnterableBy` (a tile an actor can enter), `BareOfItems`, `OutsideOf` and the
+crow's own `ForageableItems` (a tile holding an item the crow has not already
+hidden). No state or helper loops over tiles itself, and a new kind of condition
+is a new class, without changing `Area`.
 
 ### How it's driven
 
