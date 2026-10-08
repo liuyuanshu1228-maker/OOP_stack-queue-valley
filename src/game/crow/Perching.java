@@ -1,19 +1,22 @@
 package game.crow;
 
+import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.behaviours.Behaviour;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.behaviours.WanderBehaviour;
 import game.creaturestate.CreatureState;
 import game.positions.FreelyWaterable;
 import game.positions.area.Area;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * The crow's default, idle state: wanders aimlessly around the map, watching
- * for food or for actors to mob.
+ * for food or for actors to mob. Its ordinary turn is a {@link Behaviour}, by
+ * default the same {@link WanderBehaviour} that the animals and the Merchant use.
  * <p>
  * From here the crow moves to {@link Mobbing} if exactly one actor is nearby,
  * or to {@link Foraging} once food comes within sensing range; otherwise it
@@ -25,16 +28,30 @@ public class Perching implements CreatureState {
     /** The shared instance used by the game; this state holds no per-creature data. */
     public static final Perching INSTANCE = new Perching();
 
+    /** Decides where the crow hops on an ordinary turn. */
+    private final Behaviour<Actor, Action> wander;
+
     /**
-     * Creates this state. The game shares {@link #INSTANCE} because the state is
-     * stateless, but another instance (e.g. of a subclass) can be created freely.
+     * Creates this state with the default wandering behaviour. The game shares
+     * {@link #INSTANCE} because the state holds no per-creature data, but another
+     * instance (e.g. of a subclass) can be created freely.
      */
     public Perching() {
+        this(new WanderBehaviour());
     }
 
     /**
-     * Moves the crow to a random enterable tile adjacent to its current
-     * location, or stays put if there is nowhere to go.
+     * Creates this state with the given behaviour for its ordinary turn.
+     *
+     * @param wander decides where the crow hops on an ordinary turn
+     */
+    public Perching(Behaviour<Actor, Action> wander) {
+        this.wander = wander;
+    }
+
+    /**
+     * Hops to a new perch, as chosen by the wandering behaviour, or stays put
+     * if there is nowhere to go.
      *
      * @param creature the crow acting
      * @param map the map the crow is on
@@ -42,15 +59,14 @@ public class Perching implements CreatureState {
      */
     @Override
     public String act(Actor creature, GameMap map) {
-        Location here = map.locationOf(creature);
-        Optional<Location> destination = Area.adjacentTo(here).randomEnterableTile(creature);
+        Action hop = wander.operate(creature, map.locationOf(creature));
 
-        if (destination.isEmpty()) {
+        if (hop == null) {
             return creature + " perches, with nowhere to go.";
         }
 
-        map.moveActor(creature, destination.get());
-        return creature + " hops to a new perch at " + destination.get() + ".";
+        hop.execute(creature, map);
+        return creature + " hops to a new perch at " + map.locationOf(creature) + ".";
     }
 
     /**

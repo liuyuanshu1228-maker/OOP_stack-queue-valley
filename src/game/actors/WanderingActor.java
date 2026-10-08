@@ -3,35 +3,56 @@ package game.actors;
 import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actions.DoNothingAction;
-import edu.monash.fit2099.engine.actions.MoveActorAction;
 import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.behaviours.Behaviour;
 import edu.monash.fit2099.engine.displays.Display;
-import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
-import edu.monash.fit2099.engine.positions.Location;
-import game.random.RandomUtils;
+import game.behaviours.WanderBehaviour;
 
 /**
- * Abstract base class for actors that wander randomly around the map each turn.
- *
+ * Abstract base class for non-player actors that move around the map by
+ * themselves each turn.
+ * <p>
+ * How such an actor chooses its move is the job of an engine {@link Behaviour},
+ * which is given to it when it is created: by default a {@link WanderBehaviour},
+ * which steps onto a random tile that the actor can enter. The actor itself only
+ * decides whether it can act at all, so a variant that moves differently needs a
+ * different behaviour, not a different class hierarchy.
  */
 public abstract class WanderingActor extends Actor {
 
+    /** Decides where this actor goes on its turn. */
+    private final Behaviour<Actor, Action> behaviour;
+
     /**
-     * Constructor for WanderingActor.
+     * Constructor for a WanderingActor that wanders at random.
      *
      * @param name        the name of the Actor
      * @param displayChar the character that will represent the Actor in the display
      * @param hitPoints   the Actor's starting hit points
      */
     public WanderingActor(String name, char displayChar, int hitPoints) {
+        this(name, displayChar, hitPoints, new WanderBehaviour());
+    }
+
+    /**
+     * Constructor for a WanderingActor that moves according to the given behaviour.
+     *
+     * @param name        the name of the Actor
+     * @param displayChar the character that will represent the Actor in the display
+     * @param hitPoints   the Actor's starting hit points
+     * @param behaviour   decides where the Actor goes on its turn
+     */
+    public WanderingActor(String name, char displayChar, int hitPoints,
+                          Behaviour<Actor, Action> behaviour) {
         super(name, displayChar, hitPoints);
+        this.behaviour = behaviour;
     }
 
     /**
      * Selects and returns an Action to perform on the current turn.
-     * Falls unconscious if out of hit points; otherwise moves to a randomly
-     * chosen enterable adjacent exit, or does nothing if no exit is available.
+     * Falls unconscious if out of hit points; otherwise does what its
+     * behaviour decides, or nothing if the behaviour finds no valid move.
      *
      * @param actions    collection of possible Actions for this Actor
      * @param lastAction the Action this Actor took last turn
@@ -46,16 +67,10 @@ public abstract class WanderingActor extends Actor {
             return new DoNothingAction();
         }
 
-        Location here = map.locationOf(this);
-        var enterableExits = here.getExits().stream()
-                .filter(exit -> exit.getDestination().canActorEnter(this))
-                .toList();
-
-        if (enterableExits.isEmpty()) {
+        Action chosen = behaviour.operate(this, map.locationOf(this));
+        if (chosen == null) {
             return new DoNothingAction();
         }
-
-        Exit exit = RandomUtils.pickRandom(enterableExits);
-        return new MoveActorAction(exit.getDestination(), exit.getName(), exit.getHotKey());
+        return chosen;
     }
 }
