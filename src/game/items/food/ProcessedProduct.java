@@ -46,6 +46,33 @@ public abstract class ProcessedProduct extends ConsumableItem implements Process
     }
 
     /**
+     * Tells whether the given Actor can consume this product: it must be able
+     * to consume the product this one was made from, and to receive this
+     * product's own processing effect.
+     *
+     * @param actor the Actor that would consume this product
+     * @return true if both the preceding product and this product's own effect can be applied
+     */
+    @Override
+    public boolean canBeConsumedBy(Actor actor) {
+        Optional<Consumable> preceding = precedingProduct.asCapability(Consumable.class);
+        boolean precedingAllows = preceding.isEmpty() || preceding.get().canBeConsumedBy(actor);
+        return precedingAllows && canReceiveProcessingEffect(actor);
+    }
+
+    /**
+     * Tells whether the given Actor has what this product's own processing
+     * effect needs. The default allows every Actor; a product whose effect
+     * changes a statistic that not every Actor has overrides it.
+     *
+     * @param actor the Actor that would receive the effect
+     * @return true if {@link #applyProcessingEffect(Actor)} can be called with this Actor
+     */
+    protected boolean canReceiveProcessingEffect(Actor actor) {
+        return true;
+    }
+
+    /**
      * Applies this specific processing layer's own consumption effect
      * (e.g. restoring HP, restoring stamina, changing a maximum statistic,
      * or placing an item on the ground).

@@ -74,7 +74,7 @@ by name, and every tile by its coordinates (e.g. `(5, 3) on Inherited Farm`)
 |---|---|---|
 | **Perching** | Default/idle: hops to a random enterable adjacent tile, chosen by an engine `Behaviour` (`WanderBehaviour`, the same one the Chicken, Cow and Merchant use). | Its droppings count as a free watering (`FreelyWaterable.receiveFreeWatering()`) for **every** crop on its own tile and the 8 tiles around it — a cross-feature hook into REQ1, reached through a `game.positions.FreelyWaterable` capability rather than a direct dependency on `Crop`, so `game.crow` has no compile-time dependency on `game.crops`. The message lists every crop watered, e.g. `... a free watering for every crop within 1 tile: [Parsnip, Melon].` |
 | **Foraging** | *New behaviour.* If standing over an unclaimed item, hides it (see below); otherwise steps toward the nearest forageable item within sensing range. | Swoops in on the target item and scatters every *other* item within 1 tile of it onto random nearby tiles, as if startled by the sudden arrival. |
-| **Mobbing** | *New behaviour.* Pursues the nearest actor turn after turn; once adjacent, steals one random item from that actor's inventory into the crow's **own** inventory; otherwise steps toward the target. | The dive knocks **everything** the target is carrying onto random tiles around the target; unlike stealing, the crow keeps none of it. The message lists every item knocked loose, e.g. `... knocking everything they carry onto the tiles around (5, 3) on Inherited Farm: [Hoe, Watering Can, Pickaxe]!` |
+| **Mobbing** | *New behaviour.* Pursues the nearest actor turn after turn; once adjacent, steals one random item from that actor's inventory: if it is food the crow can eat (`Consumable.canBeConsumedBy`), the crow **eats it at once**; any other item goes into the crow's **own** inventory; otherwise steps toward the target. | The dive knocks **everything** the target is carrying onto random tiles around the target; unlike stealing, the crow keeps none of it. The message lists every item knocked loose, e.g. `... knocking everything they carry onto the tiles around (5, 3) on Inherited Farm: [Hoe, Watering Can, Pickaxe]!` |
 | **Fleeing** | *New behaviour.* Steps directly away from the nearest actor (`CrowNavigation.stepAway`), or stays put if cornered. | Resets its safe-turn counter, drops its *entire* inventory (including anything stolen while Mobbing) onto random nearby tiles, and startles every adjacent actor one tile backwards. |
 
 **Which states introduce genuinely new behaviour:** the spec explicitly
@@ -89,16 +89,18 @@ behaviour that did not exist anywhere in the codebase before REQ5:
   could only move an actor *toward* a target (`stepToward`) or at random;
   `stepAway` was added for this state.
 - **Mobbing** — a multi-turn pursuit of one actor that ends in taking an item
-  into the crow's own inventory. This is deliberately different from the
-  Merchant's Diamond theft in REQ3: that is a one-off side effect of a trade
-  with an adjacent seller, and the stolen item is removed from the game,
-  whereas Mobbing chases its target across turns and keeps what it takes, so
-  the item can later be recovered (see below).
+  and dealing with it by what it is: food is eaten on the spot (the crow gets
+  the effect, through REQ1's `Consumable`), anything else goes into the
+  crow's own inventory. This is deliberately different from the Merchant's
+  Diamond theft in REQ3: that is a one-off side effect of a trade with an
+  adjacent seller, and the stolen item is removed from the game, whereas
+  Mobbing chases its target across turns and decides what to do with the
+  item, and what the crow keeps can later be recovered (see below).
 
 The spec requires at least two of the four states to be new behaviours;
 three are provided, so the requirement does not hinge on any single one.
 
-**Theft → recovery loop:** an item Mobbing steals sits in the crow's own
+**Theft → recovery loop:** a non-food item Mobbing steals sits in the crow's own
 inventory, not the farmer's loss forever — the moment the crow panics into
 Fleeing, `onEnter` empties its inventory onto the tiles around it, so the
 farmer can walk over and pick the stolen item back up. Likewise, the items
@@ -195,7 +197,7 @@ Chicken (`n`), the Cow (`B`) and the Merchant (`$`) all count.
 | To see | Do this | Expect a line like |
 |---|---|---|
 | **Perching → Mobbing** | Walk the Farmer, carrying at least one item, to within 2 tiles of a Perching crow while no other actor is within 2 tiles of it. The crow only mobs a lone actor who carries something, so the dive always has items to knock loose. | `[Perching -> Mobbing] Crow ... dives aggressively at Farmer Bob ..., knocking everything they carry onto the tiles around (x, y) on Inherited Farm: [Hoe, Watering Can, Pickaxe]!` — the Farmer's inventory is now empty. |
-| **Mobbing (ordinary turn)** | Stay within 2 tiles. | `[Mobbing] ... swoops toward Farmer Bob ... landing at (x, y) ...`; once adjacent, `[Mobbing] ... steals Hoe from Farmer Bob ...! It now carries: [Hoe].` |
+| **Mobbing (ordinary turn)** | Stay within 2 tiles. | `[Mobbing] ... swoops toward Farmer Bob ... landing at (x, y) ...`; once adjacent, `[Mobbing] ... steals Hoe from Farmer Bob ...! It now carries: [Hoe].` If the item is food, e.g. a Parsnip: `... steals Parsnip from Farmer Bob ...! Crow ... eats the Parsnip and is healed for 1 HP (...).` Food that needs a statistic the crow lacks (Dried products need stamina) is kept, not eaten. |
 | **Perching → Foraging** | Drop an item within 2 tiles of a Perching crow, then step more than 2 tiles away (if the Farmer stays as the only nearby actor and still carries something, the crow mobs instead — Mobbing is checked first). | `[Perching -> Foraging] ... swoops down toward the food at (x, y) ..., scattering the other items around it: [Egg to (x, y) ...].`, or `... but there are no other items around it to scatter.` |
 | **Foraging (ordinary turn)** | Wait. | `[Foraging] ... hops toward the food at (x, y) ..., landing at (x, y) ...`, then `[Foraging] ... snatches the Hoe from (x, y) ... and hides it at (x, y) ...`. A hidden item is remembered and never foraged again. |
 | **Foraging → Perching** | Wait until every item within 2 tiles has been hidden. | `[Foraging -> Perching] ...` with the Perching effect below. |
