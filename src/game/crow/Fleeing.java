@@ -7,6 +7,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.creaturestate.Composure;
 import game.creaturestate.BaseCreatureState;
 import game.creaturestate.CreatureState;
+import game.creaturestate.Roosting;
 import game.positions.area.Area;
 import game.positions.area.ItemDropper;
 
@@ -38,8 +39,10 @@ public class Fleeing extends BaseCreatureState {
     }
 
     /**
-     * Takes one step directly away from the closest actor within sensing range,
-     * or stays put if it is cornered or nothing is nearby.
+     * Takes one step toward the perch it last settled on, as long as that step
+     * does not bring it closer to the closest actor within sensing range;
+     * otherwise (or with no perch) steps directly away from that actor. Stays
+     * put if it is cornered or nothing is nearby.
      *
      * @param creature the crow acting
      * @param map the map the crow is on
@@ -54,6 +57,14 @@ public class Fleeing extends BaseCreatureState {
             int safeTurns = composure.isPresent() ? composure.get().getSafeTurns() : 0;
             return creature + " keeps a wary eye out, catching its breath (safe for "
                     + safeTurns + "/" + CALM_DOWN_TURNS + " turns before it calms down).";
+        }
+
+        Optional<Location> perch = perchOf(creature);
+        Optional<Location> homeward = stepHomeward(creature, here, perch, threat.get());
+        if (homeward.isPresent()) {
+            map.moveActor(creature, homeward.get());
+            return creature + " flees from " + threat.get().getActor() + " at " + threat.get()
+                    + " toward its perch at " + perch.get() + ", landing at " + homeward.get() + ".";
         }
 
         Optional<Location> escape = new CrowNavigation(creature, here).stepAway(threat.get());
@@ -129,6 +140,39 @@ public class Fleeing extends BaseCreatureState {
      * @param safe whether no actor is within sensing range this turn
      * @return the number of consecutive safe turns, or 0 if the crow cannot track it
      */
+    /**
+     * Finds the step toward the perch that does not bring the creature closer
+     * to the threat.
+     *
+     * @param creature the crow
+     * @param here where the crow stands
+     * @param perch the crow's perch, if it has one
+     * @param threat the closest actor, who is being fled from
+     * @return the Location to step to, or empty if there is no perch or no
+     * such step
+     */
+    private Optional<Location> stepHomeward(Actor creature, Location here,
+                                            Optional<Location> perch, Location threat) {
+        if (perch.isEmpty()) {
+            return Optional.empty();
+        }
+        return new CrowNavigation(creature, here).stepTowardKeepingClear(perch.get(), threat);
+    }
+
+    /**
+     * Finds the perch the creature last settled on.
+     *
+     * @param creature the crow
+     * @return the perch, or empty if it has none (or cannot remember one)
+     */
+    private Optional<Location> perchOf(Actor creature) {
+        Optional<Roosting> roosting = creature.asCapability(Roosting.class);
+        if (roosting.isEmpty()) {
+            return Optional.empty();
+        }
+        return roosting.get().getPerch();
+    }
+
     private int updateComposure(Actor creature, boolean safe) {
         Optional<Composure> composure = creature.asCapability(Composure.class);
         if (composure.isEmpty()) {
