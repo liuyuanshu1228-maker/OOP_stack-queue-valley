@@ -36,7 +36,7 @@ public class PreservedProduct extends ProcessedProduct {
     @Override
     protected String applyProcessingEffect(Actor actor) {
         return "The preserving restores "
-                + new StatisticAdjuster(actor).increaseAndDescribe(
-                        ActorStatistics.HEALTH, HP_RESTORED, "HP") + ".";
+                + new StatisticAdjuster(actor).increase(
+                        ActorStatistics.HEALTH, HP_RESTORED).describe("HP") + ".";
     }
 }

@@ -94,8 +94,8 @@ public class Melon extends Crop implements CropWaterable {
 
         if (RandomUtils.rollPercent(MAX_STAMINA_INCREASE_CHANCE_PERCENT)) {
             message += " Its maximum stamina increases by "
-                    + new StatisticAdjuster(actor).increaseMaximumAndDescribe(
-                            ActorStatistics.STAMINA, MAX_STAMINA_INCREASE_AMOUNT) + ".";
+                    + new StatisticAdjuster(actor).increaseMaximum(
+                            ActorStatistics.STAMINA, MAX_STAMINA_INCREASE_AMOUNT).describe() + ".";
         }
 
         return message;

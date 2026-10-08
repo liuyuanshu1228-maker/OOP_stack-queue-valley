@@ -36,7 +36,7 @@ public class DriedProduct extends ProcessedProduct {
     @Override
     protected String applyProcessingEffect(Actor actor) {
         return "The drying restores "
-                + new StatisticAdjuster(actor).increaseAndDescribe(
-                        ActorStatistics.STAMINA, STAMINA_RESTORED, "stamina") + ".";
+                + new StatisticAdjuster(actor).increase(
+                        ActorStatistics.STAMINA, STAMINA_RESTORED).describe("stamina") + ".";
     }
 }

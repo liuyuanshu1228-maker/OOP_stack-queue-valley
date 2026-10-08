@@ -87,8 +87,8 @@ public class Parsnip extends Crop implements CropWaterable {
     @Override
     public String water(Actor actor, Location location) {
         String message = actor + " waters the " + this + " and is healed for "
-                + new StatisticAdjuster(actor).increaseAndDescribe(
-                        ActorStatistics.HEALTH, HEAL_AMOUNT, "points") + ".";
+                + new StatisticAdjuster(actor).increase(
+                        ActorStatistics.HEALTH, HEAL_AMOUNT).describe("points") + ".";
 
         int damageChancePercent = BASE_DAMAGE_CHANCE_PERCENT + getWateringCount();
         if (RandomUtils.rollPercent(damageChancePercent)) {

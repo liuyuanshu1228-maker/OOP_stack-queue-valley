@@ -53,7 +53,7 @@ public abstract class ConsumableItem extends Item implements Consumable {
     protected String eatToHeal(Actor actor, int amount) {
         return actor + " eats the " + this + " and is healed for "
                 + new StatisticAdjuster(actor)
-                        .increaseAndDescribe(ActorStatistics.HEALTH, amount, "HP")
+                        .increase(ActorStatistics.HEALTH, amount).describe("HP")
                 + ".";
     }
 
@@ -69,7 +69,7 @@ public abstract class ConsumableItem extends Item implements Consumable {
     protected String eatToRaiseMaxHealth(Actor actor, int amount) {
         String maxHealthChange =
                 new StatisticAdjuster(actor)
-                        .increaseMaximumAndDescribe(ActorStatistics.HEALTH, amount);
+                        .increaseMaximum(ActorStatistics.HEALTH, amount).describe();
         return actor + " eats the " + this + ". Maximum HP increases by " + maxHealthChange
                 + ", and current HP is restored to "
                 + actor.getStatistic(ActorStatistics.HEALTH) + ".";
