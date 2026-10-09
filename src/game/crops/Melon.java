@@ -3,18 +3,18 @@ package game.crops;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.Location;
-import game.actions.CropWaterable;
 import game.positions.area.Area;
 import game.positions.area.Explosion;
 import game.random.RandomUtils;
 import game.statistics.StatisticAdjuster;
+import game.positions.Waterable;
 
 /**
  * A melon crop. Watering it may raise the farmer's maximum stamina, and it
  * can be harvested at any time, though harvesting risks an explosion that
  * damages everyone nearby.
  */
-public class Melon extends Crop implements CropWaterable {
+public class Melon extends Crop implements Waterable {
 
     /** Stamina consumed by a successful Melon harvest. */
     private static final int HARVEST_STAMINA_COST = 5;
@@ -74,10 +74,13 @@ public class Melon extends Crop implements CropWaterable {
     }
 
     /**
+     * Watering a melon has its own cost, so the tool's cost is ignored.
+     *
+     * @param toolCost the stamina cost of the watering tool (not used)
      * @return the stamina cost of watering a melon
      */
     @Override
-    public int getWateringStaminaCost() {
+    public int getWateringStaminaCost(int toolCost) {
         return WATERING_STAMINA_COST;
     }
 
@@ -90,6 +93,7 @@ public class Melon extends Crop implements CropWaterable {
      */
     @Override
     public String water(Actor actor, Location location) {
+        recordWatering();
         String message = actor + " waters the " + this + ".";
 
         if (RandomUtils.rollPercent(MAX_STAMINA_INCREASE_CHANCE_PERCENT)) {

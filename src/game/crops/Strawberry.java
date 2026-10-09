@@ -2,16 +2,16 @@ package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.actions.CropWaterable;
 import game.positions.area.ItemDropper;
 import game.random.RandomUtils;
+import game.positions.Waterable;
 
 /**
  * A strawberry crop. It can be watered, which scatters strawberries onto
  * adjacent tiles, and it can be harvested at any time for strawberries,
  * though harvesting risks destroying the plant.
  */
-public class Strawberry extends Crop implements CropWaterable {
+public class Strawberry extends Crop implements Waterable {
 
     /** Stamina consumed by a successful Strawberry harvest. */
     private static final int HARVEST_STAMINA_COST = 1;
@@ -74,10 +74,13 @@ public class Strawberry extends Crop implements CropWaterable {
     }
 
     /**
+     * Watering a strawberry has its own cost, so the tool's cost is ignored.
+     *
+     * @param toolCost the stamina cost of the watering tool (not used)
      * @return the stamina cost of watering a strawberry
      */
     @Override
-    public int getWateringStaminaCost() {
+    public int getWateringStaminaCost(int toolCost) {
         return WATERING_STAMINA_COST;
     }
 
@@ -90,6 +93,7 @@ public class Strawberry extends Crop implements CropWaterable {
      */
     @Override
     public String water(Actor actor, Location location) {
+        recordWatering();
         for (int i = 0; i < STRAWBERRIES_PER_WATERING; i++) {
             ItemDropper.adjacentTo(location).dropOnRandomTile(StrawberryItem.createRandom());
         }
