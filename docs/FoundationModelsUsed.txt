@@ -34,4 +34,28 @@ My own work and decisions:
   not used to write or draw them.
 
 
-[Other team members: add your own section below in the same format.]
+Jingyu Zhang (jzha0797) - REQ1 & REQ5
+-------------------------------------------------------------------------------
+I used AI in the following ways:
+
+(i) Generate ideas or structure suggestions and assist with understanding core concepts
+
+I used Claude (Anthropic) through the Claude Code desktop app (https://claude.ai/code)
+to review my code against SOLID, DRY and KISS principles, explain the marking rubric,
+and explore alternative designs with their respective advantages and disadvantages.
+Examples included merging `Waterable` and `CropWaterable`, using `TileCondition` objects instead of a `Predicate`,
+and introducing a `canBreak` method in `BreakingTool`.
+I evaluated the suggestions and decided which changes to adopt.
+
+(ii) Generate and refactor code
+
+I used Claude to generate and refactor code in my REQ1 and REQ5 classes and shared classes.
+This included crop watering, harvesting and eating classes; merging `Waterable` and `WaterAction`;
+replacing `Optional` chains and a `Predicate` with plain conditionals and `TileCondition` objects;
+implementing the Crow's consumption of stolen food; Farmer stamina regeneration;
+and display character changes.
+
+I also used Claude to generate simulation scripts to check program behaviour.
+These scripts are not submitted as part of the assessment.
+I reviewed and tested the resulting code and take responsibility for the correctness and quality of my submitted work.
+
