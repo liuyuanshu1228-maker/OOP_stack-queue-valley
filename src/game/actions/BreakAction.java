@@ -41,8 +41,8 @@ public class BreakAction extends Action {
     }
 
     /**
-     * Performs the breaking attempt. If the Actor is carrying a breaking tool,
-     * delegates to the target; otherwise fails without any side effects.
+     * Performs the breaking attempt. If the Actor is carrying a tool that can break
+     * the target, delegates to the target; otherwise fails without any side effects.
      *
      * @param actor the actor performing the action
      * @param map the map the actor is on
@@ -50,11 +50,25 @@ public class BreakAction extends Action {
      */
     @Override
     public String execute(Actor actor, GameMap map) {
-        boolean hasTool = !actor.getInventory().getItemsAs(BreakingTool.class).isEmpty();
-        if (!hasTool) {
+        if (!carriesToolForTarget(actor)) {
             return actor + " needs a breaking tool to break the " + target + ".";
         }
         return target.breakUp(actor, location);
+    }
+
+    /**
+     * Tells whether the Actor carries a tool that can break the target.
+     *
+     * @param actor the actor who wants to break the target
+     * @return true if at least one tool in the actor's inventory can break the target
+     */
+    private boolean carriesToolForTarget(Actor actor) {
+        for (BreakingTool tool : actor.getInventory().getItemsAs(BreakingTool.class)) {
+            if (tool.canBreak(target)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
