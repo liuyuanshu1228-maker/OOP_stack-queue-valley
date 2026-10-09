@@ -60,7 +60,7 @@ These scripts are not submitted as part of the assessment.
 I reviewed and tested the resulting code and take responsibility for the correctness and quality of my submitted work.
 
 ----------------------------------------------------------------------------------------
-Yuanshu Liu - REQ2 (Mines travel & breakables) and REQ5 infrastructure
+Yuanshu Liu - REQ2 (Mines travel & breakables) and REQ5 mobbling infrastructure
 
 I used Claude (Anthropic) through the Claude Code desktop app (https://claude.ai/code)
 
