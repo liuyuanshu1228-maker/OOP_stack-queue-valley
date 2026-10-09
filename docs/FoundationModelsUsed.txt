@@ -66,7 +66,7 @@ I used Claude (Anthropic) through the Claude Code desktop app (https://claude.ai
 
 How it was used:
 - it  proposed and, once I approved the design, applied
-  several package-structure refactors directly to my project (extracting
+  several package-structure refactors to my project (extracting
   game.creaturestate, relocating shared interfaces into game.actions to remove
   package cycles, a Template Method extraction for TimedStatus), with instructions
   never to touch the engine package.
@@ -78,3 +78,4 @@ My own work and decisions:
   and corrected Claude when it mislabeled a DRY/data-clump fix as a SOLID fix.
 - Reviewed, tested, and pushed all REQ2 code myself; approved each package
   refactor individually before it touched disk.
+- the design rationale and req2 uml are all done by myself
