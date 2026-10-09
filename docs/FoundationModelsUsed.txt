@@ -59,3 +59,22 @@ I also used Claude to generate simulation scripts to check program behaviour.
 These scripts are not submitted as part of the assessment.
 I reviewed and tested the resulting code and take responsibility for the correctness and quality of my submitted work.
 
+----------------------------------------------------------------------------------------
+Yuanshu Liu - REQ2 (Mines travel & breakables) and REQ5 infrastructure
+
+I used Claude (Anthropic) through the Claude Code desktop app (https://claude.ai/code)
+
+How it was used:
+- it  proposed and, once I approved the design, applied
+  several package-structure refactors directly to my project (extracting
+  game.creaturestate, relocating shared interfaces into game.actions to remove
+  package cycles, a Template Method extraction for TimedStatus), with instructions
+  never to touch the engine package.
+
+My own work and decisions:
+- Chose feature-package layout over kind-based layout, chose ChargedPuddle over
+  a boolean flag, and made the call on burn-refresh vs burn-stack behaviour.
+- Rejected Claude's suggestion to make classes `final` or use a Java `record`,
+  and corrected Claude when it mislabeled a DRY/data-clump fix as a SOLID fix.
+- Reviewed, tested, and pushed all REQ2 code myself; approved each package
+  refactor individually before it touched disk.
