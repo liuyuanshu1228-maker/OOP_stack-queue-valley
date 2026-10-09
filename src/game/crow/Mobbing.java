@@ -4,6 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.actions.Consumable;
 import game.creaturestate.BaseCreatureState;
 import game.creaturestate.CreatureState;
 import game.positions.area.Area;
@@ -17,9 +18,10 @@ import java.util.Optional;
  * The crow has spotted a lone actor and dives in to harass them. On entering
  * this state the crow's dive knocks everything the target is carrying onto
  * the tiles around them. Each subsequent turn it closes the gap and, once
- * adjacent, steals one item. Stolen items sit in the crow's own inventory
- * and are dropped when it later panics into {@link Fleeing}, letting the
- * Farmer pick them back up.
+ * adjacent, steals one item. If the item is food the crow can eat, the
+ * crow eats it at once. Any other stolen item sits in the crow's own
+ * inventory and is dropped when it later panics into {@link Fleeing},
+ * letting the Farmer pick it back up.
  * <p>
  * Transitions out:
  * <ul>
@@ -72,8 +74,9 @@ public class Mobbing extends BaseCreatureState {
     }
 
     /**
-     * Takes one random item from {@code victim}'s inventory and places it in
-     * the crow's inventory instead.
+     * Takes one random item from {@code victim}'s inventory. The crow eats the
+     * item at once if it is food the crow can eat, and otherwise keeps it in
+     * its own inventory.
      *
      * @param creature the crow doing the stealing
      * @param victim the actor being robbed
@@ -86,9 +89,24 @@ public class Mobbing extends BaseCreatureState {
         }
         Item stolen = RandomUtils.pickRandom(victimItems);
         victim.getInventory().remove(stolen);
+        return creature + " steals " + stolen + " from " + victim + "! " + eatOrKeep(creature, stolen);
+    }
+
+    /**
+     * Eats the stolen item if it is food the crow can eat, and otherwise puts
+     * it in the crow's inventory.
+     *
+     * @param creature the crow that stole the item
+     * @param stolen the item the crow has just taken
+     * @return a description of how the crow ate the item, or of what it now carries
+     */
+    private String eatOrKeep(Actor creature, Item stolen) {
+        Optional<Consumable> food = stolen.asCapability(Consumable.class);
+        if (food.isPresent() && food.get().canBeConsumedBy(creature)) {
+            return food.get().consume(creature);
+        }
         creature.getInventory().add(stolen);
-        return creature + " steals " + stolen + " from " + victim + "! It now carries: "
-                + creature.getInventory().getItems() + ".";
+        return "It now carries: " + creature.getInventory().getItems() + ".";
     }
 
     /**

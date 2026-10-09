@@ -4,11 +4,11 @@ import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
-import game.actions.CropWaterable;
 import game.actions.HarvestAction;
 import game.actions.Harvestable;
-import game.actions.WaterCropAction;
+import game.actions.WaterAction;
 import game.positions.FreelyWaterable;
+import game.positions.Waterable;
 import game.positions.farm.Dirt;
 
 /**
@@ -21,10 +21,10 @@ import game.positions.farm.Dirt;
  * <p>
  * Every crop is {@link Harvestable}; the {@link HarvestAction} menu entry is
  * offered automatically, whether the Actor is standing on the crop or on an
- * adjacent tile. Crops that are also {@link CropWaterable} get the
- * {@link WaterCropAction} menu entry automatically as well. Every crop also
+ * adjacent tile. Crops that are also {@link Waterable} get the
+ * {@link WaterAction} menu entry automatically as well. Every crop also
  * accepts a free watering (e.g. from a crow's droppings) through
- * {@link FreelyWaterable}, independent of whether it is CropWaterable.
+ * {@link FreelyWaterable}, independent of whether it is Waterable.
  */
 public abstract class Crop extends Ground implements Harvestable, FreelyWaterable {
 
@@ -79,7 +79,7 @@ public abstract class Crop extends Ground implements Harvestable, FreelyWaterabl
 
     /**
      * Offers a harvesting action to an actor standing on or next to this crop,
-     * plus a watering action if this crop is {@link CropWaterable}.
+     * plus a watering action if this crop is {@link Waterable}.
      *
      * @param actor the actor acting
      * @param location the current location of this crop
@@ -90,8 +90,8 @@ public abstract class Crop extends Ground implements Harvestable, FreelyWaterabl
     public ActionList allowableActions(Actor actor, Location location, String direction) {
         ActionList actions = new ActionList();
         actions.add(new HarvestAction(location));
-        if (asCapability(CropWaterable.class).isPresent()) {
-            actions.add(new WaterCropAction(location));
+        if (asCapability(Waterable.class).isPresent()) {
+            actions.add(new WaterAction(location));
         }
         return actions;
     }

@@ -9,6 +9,7 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.statistics.BaseStatistic;
 import game.statistics.FarmerStatistics;
+import game.statistics.StatisticAdjuster;
 import java.util.List;
 
 /**
@@ -22,6 +23,8 @@ public class Farmer extends ConsciousActor {
     private static final int STARTING_STAMINA = 100;
     /** The number of coins the Farmer starts the game with. */
     private static final int STARTING_COINS = 10000;
+    /** The stamina the Farmer regenerates at the start of each of their turns. */
+    private static final int STAMINA_REGENERATED_PER_TURN = 1;
 
     /**
      * Creates a new Farmer.
@@ -35,9 +38,10 @@ public class Farmer extends ConsciousActor {
     }
 
     /**
-     * Selects the action to perform on a conscious turn: continues a multi-turn
-     * action if one is in progress, or otherwise presents the player with a menu
-     * of the allowable actions.
+     * Selects the action to perform on a conscious turn. The Farmer first
+     * regenerates stamina, then either continues a multi-turn action if one is
+     * in progress, or shows their status and presents the player with a menu of
+     * the allowable actions.
      *
      * @param actions collection of possible Actions for this Actor
      * @param lastAction the Action this Actor took last turn
@@ -48,6 +52,8 @@ public class Farmer extends ConsciousActor {
     @Override
     protected Action playConsciousTurn(ActionList actions, Action lastAction,
                                        GameMap map, Display display) {
+        regenerateStamina();
+
         // Handle multi-turn Actions
         if (lastAction.getNextAction() != null) {
             return lastAction.getNextAction();
@@ -58,6 +64,13 @@ public class Farmer extends ConsciousActor {
         // return/print the console menu
         Menu menu = new Menu(actions);
         return menu.showMenu(this, display);
+    }
+
+    /**
+     * Regenerates stamina at the start of the turn, up to the Farmer's maximum.
+     */
+    private void regenerateStamina() {
+        new StatisticAdjuster(this).increase(ActorStatistics.STAMINA, STAMINA_REGENERATED_PER_TURN);
     }
 
     /**

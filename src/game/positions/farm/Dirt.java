@@ -33,13 +33,16 @@ public class Dirt extends Ground implements Tillable, Waterable {
     }
 
     /**
-     * Returns the Ground that results from watering this Dirt.
+     * Waters this Dirt: the tile becomes a Puddle.
      *
-     * @return a new Puddle
+     * @param actor the Actor watering the Dirt
+     * @param location the Location of this Dirt
+     * @return a description of the outcome
      */
     @Override
-    public Ground getWaterResult() {
-        return new Puddle();
+    public String water(Actor actor, Location location) {
+        location.setGround(new Puddle());
+        return actor + " waters the ground.";
     }
 
     /**

@@ -6,48 +6,60 @@ import game.items.tools.WateringTool;
 import game.positions.Waterable;
 
 /**
- * An Action that allows an Actor to water the Ground at their current Location,
- * provided they are carrying a Watering Can and have enough stamina.
- * The Ground must implement Waterable to define what it becomes once watered.
- * <p>
- * This is unrelated to watering a mature {@link game.crops.Crop}: this action turns
- * one type of Ground into another (e.g. Dirt into a Puddle), whereas watering a
- * crop nurtures it in place and is handled by {@link game.actions.WaterCropAction}.
+ * An Action that lets an Actor water the Ground at a Location with a watering tool. The
+ * Ground can be Dirt or a crop: both implement {@link Waterable}. The shared checks live in
+ * {@link CapabilityToolAction}; this class only chooses the stamina cost and applies the effect.
  */
 public class WaterAction extends CapabilityToolAction<Waterable, WateringTool> {
+
+    /** The Location of the Ground being watered, kept for the menu text. */
+    private final Location target;
 
     /**
      * Creates a new WaterAction.
      *
-     * @param location the Location whose Ground is to be watered
+     * @param location the Location of the Ground to water
      */
     public WaterAction(Location location) {
         super(location, Waterable.class, WateringTool.class,
-                "has no watering can to water the ground.", "cannot water this ground.");
+                "has no watering tool to water the " + location.getGround() + ".",
+                "cannot water the " + location.getGround() + ".");
+        this.target = location;
     }
 
     /**
-     * Waters the Ground, replacing it with the Waterable's water result.
+     * Asks the Ground for its own stamina cost, which defaults to the tool's cost.
      *
-     * @param actor the actor performing the action
-     * @param location the Location whose Ground is to be watered
-     * @param waterable the Waterable capability of the Ground
-     * @return a description of the outcome, to be displayed to the player
+     * @param tool the watering tool the Actor carries
+     * @param waterable the Ground being watered
+     * @return the stamina cost of this watering
+     */
+    @Override
+    protected int staminaCost(WateringTool tool, Waterable waterable) {
+        return waterable.getWateringStaminaCost(tool.getStaminaCost());
+    }
+
+    /**
+     * Lets the Ground apply the effect of being watered.
+     *
+     * @param actor the Actor watering the Ground
+     * @param location the Location of the Ground
+     * @param waterable the Ground being watered
+     * @return a description of the outcome
      */
     @Override
     protected String applyEffect(Actor actor, Location location, Waterable waterable) {
-        location.setGround(waterable.getWaterResult());
-        return actor + " waters the ground.";
+        return waterable.water(actor, location);
     }
 
     /**
-     * Describes what this Action will do if chosen in the menu.
+     * Describes this action in the menu.
      *
-     * @param actor the actor performing the action
-     * @return the action description to be displayed on the menu
+     * @param actor the Actor performing the action
+     * @return the menu text
      */
     @Override
     public String menuDescription(Actor actor) {
-        return actor + " waters the ground here.";
+        return actor + " waters the " + target.getGround() + ".";
     }
 }

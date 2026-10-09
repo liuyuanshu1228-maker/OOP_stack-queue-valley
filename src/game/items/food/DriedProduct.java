@@ -28,6 +28,17 @@ public class DriedProduct extends ProcessedProduct {
     }
 
     /**
+     * Drying restores stamina, so only an Actor that has stamina can receive it.
+     *
+     * @param actor the Actor that would receive the effect
+     * @return true if the Actor has stamina
+     */
+    @Override
+    protected boolean canReceiveProcessingEffect(Actor actor) {
+        return actor.hasStatistic(ActorStatistics.STAMINA);
+    }
+
+    /**
      * Applies this layer's own effect: restores 2 stamina to the Actor.
      *
      * @param actor the Actor consuming this product
