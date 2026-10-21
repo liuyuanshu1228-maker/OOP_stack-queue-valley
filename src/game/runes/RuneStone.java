@@ -37,12 +37,20 @@ public class RuneStone extends Ground implements CarriesRune {
     }
 
     /**
-     * Reverts the given Location back to the ground this rune stone
+     * Restores the given Location back to the ground this rune stone
      * replaced. Called once this stone has triggered a successful formation.
+     * <p>
+     * Deliberately not named {@code revertAt} or {@code tick}-driven: REQ3's
+     * planned {@code TemporaryGround} base class restores its ground after a
+     * fixed number of turns regardless of what the player does, whereas a
+     * RuneStone never expires on its own -- it only restores its ground the
+     * moment it triggers a formation. The two are different contracts with
+     * different callers, so RuneStone does not extend TemporaryGround, and
+     * this method keeps a distinct name so the two are never confused.
      *
      * @param location the location this rune stone occupies
      */
-    public void revertAt(Location location) {
+    public void restoreOriginalGround(Location location) {
         location.setGround(originalGround);
     }
 }

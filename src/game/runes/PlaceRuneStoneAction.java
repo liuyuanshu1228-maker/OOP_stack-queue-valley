@@ -15,19 +15,15 @@ import java.util.List;
  * If it does: the formation's Rune is applied to the tiles its matching
  * RunePattern reaches (twice over, if the stone was placed on an Altar's
  * one-time boost), the pattern's own bonus effect fires, and the triggering
- * stone reverts to the ground it replaced -- it has done its job. If it
+ * stone restores the ground it replaced -- it has done its job. If it
  * does not complete anything, the stone simply stays on the map, ready to
  * take part in a later formation.
  * <p>
- * This is the one place that needs to know about every known RunePattern,
- * so that list lives here rather than inside any one pattern (a pattern
- * should not need to know what other patterns exist).
+ * Which shapes count as "known" is {@link KnownRunePatterns}'s job, not this
+ * class's: this Action only orchestrates placing one stone and checking it
+ * against whatever that registry currently lists.
  */
 public class PlaceRuneStoneAction extends Action {
-
-    /** Every shape a rune formation can take, checked in this order. */
-    private static final List<RunePattern> KNOWN_PATTERNS =
-            List.of(new LinePattern(), new TrianglePattern(), new SquarePattern());
 
     private final RuneStoneItem item;
     private final Rune rune;
@@ -55,7 +51,7 @@ public class PlaceRuneStoneAction extends Action {
         StringBuilder result = new StringBuilder();
         result.append(actor).append(" sets down a ").append(item).append(" at ").append(location).append(".");
 
-        for (RunePattern pattern : KNOWN_PATTERNS) {
+        for (RunePattern pattern : KnownRunePatterns.all()) {
             if (pattern.matches(location)) {
                 List<Location> affected = pattern.affectedTiles(location);
                 result.append(' ').append(rune.applyTo(affected, actor));
@@ -64,7 +60,7 @@ public class PlaceRuneStoneAction extends Action {
                             .append(" (boosted by the Altar!)");
                 }
                 result.append(' ').append(pattern.applyBonusEffect(location, map));
-                stone.revertAt(location);
+                stone.restoreOriginalGround(location);
                 break;
             }
         }

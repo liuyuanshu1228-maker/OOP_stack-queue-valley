@@ -1,51 +1,29 @@
 package game.runes;
 
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
-import game.crops.Cauliflower;
-import game.crops.Crop;
-import game.crops.Melon;
-import game.crops.Parsnip;
-import game.crops.Strawberry;
-import game.crops.Tomato;
-import game.positions.farm.Soil;
-import game.random.RandomUtils;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
- * A Rune whose effect is growth: every affected tile that is bare Soil
- * sprouts a randomly chosen crop.
+ * A Rune whose effect is growth: every affected tile that is bare Soil is
+ * meant to sprout a crop at its earliest growth stage.
  * <p>
- * Soil has no capability interface of its own (nothing currently needs one),
- * so unlike {@link QuakeRune}'s use of {@code Tillable}, this cannot ask
- * "can this tile grow a crop" via {@code getGroundAs}. Checking the exact
- * class with {@code getClass().equals(Soil.class)} is used instead of
- * {@code instanceof} -- it is not a type-hierarchy check, so it does not
- * fall under the "no instanceof" rule, and the same technique already
- * appears elsewhere in this codebase (e.g. BaseCreatureState's equals/hashCode)
- * for exactly this "is this the same concrete type" question. If a
- * {@code Plantable} capability is ever added to Soil, this should switch to
- * {@code getGroundAs(Plantable.class)} for consistency.
+ * <b>Blocked on REQ1.</b> The team's feature proposal commits to growing a
+ * Seedling/Sprout (REQ1's early growth stages), not a mature crop --
+ * substituting a mature crop would not match the proposal and would cost the
+ * Rule 4 mark for this requirement. REQ1's Plant/Seedling/Sprout classes do
+ * not exist in the codebase yet, and this class must not invent them (REQ1
+ * is a teammate's file, not this requirement's). Until that skeleton lands,
+ * this Rune deliberately does nothing rather than doing the wrong thing.
+ * Once Seedling/Sprout exist, replace {@link #applyTo} with "plant the
+ * earliest growth stage on every affected tile that is bare Soil".
  */
 public class VerdantRune implements Rune {
 
-    /** The crop types this rune may plant. */
-    private static final List<Supplier<Crop>> PLANTABLE_CROPS = List.of(
-            Strawberry::new, Cauliflower::new, Melon::new, Tomato::new, Parsnip::new);
-
     @Override
     public String applyTo(List<Location> affectedTiles, Actor activator) {
-        int grown = 0;
-        for (Location tile : affectedTiles) {
-            Ground ground = tile.getGround();
-            if (ground != null && ground.getClass().equals(Soil.class)) {
-                tile.setGround(RandomUtils.pickRandom(PLANTABLE_CROPS).get());
-                grown++;
-            }
-        }
-        return activator + " channels a Verdant Rune, growing " + grown + " crop(s) from bare soil.";
+        return activator + " channels a Verdant Rune, but it has no effect yet "
+                + "(awaiting REQ1's Plant/Seedling classes).";
     }
 }

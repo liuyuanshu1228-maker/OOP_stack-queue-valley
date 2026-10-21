@@ -26,7 +26,6 @@ import game.positions.facilities.DryingRack;
 import game.runes.EmberRune;
 import game.runes.QuakeRune;
 import game.runes.RuneStoneItem;
-import game.runes.VerdantRune;
 import game.travel.Ladder;
 import game.crops.Melon;
 import game.crops.Parsnip;
@@ -201,16 +200,20 @@ public class StackQueueValleyWorld extends World {
     }
 
     /**
-     * Gives the Farmer a starting supply of each rune stone type (Ember,
-     * Verdant, Quake), enough of each to complete any of the three known
-     * rune formations on their own.
+     * Gives the Farmer a starting supply of each working rune stone type
+     * (Ember, Quake), enough of each to complete any of the three known rune
+     * formations on their own.
+     * <p>
+     * Verdant Rune Stones are withheld for now: {@code VerdantRune} has no
+     * real effect yet (it is blocked on REQ1's Plant/Seedling classes -- see
+     * its javadoc), so handing the player one would just be a dead item in
+     * their inventory. Add it back here once VerdantRune is finished.
      *
      * @param farmer the Farmer to give rune stones to
      */
     private void giveRuneStones(Farmer farmer) {
         for (int i = 0; i < RUNE_STONES_PER_TYPE; i++) {
             farmer.getInventory().add(new RuneStoneItem("Ember Rune Stone", 'e', new EmberRune()));
-            farmer.getInventory().add(new RuneStoneItem("Verdant Rune Stone", 'g', new VerdantRune()));
             farmer.getInventory().add(new RuneStoneItem("Quake Rune Stone", 'u', new QuakeRune()));
         }
     }

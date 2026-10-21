@@ -3,7 +3,9 @@ package game.runes;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
+import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.items.Item;
+import game.crops.Unplanted;
 
 /**
  * A rune stone the Farmer carries and can place on the ground. One instance
@@ -29,10 +31,20 @@ public class RuneStoneItem extends Item {
         this.makePortable();
     }
 
+    /**
+     * Offers "place" only when the Actor is standing on a tile with no crop
+     * growing -- placing a rune stone there would silently destroy the crop
+     * by overwriting its ground. Reuses {@link Unplanted}, the same
+     * "no crop here" check the crops package already exposes for this exact
+     * question, rather than re-deriving it here.
+     */
     @Override
     public ActionList allowableActions(Actor owner, GameMap map) {
         ActionList actions = new ActionList();
-        actions.add(new PlaceRuneStoneAction(this, rune));
+        Location here = map.locationOf(owner);
+        if (new Unplanted().isMetBy(here)) {
+            actions.add(new PlaceRuneStoneAction(this, rune));
+        }
         return actions;
     }
 }

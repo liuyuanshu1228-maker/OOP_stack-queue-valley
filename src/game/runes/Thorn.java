@@ -7,6 +7,11 @@ import edu.monash.fit2099.engine.positions.Location;
 /**
  * Ground planted by a completed {@link SquarePattern}. It blocks entry for a
  * limited number of turns, then reverts to the ground it replaced.
+ * <p>
+ * TODO: once REQ3 publishes its planned {@code TemporaryGround} base class
+ * (SlimeGround/SaltGround/TrapGround will extend it too), this class should
+ * extend it instead of keeping its own {@code originalGround}/countdown, to
+ * avoid duplicating that "revert to original ground after N turns" logic.
  */
 public class Thorn extends Ground {
 
