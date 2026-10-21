@@ -6,15 +6,18 @@ import edu.monash.fit2099.engine.actions.DoNothingAction;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.GameMap;
+import game.status.IncapacitatingStatus;
 
 /**
  * Base class for actors that can only act while they are conscious.
  * <p>
  * Every turn it first checks whether the actor has run out of hit points; if so,
- * the actor falls unconscious and does nothing. Otherwise the turn is handed to
+ * the actor falls unconscious and does nothing. It then checks whether the actor
+ * is incapacitated by some other means (e.g. Stunned by a Quake Rune), in which
+ * case it also does nothing. Otherwise the turn is handed to
  * {@link #playConsciousTurn}, which each subclass implements with its own way of
  * choosing an action (a menu for the player, a behaviour or a state machine for
- * other actors). This keeps the unconscious check in a single place.
+ * other actors). This keeps both checks in a single place.
  */
 public abstract class ConsciousActor extends Actor {
 
@@ -31,7 +34,8 @@ public abstract class ConsciousActor extends Actor {
 
     /**
      * Selects the action to perform on this turn: falls unconscious and does
-     * nothing if out of hit points, otherwise lets the subclass choose.
+     * nothing if out of hit points, does nothing if incapacitated by some
+     * other status, otherwise lets the subclass choose.
      *
      * @param actions collection of possible Actions for this Actor
      * @param lastAction the Action this Actor took last turn
@@ -45,11 +49,15 @@ public abstract class ConsciousActor extends Actor {
             this.unconscious(map);
             return new DoNothingAction();
         }
+        if (this.hasStatus(IncapacitatingStatus.class)) {
+            return new DoNothingAction();
+        }
         return playConsciousTurn(actions, lastAction, map, display);
     }
 
     /**
-     * Chooses the action to perform on a turn where this actor is conscious.
+     * Chooses the action to perform on a turn where this actor is conscious
+     * and not incapacitated.
      *
      * @param actions collection of possible Actions for this Actor
      * @param lastAction the Action this Actor took last turn

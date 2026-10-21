@@ -23,6 +23,10 @@ import game.crops.Cauliflower;
 import game.positions.mine.CopperNode;
 import game.positions.farm.Dirt;
 import game.positions.facilities.DryingRack;
+import game.runes.EmberRune;
+import game.runes.QuakeRune;
+import game.runes.RuneStoneItem;
+import game.runes.VerdantRune;
 import game.travel.Ladder;
 import game.crops.Melon;
 import game.crops.Parsnip;
@@ -73,6 +77,9 @@ public class StackQueueValleyWorld extends World {
     private static final int COPPER_NODE_COUNT = 4;
     /** Number of geodes scattered in the mines at the start of the game. */
     private static final int GEODE_COUNT = 3;
+
+    /** How many rune stones of each type the Farmer starts with. */
+    private static final int RUNE_STONES_PER_TYPE = 4;
 
     /** Destination names shown in the travel menus. */
     private static final String TO_FARM = "the farm";
@@ -154,6 +161,7 @@ public class StackQueueValleyWorld extends World {
         farmer.getInventory().add(new Hoe());
         farmer.getInventory().add(new WateringCan());
         farmer.getInventory().add(new Pickaxe());
+        giveRuneStones(farmer);
 
         Set<Location> occupiedLocations = new HashSet<>();
         occupiedLocations.add(farmerStart);
@@ -190,6 +198,21 @@ public class StackQueueValleyWorld extends World {
         scatterGround(minesMap, minesOccupiedLocations, ROCK_COUNT, Rock::new);
         scatterGround(minesMap, minesOccupiedLocations, COPPER_NODE_COUNT, CopperNode::new);
         scatterItems(minesMap, minesOccupiedLocations, GEODE_COUNT, Geode::new);
+    }
+
+    /**
+     * Gives the Farmer a starting supply of each rune stone type (Ember,
+     * Verdant, Quake), enough of each to complete any of the three known
+     * rune formations on their own.
+     *
+     * @param farmer the Farmer to give rune stones to
+     */
+    private void giveRuneStones(Farmer farmer) {
+        for (int i = 0; i < RUNE_STONES_PER_TYPE; i++) {
+            farmer.getInventory().add(new RuneStoneItem("Ember Rune Stone", 'e', new EmberRune()));
+            farmer.getInventory().add(new RuneStoneItem("Verdant Rune Stone", 'g', new VerdantRune()));
+            farmer.getInventory().add(new RuneStoneItem("Quake Rune Stone", 'u', new QuakeRune()));
+        }
     }
 
     /**
