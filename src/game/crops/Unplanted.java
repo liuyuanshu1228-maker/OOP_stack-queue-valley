@@ -1,22 +1,27 @@
 package game.crops;
 
 import edu.monash.fit2099.engine.positions.Location;
+import game.plants.Plant;
 import game.positions.area.TileCondition;
 
 /**
- * Met by the tiles where no crop is growing.
+ * Met by the tiles where no plant is growing, at any growth stage.
  * <p>
- * It lives in the crops package because "what counts as a crop" is knowledge
- * of that package, which the area package must not depend on.
+ * It checks for {@link Plant} rather than {@link Crop}, so seedlings and
+ * sprouts also count as planted tiles: for example, a watered Cauliflower
+ * does not flood them into puddles.
+ * <p>
+ * It lives in the crops package because "what counts as a plant" is knowledge
+ * of the plant packages, which the area package must not depend on.
  */
 public class Unplanted implements TileCondition {
 
     /**
      * @param tile the tile to test
-     * @return true if the ground on the tile is not a crop
+     * @return true if the ground on the tile is not a plant
      */
     @Override
     public boolean isMetBy(Location tile) {
-        return tile.getGroundAs(Crop.class) == null;
+        return tile.getGroundAs(Plant.class) == null;
     }
 }
