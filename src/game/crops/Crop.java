@@ -2,11 +2,11 @@ package game.crops;
 
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.HarvestAction;
 import game.actions.Harvestable;
 import game.actions.WaterAction;
+import game.plants.Plant;
 import game.positions.FreelyWaterable;
 import game.positions.Waterable;
 import game.positions.farm.Dirt;
@@ -14,10 +14,11 @@ import game.positions.farm.Dirt;
 /**
  * Abstract base class for all crops.
  * <p>
- * A crop is a type of {@link Ground} that keeps track of how many times it
+ * A crop is a mature {@link Plant} that keeps track of how many times it
  * has been watered, since several crop-specific rules (chance of damage,
- * amount of produce, etc.) depend on that count. When a crop is removed from
- * the game, for any reason, its tile reverts to {@link Dirt}.
+ * amount of produce, etc.) depend on that count. When a crop is removed by
+ * {@link #removeCrop}, e.g. after a harvest, its tile reverts to {@link Dirt};
+ * being regressed is handled by {@link Plant} instead.
  * <p>
  * Every crop is {@link Harvestable}; the {@link HarvestAction} menu entry is
  * offered automatically, whether the Actor is standing on the crop or on an
@@ -26,7 +27,7 @@ import game.positions.farm.Dirt;
  * accepts a free watering (e.g. from a crow's droppings) through
  * {@link FreelyWaterable}, independent of whether it is Waterable.
  */
-public abstract class Crop extends Ground implements Harvestable, FreelyWaterable {
+public abstract class Crop extends Plant implements Harvestable, FreelyWaterable {
 
     /**
      * The number of times this crop has been watered.
