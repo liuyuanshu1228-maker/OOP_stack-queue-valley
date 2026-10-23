@@ -18,6 +18,8 @@ import java.util.Set;
 /**
  * A crow: a stateful creature that cycles between {@link Perching},
  * {@link Foraging}, {@link Mobbing}, and {@link Fleeing}.
+ * <p>
+ * It is displayed as 'b' (for bird), since 'v' is the Strawberry Sprout.
  */
 public class Crow extends ConsciousActor implements StatefulCreature, ItemCache, Composure {
 
@@ -47,7 +49,7 @@ public class Crow extends ConsciousActor implements StatefulCreature, ItemCache,
      * @param name the crow's name
      */
     public Crow(String name) {
-        super(name, 'v', STARTING_HP);
+        super(name, 'b', STARTING_HP);
     }
 
     /**
