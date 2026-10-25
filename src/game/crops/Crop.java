@@ -7,6 +7,7 @@ import game.actions.HarvestAction;
 import game.actions.Harvestable;
 import game.actions.WaterAction;
 import game.plants.Plant;
+import game.plants.PlantAbility;
 import game.positions.FreelyWaterable;
 import game.positions.Waterable;
 import game.positions.farm.Dirt;
@@ -39,9 +40,10 @@ public abstract class Crop extends Plant implements Harvestable, FreelyWaterable
      *
      * @param displayChar character to display for this crop
      * @param name the name of this crop
+     * @param abilities the abilities of this crop, from the highest priority to the lowest
      */
-    public Crop(char displayChar, String name) {
-        super(displayChar, name);
+    public Crop(char displayChar, String name, PlantAbility... abilities) {
+        super(displayChar, name, abilities);
     }
 
     /**
