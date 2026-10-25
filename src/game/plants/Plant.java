@@ -1,8 +1,11 @@
 package game.plants;
 
+import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.positions.farm.Soil;
+
+import java.util.List;
 
 /**
  * Abstract base class for every plant, at any growth stage.
@@ -11,6 +14,12 @@ import game.positions.farm.Soil;
  * is placed on the map and goes up by 1 every turn. Only the plant itself
  * changes its age, so there is no setter.
  * <p>
+ * Each plant has a list of {@link PlantAbility abilities} in priority order.
+ * Every turn it tries them from the highest priority down and stops at the
+ * first one that actually does something, so a plant does at most one thing
+ * per turn. What it did is displayed to the player; a turn where nothing
+ * happens is not reported.
+ * <p>
  * Every plant is {@link Regressible}. By default a regressed plant dies back
  * to tilled {@link Soil}; plants with an earlier growth stage override
  * {@link #previousStage()} to return it instead.
@@ -18,18 +27,31 @@ import game.positions.farm.Soil;
 public abstract class Plant extends Ground implements Regressible {
 
     /**
+     * Ground has no Display passed to its tick, so plants share this one to
+     * report what they do.
+     */
+    private static final Display DISPLAY = new Display();
+
+    /**
      * The number of turns this plant has been on the map.
      */
     private int age = 0;
+
+    /**
+     * The abilities of this plant, from the highest priority to the lowest.
+     */
+    private final List<PlantAbility> abilities;
 
     /**
      * Creates a new Plant with an age of 0.
      *
      * @param displayChar character to display for this plant
      * @param name the name of this plant
+     * @param abilities the abilities of this plant, from the highest priority to the lowest
      */
-    protected Plant(char displayChar, String name) {
+    protected Plant(char displayChar, String name, PlantAbility... abilities) {
         super(displayChar, name);
+        this.abilities = List.of(abilities);
     }
 
     /**
@@ -42,13 +64,21 @@ public abstract class Plant extends Ground implements Regressible {
     }
 
     /**
-     * Ages this plant by one turn.
+     * Ages this plant by one turn, then tries its abilities in priority order
+     * until one of them does something, and displays what it did.
      *
      * @param location the location of this plant
      */
     @Override
     public void tick(Location location) {
         age++;
+        for (PlantAbility ability : abilities) {
+            String report = ability.tryPerform(this, location);
+            if (!report.isEmpty()) {
+                DISPLAY.println(report);
+                return;
+            }
+        }
     }
 
     /**
