@@ -1,7 +1,10 @@
 package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
+import game.plants.Produce;
+import game.plants.StrawberrySprout;
 import game.positions.area.ItemDropper;
 import game.random.RandomUtils;
 import game.positions.Waterable;
@@ -10,6 +13,10 @@ import game.positions.Waterable;
  * A strawberry crop. It can be watered, which scatters strawberries onto
  * adjacent tiles, and it can be harvested at any time for strawberries,
  * though harvesting risks destroying the plant.
+ * <p>
+ * Every {@value #PRODUCE_INTERVAL} turns it drops a strawberry on an adjacent
+ * tile by itself, which may be rotten. When it is regressed it goes back to
+ * being a {@link StrawberrySprout}.
  */
 public class Strawberry extends Crop implements Waterable {
 
@@ -31,11 +38,24 @@ public class Strawberry extends Crop implements Waterable {
     /** Number of strawberries dropped nearby by a single watering. */
     private static final int STRAWBERRIES_PER_WATERING = 2;
 
+    /** How many turns between strawberries dropped by the plant itself. */
+    private static final int PRODUCE_INTERVAL = 5;
+
     /**
      * Creates a new Strawberry.
      */
     public Strawberry() {
-        super('S', "Strawberry");
+        super('S', "Strawberry", new Produce(PRODUCE_INTERVAL, StrawberryItem::createRandom));
+    }
+
+    /**
+     * A regressed Strawberry becomes a new Strawberry Sprout.
+     *
+     * @return a new StrawberrySprout
+     */
+    @Override
+    protected Ground previousStage() {
+        return new StrawberrySprout();
     }
 
     /**
