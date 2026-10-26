@@ -22,6 +22,13 @@ import game.items.tools.WateringCan;
 import game.crops.Cauliflower;
 import game.positions.mine.CopperNode;
 import game.positions.farm.Dirt;
+import game.positions.farm.Soil;
+import game.plants.CauliflowerSprout;
+import game.plants.MelonSprout;
+import game.plants.Plant;
+import game.plants.StrawberrySeedling;
+import game.plants.StrawberrySprout;
+import game.positions.Plantable;
 import game.positions.facilities.DryingRack;
 import game.runes.EmberRune;
 import game.runes.QuakeRune;
@@ -52,17 +59,6 @@ import java.util.function.Supplier;
  *
  */
 public class StackQueueValleyWorld extends World {
-
-    /** Number of Parsnip crops scattered on the farm at the start of the game. */
-    private static final int PARSNIP_COUNT = 5;
-    /** Number of Strawberry crops scattered on the farm at the start of the game. */
-    private static final int STRAWBERRY_COUNT = 5;
-    /** Number of Cauliflower crops scattered on the farm at the start of the game. */
-    private static final int CAULIFLOWER_COUNT = 5;
-    /** Number of Melon crops scattered on the farm at the start of the game. */
-    private static final int MELON_COUNT = 5;
-    /** Number of Tomato crops scattered on the farm at the start of the game. */
-    private static final int TOMATO_COUNT = 5;
 
     /** The name of the mines map. */
     private static final String MINES_MAP_NAME = "The Mines";
@@ -137,14 +133,27 @@ public class StackQueueValleyWorld extends World {
     public void initialise() throws Exception {
         DefaultGroundCreator groundCreator = new DefaultGroundCreator();
         groundCreator.registerGround('.', Dirt::new);
+        groundCreator.registerGround(',', Soil::new);
+        groundCreator.registerGround('\'',StrawberrySeedling::new);
+        groundCreator.registerGround('v', StrawberrySprout::new);
+        groundCreator.registerGround('y', CauliflowerSprout::new);
+        groundCreator.registerGround('t', MelonSprout::new);
+        groundCreator.registerGround('S', Strawberry::new);
+        groundCreator.registerGround('C', Cauliflower::new);
+        groundCreator.registerGround('M', Melon::new);
+        groundCreator.registerGround('T', Tomato::new);
+        groundCreator.registerGround('P', Parsnip::new);
 
+        // One of every plant, each with Soil around it to spread onto. The
+        // Cauliflower is kept away from the ladders and circles, as watering
+        // it may turn its neighbours into puddles.
         List<String> inheritedFarm = Arrays.asList(
-                "..........",
-                "..........",
-                "..........",
-                "..........",
-                "..........",
-                "..........",
+                "..,,,,,,..",
+                ".,',v,,S,.",
+                ".,,,,,,,,.",
+                ".,t,,.,M,.",
+                ".,,,,,,,,.",
+                ".,T,y,C,P.",
                 ".........."
         );
 
@@ -164,6 +173,7 @@ public class StackQueueValleyWorld extends World {
 
         Set<Location> occupiedLocations = new HashSet<>();
         occupiedLocations.add(farmerStart);
+        reservePlantsAndSoil(inheritedFarmMap, occupiedLocations);
         Set<Location> minesOccupiedLocations = new HashSet<>();
 
         linkMaps(inheritedFarmMap, minesMap, occupiedLocations, minesOccupiedLocations,
@@ -171,11 +181,6 @@ public class StackQueueValleyWorld extends World {
         linkMaps(inheritedFarmMap, minesMap, occupiedLocations, minesOccupiedLocations,
                 TeleportationCircle::new, CIRCLE_LINKS);
 
-        scatterGround(inheritedFarmMap, occupiedLocations, PARSNIP_COUNT, Parsnip::new);
-        scatterGround(inheritedFarmMap, occupiedLocations, STRAWBERRY_COUNT, Strawberry::new);
-        scatterGround(inheritedFarmMap, occupiedLocations, CAULIFLOWER_COUNT, Cauliflower::new);
-        scatterGround(inheritedFarmMap, occupiedLocations, MELON_COUNT, Melon::new);
-        scatterGround(inheritedFarmMap, occupiedLocations, TOMATO_COUNT, Tomato::new);
         scatterGround(inheritedFarmMap, occupiedLocations, 1, DryingRack::new);
         scatterGround(inheritedFarmMap, occupiedLocations, 1, PreservesJar::new);
 
@@ -250,6 +255,23 @@ public class StackQueueValleyWorld extends World {
             minesSide.addDestination(TO_FARM, farmLocation);
             reserveWithNeighbours(farmOccupiedLocations, farmLocation);
             reserveWithNeighbours(minesOccupiedLocations, minesLocation);
+        }
+    }
+
+    /**
+     * Records every location of the map that holds a plant or Soil as used,
+     * so that the grounds, items and actors placed at random afterwards
+     * never cover a plant or the Soil it needs to spread onto.
+     *
+     * @param map the map whose plants and Soil to reserve
+     * @param occupiedLocations the set of used locations to update
+     */
+    private void reservePlantsAndSoil(GameMap map, Set<Location> occupiedLocations) {
+        for (Location location : Area.wholeMap(map).tiles()) {
+            if (location.getGroundAs(Plant.class) != null
+                    || location.getGroundAs(Plantable.class) != null) {
+                occupiedLocations.add(location);
+            }
         }
     }
 
