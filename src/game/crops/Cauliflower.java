@@ -1,7 +1,9 @@
 package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
+import game.plants.CauliflowerSprout;
 import game.positions.area.Area;
 import game.positions.farm.Puddle;
 import game.random.RandomUtils;
@@ -11,6 +13,9 @@ import game.positions.Waterable;
  * A cauliflower crop. Watering it may turn the surrounding ground into
  * puddles, and it can only be harvested once it has been watered enough
  * times.
+ * <p>
+ * It does nothing by itself each turn. When it is regressed it goes back to
+ * being a {@link CauliflowerSprout}.
  */
 public class Cauliflower extends Crop implements Waterable {
 
@@ -34,6 +39,16 @@ public class Cauliflower extends Crop implements Waterable {
      */
     public Cauliflower() {
         super('C', "Cauliflower");
+    }
+
+    /**
+     * A regressed Cauliflower becomes a new Cauliflower Sprout.
+     *
+     * @return a new CauliflowerSprout
+     */
+    @Override
+    protected Ground previousStage() {
+        return new CauliflowerSprout();
     }
 
     /**
