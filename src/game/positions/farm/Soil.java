@@ -2,7 +2,6 @@ package game.positions.farm;
 
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
-import game.plants.Plant;
 import game.positions.Plantable;
 
 /**
@@ -27,7 +26,7 @@ public class Soil extends Ground implements Plantable {
      * @param location the Location this Soil currently occupies
      */
     @Override
-    public void plant(Plant plant, Location location) {
+    public void plant(Ground plant, Location location) {
         location.setGround(plant);
     }
 }

@@ -1,7 +1,7 @@
 package game.positions;
 
+import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
-import game.plants.Plant;
 
 /**
  * Capability interface for Ground that a plant can be planted on, e.g. by a
@@ -9,6 +9,9 @@ import game.plants.Plant;
  * Callers find it through {@code location.getGroundAs(Plantable.class)}, so
  * new kinds of plantable ground can be added without changing them.
  * Implementing classes define what planting on them does.
+ * <p>
+ * The plant is taken as a {@link Ground} rather than a plant type, so that
+ * this package does not depend on the plant packages.
  */
 public interface Plantable {
 
@@ -18,5 +21,5 @@ public interface Plantable {
      * @param plant the plant to plant
      * @param location the Location this ground currently occupies
      */
-    void plant(Plant plant, Location location);
+    void plant(Ground plant, Location location);
 }
