@@ -4,7 +4,6 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
-import game.plants.MelonSprout;
 import game.plants.SelfReplicate;
 import game.positions.area.Area;
 import game.positions.area.Explosion;

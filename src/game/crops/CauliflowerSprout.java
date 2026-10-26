@@ -1,6 +1,7 @@
-package game.plants;
+package game.crops;
 
-import game.crops.Cauliflower;
+import game.plants.Grow;
+import game.plants.Plant;
 
 /**
  * The only early growth stage of a cauliflower plant, before the mature

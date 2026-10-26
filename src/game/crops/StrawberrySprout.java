@@ -1,7 +1,9 @@
-package game.plants;
+package game.crops;
 
 import edu.monash.fit2099.engine.positions.Ground;
-import game.crops.Strawberry;
+import game.plants.Grow;
+import game.plants.Plant;
+import game.plants.SelfReplicate;
 
 /**
  * The second growth stage of a strawberry plant, between

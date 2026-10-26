@@ -1,4 +1,7 @@
-package game.plants;
+package game.crops;
+
+import game.plants.Grow;
+import game.plants.Plant;
 
 /**
  * The first growth stage of a strawberry plant.

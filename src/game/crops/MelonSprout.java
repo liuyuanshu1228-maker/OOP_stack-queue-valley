@@ -1,6 +1,8 @@
-package game.plants;
+package game.crops;
 
-import game.crops.Melon;
+import game.plants.Grow;
+import game.plants.Plant;
+import game.plants.SelfReplicate;
 
 /**
  * The only early growth stage of a melon plant, before the mature
