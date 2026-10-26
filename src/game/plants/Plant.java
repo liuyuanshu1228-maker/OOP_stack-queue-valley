@@ -4,6 +4,7 @@ import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.positions.farm.Soil;
+import game.status.GrowthPausedStatus;
 
 import java.util.List;
 
@@ -18,7 +19,8 @@ import java.util.List;
  * Every turn it tries them from the highest priority down and stops at the
  * first one that actually does something, so a plant does at most one thing
  * per turn. What it did is displayed to the player; a turn where nothing
- * happens is not reported.
+ * happens is not reported. While the plant has a {@link GrowthPausedStatus},
+ * it still ages but does not try any of its abilities.
  * <p>
  * Every plant is {@link Regressible}. By default a regressed plant dies back
  * to tilled {@link Soil}; plants with an earlier growth stage override
@@ -64,14 +66,18 @@ public abstract class Plant extends Ground implements Regressible {
     }
 
     /**
-     * Ages this plant by one turn, then tries its abilities in priority order
-     * until one of them does something, and displays what it did.
+     * Ages this plant by one turn, then, unless its growth is paused, tries
+     * its abilities in priority order until one of them does something, and
+     * displays what it did.
      *
      * @param location the location of this plant
      */
     @Override
     public void tick(Location location) {
         age++;
+        if (hasStatus(GrowthPausedStatus.class)) {
+            return;
+        }
         for (PlantAbility ability : abilities) {
             String report = ability.tryPerform(this, location);
             if (!report.isEmpty()) {
