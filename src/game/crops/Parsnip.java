@@ -3,6 +3,7 @@ package game.crops;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.Location;
+import game.plants.Produce;
 import game.positions.area.ItemDropper;
 import game.random.RandomUtils;
 import game.statistics.StatisticAdjuster;
@@ -12,6 +13,10 @@ import game.positions.Waterable;
  * A parsnip crop. It can be watered, which heals the farmer but risks
  * ruining the plant, and it can be harvested at any time for a Parsnip,
  * with a chance of a bonus Parsnip appearing nearby.
+ * <p>
+ * Every {@value #PRODUCE_INTERVAL} turns it drops a parsnip on an adjacent
+ * tile by itself. It is mature only and has no earlier stage, so when it is
+ * regressed it dies back to Soil.
  */
 public class Parsnip extends Crop implements Waterable {
 
@@ -30,11 +35,14 @@ public class Parsnip extends Crop implements Waterable {
     /** Chance (out of 100) that a second Parsnip spawns on an adjacent tile. */
     private static final int BONUS_SPAWN_CHANCE_PERCENT = 50;
 
+    /** How many turns between parsnips dropped by the plant itself. */
+    private static final int PRODUCE_INTERVAL = 15;
+
     /**
      * Creates a new Parsnip.
      */
     public Parsnip() {
-        super('P', "Parsnip");
+        super('P', "Parsnip", new Produce(PRODUCE_INTERVAL, ParsnipItem::new));
     }
 
     /**
