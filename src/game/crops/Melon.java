@@ -2,7 +2,10 @@ package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
+import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
+import game.plants.MelonSprout;
+import game.plants.SelfReplicate;
 import game.positions.area.Area;
 import game.positions.area.Explosion;
 import game.random.RandomUtils;
@@ -13,6 +16,10 @@ import game.positions.Waterable;
  * A melon crop. Watering it may raise the farmer's maximum stamina, and it
  * can be harvested at any time, though harvesting risks an explosion that
  * damages everyone nearby.
+ * <p>
+ * Every {@value #SPREAD_INTERVAL} turns it plants a {@link MelonSprout} on an
+ * adjacent tile by itself. When it is regressed it goes back to being a
+ * MelonSprout.
  */
 public class Melon extends Crop implements Waterable {
 
@@ -34,11 +41,24 @@ public class Melon extends Crop implements Waterable {
     /** Amount by which watering raises the actor's maximum stamina, when it does. */
     private static final int MAX_STAMINA_INCREASE_AMOUNT = 1;
 
+    /** How many turns between plantings of a sprout nearby. */
+    private static final int SPREAD_INTERVAL = 20;
+
     /**
      * Creates a new Melon.
      */
     public Melon() {
-        super('M', "Melon");
+        super('M', "Melon", new SelfReplicate(SPREAD_INTERVAL, MelonSprout::new));
+    }
+
+    /**
+     * A regressed Melon becomes a new Melon Sprout.
+     *
+     * @return a new MelonSprout
+     */
+    @Override
+    protected Ground previousStage() {
+        return new MelonSprout();
     }
 
     /**
