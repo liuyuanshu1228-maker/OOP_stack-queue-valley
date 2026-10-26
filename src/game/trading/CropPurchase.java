@@ -6,16 +6,17 @@ import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.actions.MerchantContext;
 import game.actions.Purchasable;
 import game.crops.Crop;
-import game.crops.Unplanted;
+import game.positions.Plantable;
 import game.positions.area.Area;
+import game.positions.area.PlantableTile;
 import game.statistics.FarmerStatistics;
 
 import java.util.Optional;
 
 /**
  * Abstract base class for purchasing crops from a Merchant.
- * Encapsulates common attributes and planting logic on a non-crop tile
- * adjacent to the Merchant's location.
+ * Encapsulates common attributes and planting logic on a {@link Plantable}
+ * tile (such as Soil) adjacent to the Merchant's location.
  */
 public abstract class CropPurchase implements Purchasable {
 
@@ -54,7 +55,7 @@ public abstract class CropPurchase implements Purchasable {
     }
 
     /**
-     * Executes the crop purchase: finds a random adjacent non-crop tile near the
+     * Executes the crop purchase: finds a random adjacent Plantable tile near the
      * Merchant to plant the crop (returning early if none exists), then charges
      * the buyer (unless waived) and triggers any crop-specific planting effect.
      *
@@ -66,7 +67,7 @@ public abstract class CropPurchase implements Purchasable {
     public final String purchase(Actor buyer, MerchantContext merchantContext) {
         Actor merchant = merchantContext.getMerchant();
         Optional<Location> plantingSpot =
-                Area.adjacentTo(merchantContext.getLocation()).filter(new Unplanted()).randomTile();
+                Area.adjacentTo(merchantContext.getLocation()).filter(new PlantableTile()).randomTile();
 
         if (plantingSpot.isEmpty()) {
             return buyer + " tries to buy a " + productName
@@ -74,7 +75,7 @@ public abstract class CropPurchase implements Purchasable {
         }
 
         Location plantedLocation = plantingSpot.get();
-        plantedLocation.setGround(createCrop());
+        plantedLocation.getGroundAs(Plantable.class).plant(createCrop(), plantedLocation);
 
         boolean waived = rollPaymentWaiver();
         if (!waived) {
