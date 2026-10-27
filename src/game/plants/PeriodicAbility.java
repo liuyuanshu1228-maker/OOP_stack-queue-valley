@@ -19,6 +19,11 @@ public abstract class PeriodicAbility implements PlantAbility {
     private static final int ALWAYS_PERCENT = 100;
 
     /**
+     * The chance used when an ability never happens, the smallest chance allowed.
+     */
+    private static final int NEVER_PERCENT = 0;
+
+    /**
      * How many turns of age between attempts.
      */
     private final int intervalTurns;
@@ -32,10 +37,20 @@ public abstract class PeriodicAbility implements PlantAbility {
      * Creates an ability that happens every given number of turns, with the
      * given chance.
      *
-     * @param intervalTurns how many turns of age between attempts
-     * @param chancePercent the chance, as a percentage, that it happens on its turn
+     * @param intervalTurns how many turns of age between attempts; must be positive
+     * @param chancePercent the chance, as a percentage, that it happens on its turn;
+     *                      must be from 0 to 100
+     * @throws IllegalArgumentException if the interval is not positive or the
+     *                                  chance is outside 0 to 100
      */
     protected PeriodicAbility(int intervalTurns, int chancePercent) {
+        if (intervalTurns <= 0) {
+            throw new IllegalArgumentException("intervalTurns must be positive, but was " + intervalTurns);
+        }
+        if (chancePercent < NEVER_PERCENT || chancePercent > ALWAYS_PERCENT) {
+            throw new IllegalArgumentException("chancePercent must be from " + NEVER_PERCENT
+                    + " to " + ALWAYS_PERCENT + ", but was " + chancePercent);
+        }
         this.intervalTurns = intervalTurns;
         this.chancePercent = chancePercent;
     }
@@ -43,7 +58,8 @@ public abstract class PeriodicAbility implements PlantAbility {
     /**
      * Creates an ability that always happens every given number of turns.
      *
-     * @param intervalTurns how many turns of age between attempts
+     * @param intervalTurns how many turns of age between attempts; must be positive
+     * @throws IllegalArgumentException if the interval is not positive
      */
     protected PeriodicAbility(int intervalTurns) {
         this(intervalTurns, ALWAYS_PERCENT);

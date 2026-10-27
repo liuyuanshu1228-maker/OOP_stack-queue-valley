@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -78,6 +80,24 @@ class PeriodicAbilityTest extends PlantTestBase {
         TestFarm.tick(location, 10);
 
         assertEquals(0, ability.performed);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1, -20})
+    void intervalThatIsNotPositiveIsRejected(int interval) {
+        assertThrows(IllegalArgumentException.class, () -> new CountingAbility(interval, 50));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 101, 1000})
+    void chanceOutsideZeroToHundredIsRejected(int chance) {
+        assertThrows(IllegalArgumentException.class, () -> new CountingAbility(5, chance));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 100})
+    void chanceAtEitherLimitIsAccepted(int chance) {
+        assertDoesNotThrow(() -> new CountingAbility(5, chance));
     }
 
     @Test

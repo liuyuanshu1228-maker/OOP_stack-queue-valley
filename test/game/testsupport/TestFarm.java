@@ -15,7 +15,7 @@ import java.util.Arrays;
 public final class TestFarm {
 
     /** The name of every test map, which appears in the plants' messages. */
-    public static final String MAP_NAME = "Farm";
+    private static final String MAP_NAME = "Farm";
 
     private TestFarm() {
     }

@@ -12,8 +12,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,8 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ProduceTest extends PlantTestBase {
 
-    static Stream<Arguments> producingCrops() {
-        return Stream.of(
+    static List<Arguments> producingCrops() {
+        return List.of(
                 Arguments.of((Supplier<Plant>) Strawberry::new, 5, "Strawberry"),
                 Arguments.of((Supplier<Plant>) Tomato::new, 7, "Tomato"),
                 Arguments.of((Supplier<Plant>) Parsnip::new, 15, "Parsnip"));
