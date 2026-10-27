@@ -1,0 +1,59 @@
+package game.testsupport;
+
+import game.random.RandomUtils;
+
+/**
+ * A {@link RandomUtils} with no randomness, so tests are deterministic.
+ * <p>
+ * Every random integer is 0, so random picks always take the first option.
+ * A chance of 100% always succeeds and a chance of 0% always fails; any
+ * other chance succeeds or fails depending on {@link #setRollsSucceed}.
+ */
+public class FixedRandom extends RandomUtils {
+
+    /** The chance that always succeeds. */
+    private static final int ALWAYS_PERCENT = 100;
+
+    /** Whether a chance between 0% and 100% succeeds. */
+    private boolean rollsSucceed = true;
+
+    /**
+     * Creates a FixedRandom and installs it for the whole game.
+     *
+     * @return the installed instance
+     */
+    public static FixedRandom install() {
+        FixedRandom fixed = new FixedRandom();
+        RandomUtils.setInstance(fixed);
+        return fixed;
+    }
+
+    /**
+     * Puts back a normal RandomUtils, so other tests are not affected.
+     */
+    public static void uninstall() {
+        RandomUtils.setInstance(new RandomUtils());
+    }
+
+    /**
+     * Sets whether a chance between 0% and 100% succeeds from now on.
+     *
+     * @param rollsSucceed true to make those chances succeed
+     */
+    public void setRollsSucceed(boolean rollsSucceed) {
+        this.rollsSucceed = rollsSucceed;
+    }
+
+    @Override
+    protected boolean doRollPercent(int percent) {
+        if (percent >= ALWAYS_PERCENT) {
+            return true;
+        }
+        return percent > 0 && rollsSucceed;
+    }
+
+    @Override
+    protected int doRandomInt(int bound) {
+        return 0;
+    }
+}

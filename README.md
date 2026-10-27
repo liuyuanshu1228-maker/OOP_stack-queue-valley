@@ -34,6 +34,24 @@ https://docs.google.com/spreadsheets/d/14k_CRD-zLqx8Qtg6DL1X_qB89g8ZwoPe-r2XALmm
    `--`--'   `--`        `--`-----'`--`-----'`--`-----``   `--`-`         
 ```
 
+## Running the Unit Tests
+
+The tests use JUnit 5 through Maven. `pom.xml` keeps the existing layout: the game and engine code stay in `src`, and the tests are in `test`, in the same packages as the classes they test.
+
+Run every test with one command from the project folder:
+
+```
+mvn test
+```
+
+In IntelliJ, right-click `pom.xml` and choose **Add as Maven Project** once. After that you can run the tests from the Maven panel (**Lifecycle → test**), or right-click the `test` folder and choose **Run 'All Tests'**.
+
+The tests do not depend on luck. `game.testsupport.FixedRandom` replaces the game's `RandomUtils`, so every chance either always succeeds or always fails, and every random pick takes the first option. `game.testsupport.TestFarm` builds small maps where `.` is Dirt and `,` is Soil.
+
+| Requirement | Test classes |
+|---|---|
+| REQ1 Second Spring | `game.plants.PeriodicAbilityTest`, `GrowTest`, `SelfReplicateTest`, `ProduceTest`, `PlantStateTest` |
+
 ## REQ5 (HD) — Stateful Creature: The Crow
 
 Our group has three people, so we build **one** stateful creature. It is a `Crow` (`src/game/crow/Crow.java`) with exactly **four** states. Each state is its own class in `src/game/crow`. Every state implements the `game.creaturestate.CreatureState` interface, which has three methods: `act`, `nextState` and `onEnter`.
@@ -42,7 +60,7 @@ The states hold no data about one creature. So the game shares one public `INSTA
 
 Data that differs between crows lives on the `Crow` object. This includes the items the crow has hidden and the number of turns it has felt safe. The crow keeps this data behind two small capability interfaces, `ItemCache` and `Composure`. The state objects never keep it. This is why every crow on the map can share the same four state instances.
 
-**Where to find it in the game:** Run `game.Application`. The crow appears as `v` on the farm map. The game places it on a random free tile when it creates the world.
+**Where to find it in the game:** Run `game.Application`. The crow appears as `b` on the farm map. The game places it on a random free tile when it creates the world.
 
 **How to read the crow's messages:** Every line the crow prints starts with a tag. `CreatureStateAction` adds the tag in one place. So you can always see the current state, even when map symbols overlap.
 
