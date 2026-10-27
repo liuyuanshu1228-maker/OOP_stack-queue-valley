@@ -12,7 +12,7 @@ public class PreservesJar extends Facility {
      * Creates a new PreservesJar.
      */
     public PreservesJar() {
-        super('J', "Preserves Jar");
+        super('U', "Preserves Jar");
     }
 
     /**

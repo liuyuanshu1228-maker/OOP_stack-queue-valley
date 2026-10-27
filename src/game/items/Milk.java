@@ -3,7 +3,7 @@ package game.items;
 import game.random.RandomUtils;
 
 /**
- * Represents a Milk ('K') item produced by a Cow. Can be sold to the Merchant
+ * Represents a Milk ('i') item produced by a Cow. Can be sold to the Merchant
  * for 60 coins, with a 50% chance that the Merchant takes the Milk and pays nothing.
  */
 public class Milk extends SellableItem {
@@ -14,10 +14,10 @@ public class Milk extends SellableItem {
     private static final int NO_PAYMENT_CHANCE_PERCENT = 50;
 
     /**
-     * Creates a new Milk. Initializes the portable Milk item with display character 'K'.
+     * Creates a new Milk. Initializes the portable Milk item with display character 'i'.
      */
     public Milk() {
-        super("Milk", 'K', SELL_PRICE);
+        super("Milk", 'i', SELL_PRICE);
     }
 
     /**

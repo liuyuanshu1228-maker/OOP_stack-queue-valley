@@ -19,7 +19,7 @@ public class Ladder extends TravelGround {
      * Creates a new Ladder.
      */
     public Ladder() {
-        super('H', "Ladder");
+        super('=', "Ladder");
     }
 
     /**

@@ -15,7 +15,7 @@ import edu.monash.fit2099.engine.positions.Location;
  */
 public class Thorn extends Ground {
 
-    private static final char DISPLAY_CHAR = 'T';
+    private static final char DISPLAY_CHAR = '&';
     private static final String NAME = "Thorn";
     /** How many turns a Thorn lasts before reverting. */
     private static final int DURATION_TURNS = 5;

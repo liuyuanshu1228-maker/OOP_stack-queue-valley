@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * Represents a Stone ('e') item that can be sold to the Merchant for 10 coins.
+ * Represents a Stone ('*') item that can be sold to the Merchant for 10 coins.
  * Selling a Stone also causes the Merchant to build a Ground on an adjacent tile.
  * The concrete Ground type is injected at construction time, so Stone has no
  * dependency on any specific Ground subclass.
@@ -32,7 +32,7 @@ public class Stone extends SellableItem {
      * @param groundFactory a factory that produces the Ground placed when this Stone is sold
      */
     public Stone(Supplier<Ground> groundFactory) {
-        super("Stone", 'e', SELL_PRICE);
+        super("Stone", '*', SELL_PRICE);
         this.groundFactory = groundFactory;
     }
 

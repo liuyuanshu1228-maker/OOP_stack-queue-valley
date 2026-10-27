@@ -218,8 +218,8 @@ public class StackQueueValleyWorld extends World {
      */
     private void giveRuneStones(Farmer farmer) {
         for (int i = 0; i < RUNE_STONES_PER_TYPE; i++) {
-            farmer.getInventory().add(new RuneStoneItem("Ember Rune Stone", 'e', new EmberRune()));
-            farmer.getInventory().add(new RuneStoneItem("Quake Rune Stone", 'u', new QuakeRune()));
+            farmer.getInventory().add(new RuneStoneItem("Ember Rune Stone", 'E', new EmberRune()));
+            farmer.getInventory().add(new RuneStoneItem("Quake Rune Stone", 'Q', new QuakeRune()));
         }
     }
 
