@@ -47,12 +47,12 @@ class SlimeSnailTest {
     }
 
     @Test
-    void aPlantWithNoEarlierStageDiesBackToSoil() {
+    void aPlantWithNoEarlierStageDiesAndLeavesDirt() {
         centre.setGround(new StrawberrySeedling());
 
         String report = snail.feedOn(centre);
 
-        assertInstanceOf(Soil.class, centre.getGround());
+        assertInstanceOf(Dirt.class, centre.getGround());
         assertFalse(report.isEmpty());
     }
 

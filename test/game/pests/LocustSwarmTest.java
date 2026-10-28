@@ -8,7 +8,7 @@ import game.crops.Strawberry;
 import game.crops.StrawberrySeedling;
 import game.crops.StrawberrySprout;
 import game.positions.area.Area;
-import game.positions.farm.Soil;
+import game.positions.farm.Dirt;
 import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
 import org.junit.jupiter.api.AfterEach;
@@ -55,7 +55,7 @@ class LocustSwarmTest {
 
         assertInstanceOf(StrawberrySprout.class, centre.getGround());
         assertInstanceOf(StrawberrySprout.class, map.at(0, 0).getGround());
-        assertInstanceOf(Soil.class, map.at(2, 2).getGround());
+        assertInstanceOf(Dirt.class, map.at(2, 2).getGround());
         assertTrue(report.contains("descends"), report);
     }
 
