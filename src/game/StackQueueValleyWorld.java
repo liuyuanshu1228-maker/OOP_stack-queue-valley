@@ -42,6 +42,12 @@ import game.random.RandomUtils;
 import game.crops.Strawberry;
 import game.travel.TeleportationCircle;
 import game.crops.Tomato;
+import game.pestcontrol.LadybugJar;
+import game.pestcontrol.PestTrap;
+import game.pestcontrol.SaltBarrier;
+import game.pests.BurrowingMole;
+import game.pests.LocustSwarm;
+import game.pests.SlimeSnail;
 import game.travel.TravelGround;
 import game.trading.ParsnipPurchase;
 import game.trading.SwordPurchase;
@@ -169,6 +175,9 @@ public class StackQueueValleyWorld extends World {
         farmer.getInventory().add(new Hoe());
         farmer.getInventory().add(new WateringCan());
         farmer.getInventory().add(new Pickaxe());
+        farmer.getInventory().add(new PestTrap());
+        farmer.getInventory().add(new LadybugJar());
+        farmer.getInventory().add(new SaltBarrier());
         giveRuneStones(farmer);
 
         Set<Location> occupiedLocations = new HashSet<>();
@@ -189,6 +198,9 @@ public class StackQueueValleyWorld extends World {
         placeActor(inheritedFarmMap, occupiedLocations,
                 new Merchant(new ParsnipPurchase(), new TomatoPurchase(), new SwordPurchase()));
         placeActor(inheritedFarmMap, occupiedLocations, new Crow("Crow"));
+        placeActor(inheritedFarmMap, occupiedLocations, new SlimeSnail());
+        placeActor(inheritedFarmMap, occupiedLocations, new LocustSwarm());
+        placeActor(inheritedFarmMap, occupiedLocations, new BurrowingMole());
 
         Location alienDeviceFarmDestination =
                 locate(inheritedFarmMap, ALIEN_DEVICE_DESTINATIONS.farm());
