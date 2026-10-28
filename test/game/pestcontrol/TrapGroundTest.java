@@ -42,13 +42,38 @@ class TrapGroundTest {
     }
 
     @Test
-    void pullsAPestTwoTilesAwayOneTileCloser() throws Exception {
+    void pullsAPestTwoTilesAwayAndCapturesItInTheSameTurn() throws Exception {
         SlimeSnail snail = new SlimeSnail();
         map.at(4, 0).addActor(snail);
 
         TestFarm.tick(trapTile, 1);
 
-        assertEquals(map.at(3, 1), map.locationOf(snail));
+        assertFalse(map.contains(snail), "pulled next to the trap, then captured");
+    }
+
+    @Test
+    void cannotPullAPestWhoseWayIsBlocked() throws Exception {
+        SlimeSnail snail = new SlimeSnail();
+        map.at(4, 0).addActor(snail);
+        map.at(3, 1).addActor(new Ladybug());
+
+        TestFarm.tick(trapTile, 1);
+
+        assertEquals(map.at(4, 0), map.locationOf(snail));
+    }
+
+    @Test
+    void leavesAPestThreeTilesAwayAlone() throws Exception {
+        map = TestFarm.map(",,,,,,", ",,,,,,", ",,,,,,");
+        new StackQueueValleyWorld(new Display()).addGameMap(map);
+        trapTile = map.at(1, 1);
+        trapTile.setGround(new TrapGround(trapTile.getGround()));
+        SlimeSnail snail = new SlimeSnail();
+        map.at(4, 1).addActor(snail);
+
+        TestFarm.tick(trapTile, 1);
+
+        assertEquals(map.at(4, 1), map.locationOf(snail));
     }
 
     @Test

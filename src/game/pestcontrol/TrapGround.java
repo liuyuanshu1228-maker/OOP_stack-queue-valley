@@ -10,9 +10,13 @@ import game.positions.TemporaryGround;
 import game.positions.area.Area;
 
 /**
- * A set pest trap. Each turn it captures the pests on it or next to it, then
- * pulls every pest within two tiles one tile closer. It turns back into the
+ * A set pest trap. Each turn it pulls every pest within two tiles one tile
+ * closer, then captures the pests on it or next to it. It turns back into the
  * ground it covered after two captures, or when it expires.
+ * <p>
+ * Pulling comes first because the ground ticks before the actors move: a pest
+ * pulled next to the trap is captured in the same turn, before it can walk
+ * away.
  * <p>
  * A ground's tick returns nothing, so the trap prints its own report.
  */
@@ -49,18 +53,15 @@ public class TrapGround extends TemporaryGround {
     }
 
     /**
-     * Captures nearby pests, then, if the trap is not used up, pulls the
-     * farther ones closer. Prints what happened, and turns back once all
-     * captures are used.
+     * Pulls the farther pests closer, then captures the pests on or next to
+     * the trap. Prints what happened, and turns back once all captures are
+     * used.
      *
      * @param location the tile this trap is on
      */
     @Override
     protected void tickEffect(Location location) {
-        String report = capturePests(location);
-        if (capturesLeft > 0) {
-            report += pullPests(location);
-        }
+        String report = pullPests(location) + capturePests(location);
         if (!report.isEmpty()) {
             new Display().println(NAME + " at " + location + ":" + report);
         }
@@ -84,7 +85,7 @@ public class TrapGround extends TemporaryGround {
             Actor pest = tile.getActor();
             location.map().removeActor(pest);
             capturesLeft--;
-            report.append(" captures ").append(pest).append(" at ").append(tile).append(".");
+            report.append(" Captured ").append(pest).append(" at ").append(tile).append(".");
         }
         return report.toString();
     }
@@ -109,7 +110,7 @@ public class TrapGround extends TemporaryGround {
             Actor pest = tile.getActor();
             if (closer.canActorEnter(pest)) {
                 map.moveActor(pest, closer);
-                report.append(" pulls ").append(pest).append(" to ").append(closer).append(".");
+                report.append(" Pulled ").append(pest).append(" to ").append(closer).append(".");
             }
         }
         return report.toString();
