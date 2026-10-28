@@ -4,6 +4,7 @@ import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.GameMap;
+import edu.monash.fit2099.engine.positions.Location;
 import game.actors.WanderingActor;
 import game.behaviours.SeekPlantBehaviour;
 import game.behaviours.WanderBehaviour;
@@ -12,11 +13,12 @@ import game.plants.Regressible;
 /**
  * A creature that moves towards plants and feeds on them.
  * <p>
- * Each turn a pest standing on a plant feeds on it through an
+ * Each turn a pest that can feed where it is feeds through an
  * {@link InfestAction}; otherwise its {@link SeekPlantBehaviour} moves it
  * towards the nearest plant. The turn is written once here. A subclass only
  * gives its landing offsets (how it moves) and its {@link #feedOn} (what
- * feeding does).
+ * feeding does). It may also override {@link #canFeedAt} if it feeds on more
+ * than the plant under it.
  */
 public abstract class Pest extends WanderingActor implements Infestation {
 
@@ -35,7 +37,8 @@ public abstract class Pest extends WanderingActor implements Infestation {
     }
 
     /**
-     * Feeds if the pest stands on a plant; otherwise moves towards one.
+     * Feeds if the pest can feed where it stands; otherwise moves towards a
+     * plant.
      *
      * @param actions collection of possible Actions for this pest
      * @param lastAction the Action this pest took last turn
@@ -46,9 +49,20 @@ public abstract class Pest extends WanderingActor implements Infestation {
     @Override
     protected Action playConsciousTurn(ActionList actions, Action lastAction,
                                        GameMap map, Display display) {
-        if (map.locationOf(this).getGroundAs(Regressible.class) != null) {
+        if (canFeedAt(map.locationOf(this))) {
             return new InfestAction(this);
         }
         return super.playConsciousTurn(actions, lastAction, map, display);
+    }
+
+    /**
+     * Decides whether this pest can feed where it stands. By default a pest
+     * feeds only on the plant under it.
+     *
+     * @param here the tile this pest stands on
+     * @return true if there is something for this pest to feed on
+     */
+    protected boolean canFeedAt(Location here) {
+        return here.getGroundAs(Regressible.class) != null;
     }
 }

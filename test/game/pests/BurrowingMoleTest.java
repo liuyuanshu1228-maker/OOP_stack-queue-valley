@@ -1,0 +1,66 @@
+package game.pests;
+
+import edu.monash.fit2099.engine.positions.GameMap;
+import edu.monash.fit2099.engine.positions.Location;
+import game.crops.Strawberry;
+import game.crops.StrawberrySprout;
+import game.positions.farm.Dirt;
+import game.positions.farm.Soil;
+import game.testsupport.TestFarm;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * Tests what a BurrowingMole does when it feeds.
+ */
+class BurrowingMoleTest {
+
+    private GameMap map;
+    private Location centre;
+    private final BurrowingMole mole = new BurrowingMole();
+
+    @BeforeEach
+    void setUp() {
+        map = TestFarm.map(",,,", ",,,", ",,,");
+        centre = map.at(1, 1);
+    }
+
+    @Test
+    void setsThePlantBackAndCavesInTheFourStraightNeighbours() {
+        centre.setGround(new Strawberry());
+
+        String report = mole.feedOn(centre);
+
+        assertInstanceOf(StrawberrySprout.class, centre.getGround());
+        assertInstanceOf(Dirt.class, map.at(1, 0).getGround());
+        assertInstanceOf(Dirt.class, map.at(0, 1).getGround());
+        assertInstanceOf(Dirt.class, map.at(2, 1).getGround());
+        assertInstanceOf(Dirt.class, map.at(1, 2).getGround());
+        assertEquals(4, TestFarm.countGround(map, Soil.class), "the corners stay Soil");
+        assertTrue(report.contains("Burrowing Mole"), report);
+    }
+
+    @Test
+    void doesNothingWhereThereIsNoPlant() {
+        String report = mole.feedOn(centre);
+
+        assertEquals("", report);
+        assertEquals(9, TestFarm.countGround(map, Soil.class));
+        assertEquals(0, TestFarm.countItems(map));
+    }
+
+    @Test
+    void doesNotCaveInANeighbouringPlant() {
+        centre.setGround(new Strawberry());
+        map.at(1, 0).setGround(new Strawberry());
+
+        mole.feedOn(centre);
+
+        assertInstanceOf(Strawberry.class, map.at(1, 0).getGround());
+        assertEquals(3, TestFarm.countGround(map, Dirt.class));
+    }
+}
