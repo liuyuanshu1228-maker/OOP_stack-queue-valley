@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -62,5 +63,17 @@ class BurrowingMoleTest {
 
         assertInstanceOf(Strawberry.class, map.at(1, 0).getGround());
         assertEquals(3, TestFarm.countGround(map, Dirt.class));
+    }
+
+    @Test
+    void saysNothingAboutCavingInWhenThereIsNoSoilAround() {
+        map = TestFarm.map("...", "...", "...");
+        centre = map.at(1, 1);
+        centre.setGround(new Strawberry());
+
+        String report = mole.feedOn(centre);
+
+        assertInstanceOf(StrawberrySprout.class, centre.getGround());
+        assertFalse(report.contains("caves in"), report);
     }
 }

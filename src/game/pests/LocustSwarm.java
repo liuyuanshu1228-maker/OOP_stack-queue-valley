@@ -91,7 +91,7 @@ public class LocustSwarm extends Pest {
         if (plantTiles.isEmpty()) {
             return "";
         }
-        StringBuilder report = new StringBuilder(this + " descends on " + plantTiles.size() + " plants.");
+        StringBuilder report = new StringBuilder(this + " descends on the plants around " + here + ".");
         for (Location tile : plantTiles) {
             report.append(" ").append(tile.getGroundAs(Regressible.class).regress(tile));
         }

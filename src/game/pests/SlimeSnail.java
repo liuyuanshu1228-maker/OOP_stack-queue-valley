@@ -58,7 +58,10 @@ public class SlimeSnail extends Pest {
                 slimed++;
             }
         }
-        return report + " " + this + " leaves slime on " + slimed + " tiles around it.";
+        if (slimed == 0) {
+            return report;
+        }
+        return report + " " + this + " leaves slime on the bare ground around it.";
     }
 
     /**

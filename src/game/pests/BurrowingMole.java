@@ -56,7 +56,10 @@ public class BurrowingMole extends Pest {
                 cavedIn++;
             }
         }
-        return report + " " + this + " turns " + cavedIn + " Soil tiles around it back into Dirt.";
+        if (cavedIn == 0) {
+            return report;
+        }
+        return report + " " + this + " caves in the Soil around it, which turns back into Dirt.";
     }
 
     /**

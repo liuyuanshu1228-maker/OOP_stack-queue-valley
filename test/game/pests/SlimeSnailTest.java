@@ -6,6 +6,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.crops.Strawberry;
 import game.crops.StrawberrySeedling;
 import game.crops.StrawberrySprout;
+import game.positions.area.Area;
 import game.positions.area.PlantableTile;
 import game.positions.farm.Dirt;
 import game.positions.farm.Soil;
@@ -92,5 +93,17 @@ class SlimeSnailTest {
         assertInstanceOf(Soil.class, slimedSoil.getGround());
         assertTrue(plantable.isMetBy(slimedSoil));
         assertInstanceOf(Dirt.class, slimedDirt.getGround(), "slimed Dirt dries back to Dirt");
+    }
+
+    @Test
+    void saysNothingAboutSlimeWhenThereIsNoBareGroundAround() {
+        centre.setGround(new Strawberry());
+        for (Location tile : Area.adjacentTo(centre).tiles()) {
+            tile.setGround(new StrawberrySeedling());
+        }
+
+        String report = snail.feedOn(centre);
+
+        assertFalse(report.contains("slime"), report);
     }
 }

@@ -56,7 +56,7 @@ class LocustSwarmTest {
         assertInstanceOf(StrawberrySprout.class, centre.getGround());
         assertInstanceOf(StrawberrySprout.class, map.at(0, 0).getGround());
         assertInstanceOf(Soil.class, map.at(2, 2).getGround());
-        assertTrue(report.contains("3 plants"), report);
+        assertTrue(report.contains("descends"), report);
     }
 
     @Test
