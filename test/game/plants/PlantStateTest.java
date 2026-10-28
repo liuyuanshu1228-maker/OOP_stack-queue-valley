@@ -10,7 +10,7 @@ import game.crops.Strawberry;
 import game.crops.StrawberrySeedling;
 import game.crops.StrawberrySprout;
 import game.crops.Tomato;
-import game.positions.farm.Soil;
+import game.positions.farm.Dirt;
 import game.status.GrowthPausedStatus;
 import game.testsupport.TestFarm;
 import org.junit.jupiter.api.Test;
@@ -32,15 +32,15 @@ class PlantStateTest extends PlantTestBase {
 
     static List<Arguments> earlierStages() {
         return List.of(
-                Arguments.of((Supplier<Plant>) StrawberrySeedling::new, Soil.class),
+                Arguments.of((Supplier<Plant>) StrawberrySeedling::new, Dirt.class),
                 Arguments.of((Supplier<Plant>) StrawberrySprout::new, StrawberrySeedling.class),
                 Arguments.of((Supplier<Plant>) Strawberry::new, StrawberrySprout.class),
-                Arguments.of((Supplier<Plant>) CauliflowerSprout::new, Soil.class),
+                Arguments.of((Supplier<Plant>) CauliflowerSprout::new, Dirt.class),
                 Arguments.of((Supplier<Plant>) Cauliflower::new, CauliflowerSprout.class),
-                Arguments.of((Supplier<Plant>) MelonSprout::new, Soil.class),
+                Arguments.of((Supplier<Plant>) MelonSprout::new, Dirt.class),
                 Arguments.of((Supplier<Plant>) Melon::new, MelonSprout.class),
-                Arguments.of((Supplier<Plant>) Tomato::new, Soil.class),
-                Arguments.of((Supplier<Plant>) Parsnip::new, Soil.class));
+                Arguments.of((Supplier<Plant>) Tomato::new, Dirt.class),
+                Arguments.of((Supplier<Plant>) Parsnip::new, Dirt.class));
     }
 
     private Location plantOnDirt(Plant plant) {

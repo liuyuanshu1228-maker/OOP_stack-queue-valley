@@ -3,7 +3,7 @@ package game.plants;
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
-import game.positions.farm.Soil;
+import game.positions.farm.Dirt;
 import game.status.GrowthPausedStatus;
 
 import java.util.List;
@@ -22,9 +22,10 @@ import java.util.List;
  * happens is not reported. While the plant has a {@link GrowthPausedStatus},
  * it still ages but does not try any of its abilities.
  * <p>
- * Every plant is {@link Regressible}. By default a regressed plant dies back
- * to tilled {@link Soil}; plants with an earlier growth stage override
- * {@link #previousStage()} to return it instead.
+ * Every plant is {@link Regressible}. By default a regressed plant dies and
+ * its tile becomes {@link Dirt}, as when a crop is removed; plants with an
+ * earlier growth stage override {@link #previousStage()} to return it
+ * instead.
  */
 public abstract class Plant extends Ground implements Regressible {
 
@@ -89,13 +90,14 @@ public abstract class Plant extends Ground implements Regressible {
 
     /**
      * The ground this plant falls back to when it is regressed. Defaults to
-     * tilled Soil, meaning the plant dies; override for plants that have an
-     * earlier growth stage.
+     * Dirt, meaning the plant dies and its tile must be tilled again before
+     * anything can grow there; override for plants that have an earlier
+     * growth stage.
      *
      * @return a new instance of the earlier stage
      */
     protected Ground previousStage() {
-        return new Soil();
+        return new Dirt();
     }
 
     /**

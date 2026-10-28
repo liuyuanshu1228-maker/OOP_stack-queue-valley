@@ -11,7 +11,7 @@ import game.plants.Plant;
  * <p>
  * A seedling is a {@link Plant} but not a crop: it cannot be watered or
  * harvested, and the Farmer can walk onto it. It has no earlier stage, so
- * when it is regressed it dies back to Soil.
+ * when it is regressed it dies, leaving Dirt.
  */
 public class StrawberrySeedling extends Plant {
 

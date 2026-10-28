@@ -16,7 +16,7 @@ import game.positions.Waterable;
  * <p>
  * Every {@value #PRODUCE_INTERVAL} turns it drops a parsnip on an adjacent
  * tile by itself. It is mature only and has no earlier stage, so when it is
- * regressed it dies back to Soil.
+ * regressed it dies, leaving Dirt.
  */
 public class Parsnip extends Crop implements Waterable {
 

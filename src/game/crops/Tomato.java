@@ -20,7 +20,7 @@ import game.statistics.StatisticAdjuster;
  *     an adjacent tile.</li>
  * </ol>
  * It is mature only and has no earlier stage, so when it is regressed it dies
- * back to Soil.
+ * and leaves Dirt.
  */
 public class Tomato extends Crop {
 
