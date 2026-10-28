@@ -46,6 +46,8 @@ public class Parsnip extends Crop implements Waterable {
     }
 
     /**
+     * How much stamina a successful harvest of this parsnip costs.
+     *
      * @return the stamina cost of harvesting a parsnip
      */
     @Override

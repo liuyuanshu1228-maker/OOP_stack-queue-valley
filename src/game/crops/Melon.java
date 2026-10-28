@@ -61,6 +61,8 @@ public class Melon extends Crop implements Waterable {
     }
 
     /**
+     * How much stamina a successful harvest of this melon costs.
+     *
      * @return the stamina cost of harvesting a melon
      */
     @Override

@@ -51,6 +51,8 @@ public class Cauliflower extends Crop implements Waterable {
     }
 
     /**
+     * How much stamina a successful harvest of this cauliflower costs.
+     *
      * @return the stamina cost of harvesting a cauliflower
      */
     @Override
@@ -59,6 +61,8 @@ public class Cauliflower extends Crop implements Waterable {
     }
 
     /**
+     * Whether this cauliflower has been watered enough times to be harvested.
+     *
      * @return true once the cauliflower has been watered at least
      * {@value #REQUIRED_WATERINGS} times
      */
@@ -68,6 +72,8 @@ public class Cauliflower extends Crop implements Waterable {
     }
 
     /**
+     * Explains why this cauliflower cannot be harvested yet.
+     *
      * @param actor the actor attempting to harvest the cauliflower
      * @return a description of why the harvest failed
      */

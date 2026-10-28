@@ -10,6 +10,8 @@ import game.positions.Plantable;
 public class PlantableTile implements TileCondition {
 
     /**
+     * Checks whether a plant can be planted on the ground of the tile.
+     *
      * @param tile the tile to test
      * @return true if the ground on the tile is Plantable
      */

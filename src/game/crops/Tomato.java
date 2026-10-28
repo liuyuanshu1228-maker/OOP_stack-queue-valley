@@ -52,6 +52,8 @@ public class Tomato extends Crop {
     }
 
     /**
+     * How much stamina a successful harvest of this tomato costs.
+     *
      * @return the stamina cost of harvesting a tomato
      */
     @Override

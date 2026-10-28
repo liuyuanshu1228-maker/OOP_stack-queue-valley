@@ -58,6 +58,8 @@ public class Strawberry extends Crop implements Waterable {
     }
 
     /**
+     * How much stamina a successful harvest of this strawberry costs.
+     *
      * @return the stamina cost of harvesting a strawberry
      */
     @Override
