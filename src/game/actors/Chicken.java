@@ -22,14 +22,11 @@ public class Chicken extends Animal {
 
     /**
      * Creates a new Chicken.
-     * <p>
-     * Uses 'n' rather than the more obvious 'c', which is already taken by
-     * the Cauliflower item in this world.
      *
      * @param name the name of the Chicken
      */
     public Chicken(String name) {
-        super(name, 'n', MAX_HP);
+        super(name, 'c', MAX_HP);
     }
 
     /**

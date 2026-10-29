@@ -48,6 +48,6 @@ public class ParsnipPurchase extends CropPurchase {
         for (int i = 0; i < PARSNIPS_PRODUCED; i++) {
             ItemDropper.adjacentTo(cropLocation).dropOnRandomTile(new ParsnipItem());
         }
-        return buyer + " buys a Parsnip crop from " + merchant + ".";
+        return buyer + " buys a Parsnip crop from " + merchant + ", planted at " + cropLocation + ".";
     }
 }

@@ -143,7 +143,7 @@ public class StackQueueValleyWorld extends World {
         groundCreator.registerGround('y', CauliflowerSprout::new);
         groundCreator.registerGround('t', MelonSprout::new);
         groundCreator.registerGround('S', Strawberry::new);
-        groundCreator.registerGround('C', Cauliflower::new);
+        groundCreator.registerGround('K', Cauliflower::new);
         groundCreator.registerGround('M', Melon::new);
         groundCreator.registerGround('T', Tomato::new);
         groundCreator.registerGround('P', Parsnip::new);
@@ -157,7 +157,7 @@ public class StackQueueValleyWorld extends World {
                 ".,,,,,,,,.",
                 ".,t,,.,M,.",
                 ".,,,,,,,,.",
-                ".,T,y,C,P.",
+                ".,T,y,K,P.",
                 ".........."
         );
 

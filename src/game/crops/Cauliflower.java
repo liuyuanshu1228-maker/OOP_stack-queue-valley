@@ -37,7 +37,7 @@ public class Cauliflower extends Crop implements Waterable {
      * Creates a new Cauliflower.
      */
     public Cauliflower() {
-        super('C', "Cauliflower");
+        super('K', "Cauliflower");
     }
 
     /**

@@ -51,6 +51,6 @@ public class TomatoPurchase extends CropPurchase {
      */
     @Override
     protected String applyPlantingEffect(Actor buyer, Actor merchant, Location cropLocation) {
-        return buyer + " buys a Tomato crop from " + merchant + ".";
+        return buyer + " buys a Tomato crop from " + merchant + ", planted at " + cropLocation + ".";
     }
 }

@@ -18,14 +18,11 @@ public class Cow extends Animal {
 
     /**
      * Creates a new Cow.
-     * <p>
-     * Uses 'B' rather than the more obvious 'C', which is already taken by
-     * the Cauliflower crop in this world.
      *
      * @param name the name of the Cow
      */
     public Cow(String name) {
-        super(name, 'B', MAX_HP);
+        super(name, 'C', MAX_HP);
     }
 
     /**

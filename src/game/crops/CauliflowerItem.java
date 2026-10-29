@@ -19,7 +19,7 @@ public class CauliflowerItem extends ConsumableItem {
      * Creates a new CauliflowerItem.
      */
     public CauliflowerItem() {
-        super("Cauliflower", 'c');
+        super("Cauliflower", 'k');
     }
 
     /**
