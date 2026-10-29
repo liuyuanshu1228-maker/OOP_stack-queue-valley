@@ -10,22 +10,15 @@ import edu.monash.fit2099.engine.actors.Actor;
  */
 public class StunnedStatus extends IncapacitatingStatus {
 
-    private StunnedStatus(int durationTurns) {
-        super(durationTurns);
-    }
-
     /**
-     * Stuns the given Actor for the given number of turns, replacing any
-     * Stun they already have rather than stacking a second one.
+     * Creates a new StunnedStatus. Use {@link TimedStatus#replaceOn(Actor)}
+     * to attach it to an Actor, replacing any Stun they already have rather
+     * than stacking a second one.
      *
-     * @param actor the actor to stun
      * @param durationTurns how many turns the stun lasts
      */
-    public static void applyTo(Actor actor, int durationTurns) {
-        for (StunnedStatus existing : actor.statusesOf(StunnedStatus.class)) {
-            actor.removeStatus(existing);
-        }
-        actor.addStatus(new StunnedStatus(durationTurns));
+    public StunnedStatus(int durationTurns) {
+        super(durationTurns);
     }
 
     @Override

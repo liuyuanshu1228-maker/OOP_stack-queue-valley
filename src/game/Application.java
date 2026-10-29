@@ -17,7 +17,7 @@ public class Application {
         Display display = new Display();
         StackQueueValleyWorld world = new StackQueueValleyWorld(display);
         try {
-            FancyMessage.gameTitle().printTo(display);
+            new FancyMessage().printTo(display);
             world.initialise();
             world.run();
         } catch (Exception e) {

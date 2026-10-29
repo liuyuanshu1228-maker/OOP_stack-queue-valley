@@ -4,6 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.positions.area.TileListDescription;
 import game.status.StunnedStatus;
+import game.status.TimedStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class ShatterEnchantment implements Enchantment {
         List<Location> stunnedTiles = new ArrayList<>();
         for (Location tile : affectedTiles) {
             if (tile.containsAnActor()) {
-                StunnedStatus.applyTo(tile.getActor(), STUN_DURATION_TURNS);
+                new StunnedStatus(STUN_DURATION_TURNS).replaceOn(tile.getActor());
                 stunnedTiles.add(tile);
             }
         }

@@ -17,23 +17,21 @@ public class StrawberryItem extends ConsumableItem {
     private final boolean rotten;
 
     /**
-     * Creates a new StrawberryItem.
-     *
-     * @param rotten whether this strawberry is rotten
+     * Creates a new StrawberryItem that has a {@value #ROTTEN_CHANCE_PERCENT}%
+     * chance of being rotten.
      */
-    StrawberryItem(boolean rotten) {
-        super(rotten ? "Rotten Strawberry" : "Strawberry", 's');
-        this.rotten = rotten;
+    public StrawberryItem() {
+        this(RandomUtils.rollPercent(ROTTEN_CHANCE_PERCENT));
     }
 
     /**
-     * Creates a strawberry that has a {@value #ROTTEN_CHANCE_PERCENT}%
-     * chance of being rotten.
+     * Creates a new StrawberryItem with a known rotten/fresh outcome.
      *
-     * @return a new, randomly rotten or fresh strawberry
+     * @param rotten whether this strawberry is rotten
      */
-    public static StrawberryItem createRandom() {
-        return new StrawberryItem(RandomUtils.rollPercent(ROTTEN_CHANCE_PERCENT));
+    private StrawberryItem(boolean rotten) {
+        super(rotten ? "Rotten Strawberry" : "Strawberry", 's');
+        this.rotten = rotten;
     }
 
     /**

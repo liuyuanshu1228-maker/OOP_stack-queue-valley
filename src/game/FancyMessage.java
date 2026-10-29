@@ -4,8 +4,8 @@ import edu.monash.fit2099.engine.displays.Display;
 
 /**
  * A multi-line message that is printed one line at a time, with a short pause
- * between lines. {@link #gameTitle()} gives the fancy ASCII-art banner printed
- * once when the game starts.
+ * between lines. The no-arg constructor gives the fancy ASCII-art banner
+ * printed once when the game starts.
  */
 public class FancyMessage {
 
@@ -45,21 +45,19 @@ public class FancyMessage {
     private final String text;
 
     /**
+     * Creates the game's title banner, a FancyMessage of the ASCII-art title.
+     */
+    public FancyMessage() {
+        this(GAME_TITLE);
+    }
+
+    /**
      * Creates a new FancyMessage.
      *
      * @param text the message to print, with lines separated by newline characters
      */
     public FancyMessage(String text) {
         this.text = text;
-    }
-
-    /**
-     * Creates the game's title banner.
-     *
-     * @return the ASCII-art title banner
-     */
-    public static FancyMessage gameTitle() {
-        return new FancyMessage(GAME_TITLE);
     }
 
     /**

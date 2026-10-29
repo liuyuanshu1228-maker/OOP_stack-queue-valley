@@ -1,6 +1,7 @@
 package game.status;
 
 import edu.monash.fit2099.engine.GameEntity;
+import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.capabilities.Status;
 import edu.monash.fit2099.engine.positions.Location;
 
@@ -58,4 +59,23 @@ public abstract class TimedStatus implements Status {
      * etc.). Called once per turn by {@link #tickStatus(GameEntity, Location)}.
      */
     protected abstract void applyEffect();
+
+    /**
+     * Attaches this status to the given Actor, first removing any status of
+     * the same concrete type the Actor already carries.
+     * <p>
+     * This is for statuses that should not stack (e.g. a fresh Burn resets
+     * the clock on an old one rather than adding a second, independent
+     * Burn). A status that is meant to stack instead (healing, poison) is
+     * simply added directly with {@code actor.addStatus(...)} and does not
+     * call this method.
+     *
+     * @param actor the Actor to attach this status to
+     */
+    public final void replaceOn(Actor actor) {
+        for (TimedStatus existing : actor.statusesOf(getClass())) {
+            actor.removeStatus(existing);
+        }
+        actor.addStatus(this);
+    }
 }

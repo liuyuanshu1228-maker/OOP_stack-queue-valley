@@ -55,7 +55,7 @@ public class Strawberry extends Crop implements Waterable {
      */
     @Override
     protected Item produce() {
-        return StrawberryItem.createRandom();
+        return new StrawberryItem();
     }
 
     /**
@@ -90,7 +90,7 @@ public class Strawberry extends Crop implements Waterable {
     @Override
     public String harvest(Actor actor, Location location) {
         for (int i = 0; i < STRAWBERRIES_PER_HARVEST; i++) {
-            actor.getInventory().add(StrawberryItem.createRandom());
+            actor.getInventory().add(new StrawberryItem());
         }
 
         String message = actor + " harvests the " + this + " and gets "
@@ -127,7 +127,7 @@ public class Strawberry extends Crop implements Waterable {
     public String water(Actor actor, Location location) {
         recordWatering();
         for (int i = 0; i < STRAWBERRIES_PER_WATERING; i++) {
-            ItemDropper.adjacentTo(location).dropOnRandomTile(StrawberryItem.createRandom());
+            ItemDropper.adjacentTo(location).dropOnRandomTile(new StrawberryItem());
         }
 
         return actor + " waters the " + this + ". Strawberries appear on the nearby tiles.";
