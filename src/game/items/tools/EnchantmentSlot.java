@@ -43,13 +43,14 @@ public final class EnchantmentSlot {
      *
      * @param affectedTiles the tiles the host tool's own effect touched
      * @param activator the Actor who triggered the effect
+     * @param origin the Location the host tool was used at
      * @return a description of what the Enchantment did, or "" if none was held
      */
-    public String fire(List<Location> affectedTiles, Actor activator) {
+    public String fire(List<Location> affectedTiles, Actor activator, Location origin) {
         if (enchantment == null) {
             return "";
         }
-        String message = enchantment.applyTo(affectedTiles, activator);
+        String message = enchantment.applyTo(affectedTiles, activator, origin);
         enchantment = null;
         return message;
     }

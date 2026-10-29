@@ -43,7 +43,8 @@ public class EnchantAction extends Action {
     @Override
     public String execute(Actor actor, GameMap map) {
         tool.enchant(enchantment);
-        return actor + " enchants the " + tool + " with a " + enchantment + ".";
+        return "At " + map.locationOf(actor) + ": " + actor + " enchants the " + tool
+                + " with a " + enchantment + ".";
     }
 
     /**

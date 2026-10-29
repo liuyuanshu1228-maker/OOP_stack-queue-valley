@@ -21,10 +21,11 @@ public class BountyEnchantment implements Enchantment {
      *
      * @param affectedTiles the tiles the host tool's own effect touched
      * @param activator the Actor who triggered the effect
+     * @param origin the Location the host tool was used at
      * @return a description naming exactly which tiles had a plant grow further
      */
     @Override
-    public String applyTo(List<Location> affectedTiles, Actor activator) {
+    public String applyTo(List<Location> affectedTiles, Actor activator, Location origin) {
         List<Location> grownTiles = new ArrayList<>();
         for (Location tile : affectedTiles) {
             Plant plant = tile.getGroundAs(Plant.class);
@@ -37,7 +38,7 @@ public class BountyEnchantment implements Enchantment {
             }
         }
         if (grownTiles.isEmpty()) {
-            return "The Bounty Enchantment finds no plant ready to grow further.";
+            return "The Bounty Enchantment finds no plant ready to grow further near " + origin + ".";
         }
         return "Plants grow further at " + new TileListDescription().of(grownTiles) + ".";
     }

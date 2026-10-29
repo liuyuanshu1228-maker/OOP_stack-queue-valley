@@ -28,12 +28,13 @@ public class BlazeEnchantment implements Enchantment {
      *
      * @param affectedTiles the tiles the host tool's own effect touched
      * @param activator the Actor who triggered the effect
+     * @param origin the Location the host tool was used at
      * @return a description naming exactly which tiles caught fire
      */
     @Override
-    public String applyTo(List<Location> affectedTiles, Actor activator) {
+    public String applyTo(List<Location> affectedTiles, Actor activator, Location origin) {
         if (affectedTiles.isEmpty()) {
-            return "The Blaze Enchantment finds nothing to ignite.";
+            return "The Blaze Enchantment finds nothing to ignite near " + origin + ".";
         }
         for (Location tile : affectedTiles) {
             tile.addItem(new Fire(FIRE_LIFETIME_TURNS, BURN_DAMAGE_PER_TURN, BURN_DURATION_TURNS));

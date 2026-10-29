@@ -78,7 +78,7 @@ public class Hoe extends AbstractEnchantableTool implements TillingTool {
         String spreadMessage = tilledTiles.isEmpty()
                 ? "The enchantment finds no adjacent ground to till."
                 : "The enchantment spreads the tilling to " + new TileListDescription().of(tilledTiles) + ".";
-        String enchantmentMessage = enchantmentSlot().fire(tilledTiles, actor);
+        String enchantmentMessage = enchantmentSlot().fire(tilledTiles, actor, location);
         return (spreadMessage + " " + enchantmentMessage).trim();
     }
 }

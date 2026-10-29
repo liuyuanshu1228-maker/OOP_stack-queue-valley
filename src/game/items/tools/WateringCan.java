@@ -83,7 +83,7 @@ public class WateringCan extends AbstractEnchantableTool implements WateringTool
         } else {
             spreadMessage = "The enchantment finds no adjacent ground to water.";
         }
-        String enchantmentMessage = enchantmentSlot().fire(affectedTiles, actor);
+        String enchantmentMessage = enchantmentSlot().fire(affectedTiles, actor, location);
         return (spreadMessage + " " + enchantmentMessage).trim();
     }
 }

@@ -23,10 +23,11 @@ public class ShatterEnchantment implements Enchantment {
      *
      * @param affectedTiles the tiles the host tool's own effect touched
      * @param activator the Actor who triggered the effect
+     * @param origin the Location the host tool was used at
      * @return a description naming exactly which tiles had an Actor stunned
      */
     @Override
-    public String applyTo(List<Location> affectedTiles, Actor activator) {
+    public String applyTo(List<Location> affectedTiles, Actor activator, Location origin) {
         List<Location> stunnedTiles = new ArrayList<>();
         for (Location tile : affectedTiles) {
             if (tile.containsAnActor()) {
@@ -35,7 +36,7 @@ public class ShatterEnchantment implements Enchantment {
             }
         }
         if (stunnedTiles.isEmpty()) {
-            return "The Shatter Enchantment finds no one to stun.";
+            return "The Shatter Enchantment finds no one to stun near " + origin + ".";
         }
         return "Actors are stunned at " + new TileListDescription().of(stunnedTiles) + ".";
     }

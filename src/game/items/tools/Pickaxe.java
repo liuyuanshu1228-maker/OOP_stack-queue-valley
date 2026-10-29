@@ -74,7 +74,7 @@ public class Pickaxe extends AbstractEnchantableTool implements BreakingTool {
                 chainMessage = "The enchantment's energy arcs to " + spot.get() + ": " + breakReport;
             }
         }
-        String enchantmentMessage = enchantmentSlot().fire(affectedTiles, actor);
+        String enchantmentMessage = enchantmentSlot().fire(affectedTiles, actor, location);
         return (chainMessage + " " + enchantmentMessage).trim();
     }
 }

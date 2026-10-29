@@ -13,11 +13,14 @@ import java.util.List;
 public interface Enchantment {
 
     /**
-     * Applies this Enchantment's effect to every given tile.
+     * Applies this Enchantment's effect to every given tile. The origin is
+     * passed separately so a description still has a Location to name even
+     * when {@code affectedTiles} turns out to be empty.
      *
      * @param affectedTiles the tiles the host tool's own effect touched
      * @param activator the Actor who triggered the effect
+     * @param origin the Location the host tool was used at
      * @return a description of what happened, to be displayed to the player; never null
      */
-    String applyTo(List<Location> affectedTiles, Actor activator);
+    String applyTo(List<Location> affectedTiles, Actor activator, Location origin);
 }
