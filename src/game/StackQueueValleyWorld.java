@@ -14,6 +14,10 @@ import game.actors.Farmer;
 import game.actors.Merchant;
 import game.crow.Crow;
 import game.travel.AlienDevice;
+import game.enchantments.BlazeEnchantment;
+import game.enchantments.BountyEnchantment;
+import game.enchantments.Enchantment;
+import game.enchantments.ShatterEnchantment;
 import game.items.mine.Geode;
 import game.items.tools.Hoe;
 import game.items.tools.Pickaxe;
@@ -30,9 +34,6 @@ import game.crops.StrawberrySeedling;
 import game.crops.StrawberrySprout;
 import game.positions.Plantable;
 import game.positions.facilities.DryingRack;
-import game.runes.EmberRune;
-import game.runes.QuakeRune;
-import game.runes.RuneStoneItem;
 import game.travel.Ladder;
 import game.crops.Melon;
 import game.crops.Parsnip;
@@ -78,9 +79,6 @@ public class StackQueueValleyWorld extends World {
     private static final int COPPER_NODE_COUNT = 4;
     /** Number of geodes scattered in the mines at the start of the game. */
     private static final int GEODE_COUNT = 3;
-
-    /** How many rune stones of each type the Farmer starts with. */
-    private static final int RUNE_STONES_PER_TYPE = 4;
 
     /** Destination names shown in the travel menus. */
     private static final String TO_FARM = "the farm";
@@ -172,13 +170,14 @@ public class StackQueueValleyWorld extends World {
         Location farmerStart = locate(inheritedFarmMap, FARMER_START);
         Farmer farmer = new Farmer("Bob");
         this.addPlayer(farmer, farmerStart);
-        farmer.getInventory().add(new Hoe());
-        farmer.getInventory().add(new WateringCan());
-        farmer.getInventory().add(new Pickaxe());
+        List<Enchantment> toolEnchantments =
+                List.of(new BlazeEnchantment(), new BountyEnchantment(), new ShatterEnchantment());
+        farmer.getInventory().add(new Hoe(toolEnchantments));
+        farmer.getInventory().add(new WateringCan(toolEnchantments));
+        farmer.getInventory().add(new Pickaxe(toolEnchantments));
         farmer.getInventory().add(new PestTrap());
         farmer.getInventory().add(new LadybugJar());
         farmer.getInventory().add(new SaltBarrier());
-        giveRuneStones(farmer);
 
         Set<Location> occupiedLocations = new HashSet<>();
         occupiedLocations.add(farmerStart);
@@ -214,25 +213,6 @@ public class StackQueueValleyWorld extends World {
         scatterGround(minesMap, minesOccupiedLocations, ROCK_COUNT, Rock::new);
         scatterGround(minesMap, minesOccupiedLocations, COPPER_NODE_COUNT, CopperNode::new);
         scatterItems(minesMap, minesOccupiedLocations, GEODE_COUNT, Geode::new);
-    }
-
-    /**
-     * Gives the Farmer a starting supply of each working rune stone type
-     * (Ember, Quake), enough of each to complete any of the three known rune
-     * formations on their own.
-     * <p>
-     * Verdant Rune Stones are withheld for now: {@code VerdantRune} has no
-     * real effect yet (it is blocked on REQ1's Plant/Seedling classes -- see
-     * its javadoc), so handing the player one would just be a dead item in
-     * their inventory. Add it back here once VerdantRune is finished.
-     *
-     * @param farmer the Farmer to give rune stones to
-     */
-    private void giveRuneStones(Farmer farmer) {
-        for (int i = 0; i < RUNE_STONES_PER_TYPE; i++) {
-            farmer.getInventory().add(new RuneStoneItem("Ember Rune Stone", 'E', new EmberRune()));
-            farmer.getInventory().add(new RuneStoneItem("Quake Rune Stone", 'Q', new QuakeRune()));
-        }
     }
 
     /**

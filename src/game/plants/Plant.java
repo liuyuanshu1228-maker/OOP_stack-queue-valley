@@ -18,9 +18,10 @@ import java.util.List;
  * Each plant has a list of {@link PlantAbility abilities} in priority order.
  * Every turn it tries them from the highest priority down and stops at the
  * first one that actually does something, so a plant does at most one thing
- * per turn. What it did is displayed to the player; a turn where nothing
- * happens is not reported. While the plant has a {@link GrowthPausedStatus},
- * it still ages but does not try any of its abilities.
+ * per turn ({@link #attemptGrowth}). What it did is displayed to the player;
+ * a turn where nothing happens is not reported. While the plant has a
+ * {@link GrowthPausedStatus}, it still ages but does not try any of its
+ * abilities.
  * <p>
  * Every plant is {@link Regressible}. By default a regressed plant dies and
  * its tile becomes {@link Dirt}, as when a crop is removed; plants with an
@@ -68,8 +69,8 @@ public abstract class Plant extends Ground implements Regressible {
 
     /**
      * Ages this plant by one turn, then, unless its growth is paused, tries
-     * its abilities in priority order until one of them does something, and
-     * displays what it did.
+     * this plant's abilities via {@link #attemptGrowth} and displays the
+     * result.
      *
      * @param location the location of this plant
      */
@@ -79,13 +80,31 @@ public abstract class Plant extends Ground implements Regressible {
         if (hasStatus(GrowthPausedStatus.class)) {
             return;
         }
+        String report = attemptGrowth(location);
+        if (!report.isEmpty()) {
+            DISPLAY.println(report);
+        }
+    }
+
+    /**
+     * Tries this plant's abilities, from the highest priority down, and
+     * stops at the first one that does something. Does not age the plant and
+     * does not display the result, so a caller forcing an extra growth
+     * attempt (e.g. a magical effect) gets the description back to use
+     * however it needs to, instead of this plant ageing an extra turn or the
+     * result being printed twice.
+     *
+     * @param location the location of this plant
+     * @return a description of what happened, or "" if no ability did anything
+     */
+    public String attemptGrowth(Location location) {
         for (PlantAbility ability : abilities) {
             String report = ability.tryPerform(this, location);
             if (!report.isEmpty()) {
-                DISPLAY.println(report);
-                return;
+                return report;
             }
         }
+        return "";
     }
 
     /**

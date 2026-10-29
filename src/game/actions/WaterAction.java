@@ -53,6 +53,18 @@ public class WaterAction extends CapabilityToolAction<Waterable, WateringTool> {
     }
 
     /**
+     * Tells whether the given watering tool can water the given ground.
+     *
+     * @param tool the watering tool being considered
+     * @param waterable the Waterable capability of the Ground
+     * @return true if the tool can water it
+     */
+    @Override
+    protected boolean canUseOn(WateringTool tool, Waterable waterable) {
+        return tool.canWater(waterable);
+    }
+
+    /**
      * Describes this action in the menu.
      *
      * @param actor the Actor performing the action

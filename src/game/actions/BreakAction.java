@@ -5,12 +5,17 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.tools.BreakingTool;
+import game.items.tools.EnchantmentTrigger;
 import game.positions.Breakable;
+
+import java.util.Optional;
 
 /**
  * An Action that allows an Actor to break a {@link Breakable}, provided they
  * are carrying a {@link BreakingTool}. What breaking actually does is up to the
- * Breakable.
+ * Breakable. Once the Breakable has been broken, the specific tool used is
+ * also given a chance to fire any Enchantment attached to it (see
+ * {@link EnchantmentTrigger}).
  */
 public class BreakAction extends Action {
 
@@ -42,7 +47,8 @@ public class BreakAction extends Action {
 
     /**
      * Performs the breaking attempt. If the Actor is carrying a tool that can break
-     * the target, delegates to the target; otherwise fails without any side effects.
+     * the target, delegates to the target, then gives that tool a chance to fire
+     * any Enchantment attached to it; otherwise fails without any side effects.
      *
      * @param actor the actor performing the action
      * @param map the map the actor is on
@@ -50,25 +56,27 @@ public class BreakAction extends Action {
      */
     @Override
     public String execute(Actor actor, GameMap map) {
-        if (!carriesToolForTarget(actor)) {
+        Optional<BreakingTool> tool = toolForTarget(actor);
+        if (tool.isEmpty()) {
             return actor + " needs a breaking tool to break the " + target + ".";
         }
-        return target.breakUp(actor, location);
+        String breakReport = target.breakUp(actor, location);
+        return breakReport + new EnchantmentTrigger().fire(actor, tool.get(), location);
     }
 
     /**
-     * Tells whether the Actor carries a tool that can break the target.
+     * Finds a tool the Actor carries that can break the target.
      *
      * @param actor the actor who wants to break the target
-     * @return true if at least one tool in the actor's inventory can break the target
+     * @return the first tool in the actor's inventory that can break the target, if any
      */
-    private boolean carriesToolForTarget(Actor actor) {
+    private Optional<BreakingTool> toolForTarget(Actor actor) {
         for (BreakingTool tool : actor.getInventory().getItemsAs(BreakingTool.class)) {
             if (tool.canBreak(target)) {
-                return true;
+                return Optional.of(tool);
             }
         }
-        return false;
+        return Optional.empty();
     }
 
     /**

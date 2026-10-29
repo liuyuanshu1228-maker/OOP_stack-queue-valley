@@ -37,6 +37,18 @@ public class TillAction extends CapabilityToolAction<Tillable, TillingTool> {
     }
 
     /**
+     * Tells whether the given hoe can till the given ground.
+     *
+     * @param tool the hoe being considered
+     * @param tillable the Tillable capability of the Ground
+     * @return true if the hoe can till it
+     */
+    @Override
+    protected boolean canUseOn(TillingTool tool, Tillable tillable) {
+        return tool.canTill(tillable);
+    }
+
+    /**
      * Describes what this Action will do if chosen in the menu.
      *
      * @param actor the actor performing the action
