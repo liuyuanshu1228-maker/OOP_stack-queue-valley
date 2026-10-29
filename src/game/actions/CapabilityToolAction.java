@@ -81,27 +81,38 @@ public abstract class CapabilityToolAction<C, T extends HasStaminaCost> extends 
     public final String execute(Actor actor, GameMap map) {
         List<T> tools = actor.getInventory().getItemsAs(toolType);
         if (tools.isEmpty()) {
-            return actor + " " + noToolMessage;
+            return at(actor + " " + noToolMessage);
         }
 
         C capability = location.getGroundAs(capabilityType);
         if (capability == null) {
-            return actor + " " + noCapabilityMessage;
+            return at(actor + " " + noCapabilityMessage);
         }
 
         Optional<T> usableTool = findUsableTool(tools, capability);
         if (usableTool.isEmpty()) {
-            return actor + " " + noToolMessage;
+            return at(actor + " " + noToolMessage);
         }
         T tool = usableTool.get();
 
         int cost = staminaCost(tool, capability);
         if (!new StatisticAdjuster(actor).trySpend(ActorStatistics.STAMINA, cost)) {
-            return actor + " is too tired to do this.";
+            return at(actor + " is too tired to do this.");
         }
 
-        String effectReport = "At " + location + ": " + applyEffect(actor, location, capability);
+        String effectReport = at(applyEffect(actor, location, capability));
         return effectReport + new EnchantmentTrigger().fire(actor, tool, location);
+    }
+
+    /**
+     * Prepends this Action's Location to an outcome message, so every
+     * outcome -- success or failure -- names where it happened.
+     *
+     * @param message the outcome message to locate
+     * @return the message prefixed with this Action's Location
+     */
+    private String at(String message) {
+        return "At " + location + ": " + message;
     }
 
     /**

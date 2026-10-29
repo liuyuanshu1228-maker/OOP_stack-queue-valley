@@ -58,10 +58,21 @@ public class BreakAction extends Action {
     public String execute(Actor actor, GameMap map) {
         Optional<BreakingTool> tool = toolForTarget(actor);
         if (tool.isEmpty()) {
-            return actor + " needs a breaking tool to break the " + target + ".";
+            return at(actor + " needs a breaking tool to break the " + target + ".");
         }
         String breakReport = target.breakUp(actor, location);
-        return breakReport + new EnchantmentTrigger().fire(actor, tool.get(), location);
+        return at(breakReport) + new EnchantmentTrigger().fire(actor, tool.get(), location);
+    }
+
+    /**
+     * Prepends this Action's Location to an outcome message, so every
+     * outcome -- success or failure -- names where it happened.
+     *
+     * @param message the outcome message to locate
+     * @return the message prefixed with this Action's Location
+     */
+    private String at(String message) {
+        return "At " + location + ": " + message;
     }
 
     /**
