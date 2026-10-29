@@ -3,6 +3,7 @@ package game.items.food;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import game.actions.Consumable;
+import game.positions.ProcessingFacility;
 
 import java.util.Optional;
 
@@ -69,6 +70,18 @@ public abstract class ProcessedProduct extends ConsumableItem implements Process
      * @return true if {@link #applyProcessingEffect(Actor)} can be called with this Actor
      */
     protected boolean canReceiveProcessingEffect(Actor actor) {
+        return true;
+    }
+
+    /**
+     * An already-processed product can still be processed by every
+     * ProcessingFacility, adding one more layer on top.
+     *
+     * @param facility the facility that would process this item
+     * @return always true
+     */
+    @Override
+    public boolean canBeProcessedBy(ProcessingFacility facility) {
         return true;
     }
 

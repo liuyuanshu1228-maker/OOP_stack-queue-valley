@@ -6,6 +6,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.actions.FeedAction;
 import game.actions.Feedable;
 import game.actions.Food;
+import game.positions.ProcessingFacility;
 
 /**
  * Abstract base class for portable Items that can be consumed, used as animal food,
@@ -41,5 +42,16 @@ public abstract class FoodItem extends ConsumableItem implements Food, Processab
             actions.add(new FeedAction(this, otherActor));
         }
         return actions;
+    }
+
+    /**
+     * A raw crop can be processed by every ProcessingFacility.
+     *
+     * @param facility the facility that would process this item
+     * @return always true
+     */
+    @Override
+    public boolean canBeProcessedBy(ProcessingFacility facility) {
+        return true;
     }
 }

@@ -9,6 +9,8 @@ import game.actions.ProcessAction;
 import game.items.food.Processable;
 import game.positions.ProcessingFacility;
 
+import java.util.Optional;
+
 /**
  * Abstract base class for processing facilities. While the Farmer is adjacent
  * to (or standing on) a Facility, a ProcessAction is offered for each
@@ -39,7 +41,8 @@ public abstract class Facility extends Ground implements ProcessingFacility {
     public ActionList allowableActions(Actor actor, Location location, String direction) {
         ActionList actions = new ActionList();
         for (Item item : actor.getInventory().getItems()) {
-            if (item.asCapability(Processable.class).isPresent()) {
+            Optional<Processable> processable = item.asCapability(Processable.class);
+            if (processable.isPresent() && processable.get().canBeProcessedBy(this)) {
                 actions.add(new ProcessAction(this, item));
             }
         }
