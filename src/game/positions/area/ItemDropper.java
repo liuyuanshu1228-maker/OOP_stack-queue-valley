@@ -7,7 +7,6 @@ import edu.monash.fit2099.engine.positions.Location;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * Moves Items onto, and off, the tiles of an {@link Area}.
@@ -82,17 +81,5 @@ public class ItemDropper {
             dropOnRandomTile(item);
         }
         return carried;
-    }
-
-    /**
-     * Places a new Item on every tile of the area. Each tile gets its own
-     * Item, created by the given factory.
-     *
-     * @param itemFactory a supplier that creates a new instance of the Item to place
-     */
-    public void placeOnEveryTile(Supplier<? extends Item> itemFactory) {
-        for (Location tile : area.tiles()) {
-            tile.addItem(itemFactory.get());
-        }
     }
 }

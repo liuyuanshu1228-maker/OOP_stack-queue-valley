@@ -6,32 +6,26 @@ import game.positions.area.Area;
 import game.positions.area.PlantableTile;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * A plant ability that plants a new plant on a random adjacent tile that can
  * be planted on (see {@link Plantable}).
  * <p>
- * The new plant may be the same kind as this one or an earlier stage, e.g.
- * {@code new SelfReplicate(5, StrawberrySeedling::new)}. If no adjacent tile
- * can be planted on, nothing happens.
+ * The new plant is created by the plant itself, via {@link Plant#offspring()},
+ * and may be the same kind as this one or an earlier stage, e.g. a
+ * {@code StrawberrySprout}'s {@code offspring()} returns a new
+ * {@code StrawberrySeedling}. If no adjacent tile can be planted on, nothing
+ * happens.
  */
 public class SelfReplicate extends PeriodicAbility {
-
-    /**
-     * Creates the plant to be planted next to this one.
-     */
-    private final Supplier<Plant> offspring;
 
     /**
      * Creates a SelfReplicate ability that always happens on its turn.
      *
      * @param intervalTurns how many turns of age between attempts to spread
-     * @param offspring creates the plant to be planted next to this one
      */
-    public SelfReplicate(int intervalTurns, Supplier<Plant> offspring) {
+    public SelfReplicate(int intervalTurns) {
         super(intervalTurns);
-        this.offspring = offspring;
     }
 
     /**
@@ -39,11 +33,9 @@ public class SelfReplicate extends PeriodicAbility {
      *
      * @param intervalTurns how many turns of age between attempts to spread
      * @param chancePercent the chance, as a percentage, of spreading on its turn
-     * @param offspring creates the plant to be planted next to this one
      */
-    public SelfReplicate(int intervalTurns, int chancePercent, Supplier<Plant> offspring) {
+    public SelfReplicate(int intervalTurns, int chancePercent) {
         super(intervalTurns, chancePercent);
-        this.offspring = offspring;
     }
 
     /**
@@ -60,7 +52,7 @@ public class SelfReplicate extends PeriodicAbility {
         if (target.isEmpty()) {
             return "";
         }
-        Plant child = offspring.get();
+        Plant child = plant.offspring();
         target.get().getGroundAs(Plantable.class).plant(child, target.get());
         return plant + " at " + location + " spreads, and a " + child
                 + " takes root at " + target.get() + ".";

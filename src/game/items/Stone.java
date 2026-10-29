@@ -7,7 +7,6 @@ import game.actions.MerchantContext;
 import game.positions.area.Area;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * Represents a Stone ('*') item that can be sold to the Merchant for 10 coins.
@@ -24,14 +23,14 @@ public class Stone extends SellableItem {
      * Factory that produces the Ground instance placed on a tile adjacent to the Merchant
      * after the sale.
      */
-    private final Supplier<Ground> groundFactory;
+    private final GroundFactory groundFactory;
 
     /**
      * Creates a new Stone.
      *
      * @param groundFactory a factory that produces the Ground placed when this Stone is sold
      */
-    public Stone(Supplier<Ground> groundFactory) {
+    public Stone(GroundFactory groundFactory) {
         super("Stone", '*', SELL_PRICE);
         this.groundFactory = groundFactory;
     }
@@ -50,7 +49,7 @@ public class Stone extends SellableItem {
         if (spot.isEmpty()) {
             return "";
         }
-        Ground built = groundFactory.get();
+        Ground built = groundFactory.create();
         spot.get().setGround(built);
         return merchantContext.getMerchant() + " builds a " + built + " nearby.";
     }

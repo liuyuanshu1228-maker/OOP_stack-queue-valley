@@ -4,6 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
+import game.plants.Plant;
 import game.plants.SelfReplicate;
 import game.positions.area.Area;
 import game.positions.area.Explosion;
@@ -47,7 +48,7 @@ public class Melon extends Crop implements Waterable {
      * Creates a new Melon.
      */
     public Melon() {
-        super('M', "Melon", new SelfReplicate(SPREAD_INTERVAL, MelonSprout::new));
+        super('M', "Melon", new SelfReplicate(SPREAD_INTERVAL));
     }
 
     /**
@@ -57,6 +58,16 @@ public class Melon extends Crop implements Waterable {
      */
     @Override
     protected Ground previousStage() {
+        return new MelonSprout();
+    }
+
+    /**
+     * A Melon spreads by planting a new Melon Sprout nearby.
+     *
+     * @return a new MelonSprout
+     */
+    @Override
+    protected Plant offspring() {
         return new MelonSprout();
     }
 

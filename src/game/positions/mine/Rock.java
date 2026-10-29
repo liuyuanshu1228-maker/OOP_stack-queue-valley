@@ -31,7 +31,7 @@ public class Rock extends BreakableGround {
      */
     @Override
     protected Item createDrop() {
-        return new Stone(Rock::new);
+        return new Stone(new RockFactory());
     }
 
     /**

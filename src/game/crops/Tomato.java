@@ -2,7 +2,9 @@ package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
+import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
+import game.plants.Plant;
 import game.plants.Produce;
 import game.plants.SelfReplicate;
 import game.statistics.StatisticAdjuster;
@@ -47,8 +49,28 @@ public class Tomato extends Crop {
      */
     public Tomato() {
         super('T', "Tomato",
-                new Produce(PRODUCE_INTERVAL, TomatoItem::new),
-                new SelfReplicate(SPREAD_INTERVAL, SPREAD_CHANCE_PERCENT, Tomato::new));
+                new Produce(PRODUCE_INTERVAL),
+                new SelfReplicate(SPREAD_INTERVAL, SPREAD_CHANCE_PERCENT));
+    }
+
+    /**
+     * A Tomato produces a new TomatoItem.
+     *
+     * @return a new TomatoItem
+     */
+    @Override
+    protected Item produce() {
+        return new TomatoItem();
+    }
+
+    /**
+     * A Tomato spreads by planting another Tomato nearby.
+     *
+     * @return a new Tomato
+     */
+    @Override
+    protected Plant offspring() {
+        return new Tomato();
     }
 
     /**

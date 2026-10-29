@@ -36,7 +36,27 @@ public class MelonSprout extends Plant {
      */
     public MelonSprout() {
         super('t', "Melon Sprout",
-                new Grow(GROW_INTERVAL, GROW_CHANCE_PERCENT, Melon::new),
-                new SelfReplicate(SPREAD_INTERVAL, MelonSprout::new));
+                new Grow(GROW_INTERVAL, GROW_CHANCE_PERCENT),
+                new SelfReplicate(SPREAD_INTERVAL));
+    }
+
+    /**
+     * A Melon Sprout grows into a new Melon.
+     *
+     * @return a new Melon
+     */
+    @Override
+    protected Plant nextStage() {
+        return new Melon();
+    }
+
+    /**
+     * A Melon Sprout spreads by planting another Melon Sprout nearby.
+     *
+     * @return a new MelonSprout
+     */
+    @Override
+    protected Plant offspring() {
+        return new MelonSprout();
     }
 }

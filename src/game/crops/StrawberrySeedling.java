@@ -26,6 +26,16 @@ public class StrawberrySeedling extends Plant {
      */
     public StrawberrySeedling() {
         super('\'', "Strawberry Seedling",
-                new Grow(GROW_INTERVAL, GROW_CHANCE_PERCENT, StrawberrySprout::new));
+                new Grow(GROW_INTERVAL, GROW_CHANCE_PERCENT));
+    }
+
+    /**
+     * A Strawberry Seedling grows into a new Strawberry Sprout.
+     *
+     * @return a new StrawberrySprout
+     */
+    @Override
+    protected Plant nextStage() {
+        return new StrawberrySprout();
     }
 }

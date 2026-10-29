@@ -60,6 +60,6 @@ public class Chicken extends Animal {
      * @return a new Chicken Egg
      */
     private Egg layEgg() {
-        return new Egg(() -> new Chicken("Chicken"));
+        return new Egg(new ChickenFactory());
     }
 }

@@ -27,6 +27,16 @@ public class CauliflowerSprout extends Plant {
      */
     public CauliflowerSprout() {
         super('y', "Cauliflower Sprout",
-                new Grow(GROW_INTERVAL, GROW_CHANCE_PERCENT, Cauliflower::new));
+                new Grow(GROW_INTERVAL, GROW_CHANCE_PERCENT));
+    }
+
+    /**
+     * A Cauliflower Sprout grows into a new Cauliflower.
+     *
+     * @return a new Cauliflower
+     */
+    @Override
+    protected Plant nextStage() {
+        return new Cauliflower();
     }
 }

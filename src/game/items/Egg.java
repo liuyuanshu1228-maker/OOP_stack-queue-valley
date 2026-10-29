@@ -8,7 +8,6 @@ import game.positions.area.Area;
 import game.random.RandomUtils;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * Represents an Egg ('0') item produced by a Chicken. Can be sold to the Merchant
@@ -24,14 +23,14 @@ public class Egg extends SellableItem {
     private static final int ANIMAL_SPAWN_CHANCE_PERCENT = 50;
 
     /** Factory that produces the Actor spawned adjacent to the Merchant on a successful sale. */
-    private final Supplier<Actor> animalFactory;
+    private final ActorFactory animalFactory;
 
     /**
      * Creates a new Egg.
      *
      * @param animalFactory a factory that produces the Actor spawned when this Egg is sold
      */
-    public Egg(Supplier<Actor> animalFactory) {
+    public Egg(ActorFactory animalFactory) {
         super("Egg", '0', SELL_PRICE);
         this.animalFactory = animalFactory;
     }
@@ -49,7 +48,7 @@ public class Egg extends SellableItem {
         if (!RandomUtils.rollPercent(ANIMAL_SPAWN_CHANCE_PERCENT)) {
             return "";
         }
-        Actor animal = animalFactory.get();
+        Actor animal = animalFactory.create();
         Optional<Location> spot = Area.adjacentTo(merchantContext.getLocation())
                 .randomEnterableTile(animal);
         if (spot.isEmpty()) {

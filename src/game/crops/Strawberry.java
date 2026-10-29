@@ -1,6 +1,7 @@
 package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.plants.Produce;
@@ -44,7 +45,17 @@ public class Strawberry extends Crop implements Waterable {
      * Creates a new Strawberry.
      */
     public Strawberry() {
-        super('S', "Strawberry", new Produce(PRODUCE_INTERVAL, StrawberryItem::createRandom));
+        super('S', "Strawberry", new Produce(PRODUCE_INTERVAL));
+    }
+
+    /**
+     * A Strawberry produces a new (possibly rotten) StrawberryItem.
+     *
+     * @return a new StrawberryItem
+     */
+    @Override
+    protected Item produce() {
+        return StrawberryItem.createRandom();
     }
 
     /**

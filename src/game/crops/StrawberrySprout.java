@@ -37,8 +37,28 @@ public class StrawberrySprout extends Plant {
      */
     public StrawberrySprout() {
         super('v', "Strawberry Sprout",
-                new Grow(GROW_INTERVAL, GROW_CHANCE_PERCENT, Strawberry::new),
-                new SelfReplicate(SPREAD_INTERVAL, StrawberrySeedling::new));
+                new Grow(GROW_INTERVAL, GROW_CHANCE_PERCENT),
+                new SelfReplicate(SPREAD_INTERVAL));
+    }
+
+    /**
+     * A Strawberry Sprout grows into a new Strawberry.
+     *
+     * @return a new Strawberry
+     */
+    @Override
+    protected Plant nextStage() {
+        return new Strawberry();
+    }
+
+    /**
+     * A Strawberry Sprout spreads by planting a new Strawberry Seedling.
+     *
+     * @return a new StrawberrySeedling
+     */
+    @Override
+    protected Plant offspring() {
+        return new StrawberrySeedling();
     }
 
     /**

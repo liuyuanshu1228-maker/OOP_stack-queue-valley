@@ -2,6 +2,7 @@ package game.crops;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
+import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import game.plants.Produce;
 import game.positions.area.ItemDropper;
@@ -42,7 +43,17 @@ public class Parsnip extends Crop implements Waterable {
      * Creates a new Parsnip.
      */
     public Parsnip() {
-        super('P', "Parsnip", new Produce(PRODUCE_INTERVAL, ParsnipItem::new));
+        super('P', "Parsnip", new Produce(PRODUCE_INTERVAL));
+    }
+
+    /**
+     * A Parsnip produces a new ParsnipItem.
+     *
+     * @return a new ParsnipItem
+     */
+    @Override
+    protected Item produce() {
+        return new ParsnipItem();
     }
 
     /**
