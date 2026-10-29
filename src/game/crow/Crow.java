@@ -21,7 +21,8 @@ import java.util.Set;
  * <p>
  * It is displayed as 'b' (for bird), since 'v' is the Strawberry Sprout.
  */
-public class Crow extends ConsciousActor implements StatefulCreature, ItemCache, Composure {
+public class Crow extends ConsciousActor
+        implements StatefulCreature, ItemCache, Composure, SensingRange {
 
     /** The crow's starting (and maximum) hit points. */
     private static final int STARTING_HP = 30;
@@ -32,10 +33,10 @@ public class Crow extends ConsciousActor implements StatefulCreature, ItemCache,
      * whole farm, so the wandering animals and Merchant would always count as
      * a crowd and the crow would never leave Fleeing.
      */
-    public static final int SENSING_RADIUS = 2;
+    private static final int SENSING_RADIUS = 2;
 
     /** The state this crow is currently in. */
-    private CreatureState state = Perching.INSTANCE;
+    private CreatureState state = new Perching();
 
     /** Items this crow has deliberately hidden away, so it does not forage them again. */
     private final Set<Item> cachedItems = new HashSet<>();
@@ -115,6 +116,14 @@ public class Crow extends ConsciousActor implements StatefulCreature, ItemCache,
     @Override
     public void resetComposure() {
         safeTurns = 0;
+    }
+
+    /**
+     * @return how far, in tiles, this crow can sense around itself
+     */
+    @Override
+    public int sensingRadius() {
+        return SENSING_RADIUS;
     }
 
     /**

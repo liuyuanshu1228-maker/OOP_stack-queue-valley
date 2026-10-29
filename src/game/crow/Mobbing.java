@@ -31,12 +31,11 @@ import java.util.Optional;
  */
 public class Mobbing extends BaseCreatureState {
 
-    /** The shared instance used by the game; this state holds no per-creature data. */
-    public static final Mobbing INSTANCE = new Mobbing();
-
     /**
-     * Creates this state. The game shares {@link #INSTANCE} because the state is
-     * stateless, but another instance (e.g. of a subclass) can be created freely.
+     * Creates this state. A new instance is created every time a transition
+     * returns this state; {@link BaseCreatureState} gives every instance of
+     * the same class the same identity, so creating a fresh one each time
+     * costs nothing.
      */
     public Mobbing() {
     }
@@ -122,10 +121,10 @@ public class Mobbing extends BaseCreatureState {
         CrowSensing sensing = new CrowSensing(creature, map.locationOf(creature));
 
         if (sensing.isCrowded()) {
-            return Fleeing.INSTANCE;
+            return new Fleeing();
         }
         if (sensing.isSafe()) {
-            return Perching.INSTANCE;
+            return new Perching();
         }
         return this;
     }

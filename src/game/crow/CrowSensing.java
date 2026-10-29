@@ -17,10 +17,13 @@ import java.util.Optional;
  * One instance describes one crow at one Location; the states are shared
  * between crows, so they create a new one each time they need to sense.
  */
-class CrowSensing {
+public class CrowSensing {
 
     /** The number of actors within sensing range that makes the crow feel crowded. */
-    static final int CROWD_SIZE = 2;
+    private static final int CROWD_SIZE = 2;
+
+    /** Used when the creature being sensed for has no sensing range of its own. */
+    private static final int DEFAULT_SENSING_RADIUS = 0;
 
     /** The creature that is sensing. */
     private final Actor creature;
@@ -28,15 +31,23 @@ class CrowSensing {
     /** Where the creature is sensing from. */
     private final Location here;
 
+    /** How far, in tiles, the creature can sense around itself. */
+    private final int sensingRadius;
+
     /**
-     * Creates the senses of a creature at a Location.
+     * Creates the senses of a creature at a Location. The creature's own
+     * sensing radius is asked for through its {@link SensingRange} capability,
+     * rather than this class assuming the creature is a {@link Crow}, so these
+     * senses could later be reused by another kind of stateful creature.
      *
      * @param creature the creature doing the sensing
      * @param here the Location the creature senses from
      */
-    CrowSensing(Actor creature, Location here) {
+    public CrowSensing(Actor creature, Location here) {
         this.creature = creature;
         this.here = here;
+        Optional<SensingRange> range = creature.asCapability(SensingRange.class);
+        this.sensingRadius = range.isPresent() ? range.get().sensingRadius() : DEFAULT_SENSING_RADIUS;
     }
 
     /**
@@ -45,7 +56,7 @@ class CrowSensing {
      * @return the first forageable Item here, or empty if there is none
      * @see ForageableItems
      */
-    Optional<Item> forageableItemHere() {
+    public Optional<Item> forageableItemHere() {
         return new ForageableItems(creature).firstAt(here);
     }
 
@@ -54,7 +65,7 @@ class CrowSensing {
      *
      * @return true if there is at least one forageable Item here
      */
-    boolean isOnFood() {
+    public boolean isOnFood() {
         return forageableItemHere().isPresent();
     }
 
@@ -64,7 +75,7 @@ class CrowSensing {
      *
      * @return true if forageable food is within sensing range
      */
-    boolean foodWithinRange() {
+    public boolean foodWithinRange() {
         return isOnFood() || nearestFood().isPresent();
     }
 
@@ -74,7 +85,7 @@ class CrowSensing {
      *
      * @return the closest Location with forageable food, or empty if there is none
      */
-    Optional<Location> nearestFood() {
+    public Optional<Location> nearestFood() {
         return withinRange().filter(new ForageableItems(creature)).nearestTo(here);
     }
 
@@ -83,7 +94,7 @@ class CrowSensing {
      *
      * @return the number of actors within sensing range, not counting one standing here
      */
-    int actorsWithinRange() {
+    public int actorsWithinRange() {
         return withinRange().filter(new HoldsActor()).tiles().size();
     }
 
@@ -92,7 +103,7 @@ class CrowSensing {
      *
      * @return true if the creature has nobody nearby
      */
-    boolean isSafe() {
+    public boolean isSafe() {
         return actorsWithinRange() == 0;
     }
 
@@ -101,7 +112,7 @@ class CrowSensing {
      *
      * @return true if at least {@value #CROWD_SIZE} actors are within sensing range
      */
-    boolean isCrowded() {
+    public boolean isCrowded() {
         return actorsWithinRange() >= CROWD_SIZE;
     }
 
@@ -111,7 +122,7 @@ class CrowSensing {
      *
      * @return the closest Location holding an actor, or empty if there is none
      */
-    Optional<Location> nearestActor() {
+    public Optional<Location> nearestActor() {
         return withinRange().filter(new HoldsActor()).nearestTo(here);
     }
 
@@ -121,7 +132,7 @@ class CrowSensing {
      *
      * @return true if there is a lone actor nearby with a non-empty inventory
      */
-    boolean hasLoneTargetWithItems() {
+    public boolean hasLoneTargetWithItems() {
         Optional<Location> target = nearestActor();
         return actorsWithinRange() == 1
                 && target.isPresent()
@@ -132,6 +143,6 @@ class CrowSensing {
      * @return the tiles within the crow's sensing range, not including its own
      */
     private Area withinRange() {
-        return Area.within(here, Crow.SENSING_RADIUS);
+        return Area.within(here, sensingRadius);
     }
 }

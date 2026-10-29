@@ -24,15 +24,14 @@ import java.util.Optional;
  */
 public class Fleeing extends BaseCreatureState {
 
-    /** The shared instance used by the game; this state holds no per-creature data. */
-    public static final Fleeing INSTANCE = new Fleeing();
-
     /** How many consecutive safe turns it takes for the crow to fully calm down. */
     private static final int CALM_DOWN_TURNS = 3;
 
     /**
-     * Creates this state. The game shares {@link #INSTANCE} because the state is
-     * stateless, but another instance (e.g. of a subclass) can be created freely.
+     * Creates this state. A new instance is created every time a transition
+     * returns this state; {@link BaseCreatureState} gives every instance of
+     * the same class the same identity, so creating a fresh one each time
+     * costs nothing.
      */
     public Fleeing() {
     }
@@ -82,10 +81,10 @@ public class Fleeing extends BaseCreatureState {
         int safeTurns = updateComposure(creature, safe);
 
         if (safe && safeTurns >= CALM_DOWN_TURNS) {
-            return Perching.INSTANCE;
+            return new Perching();
         }
         if (safe && sensing.foodWithinRange()) {
-            return Foraging.INSTANCE;
+            return new Foraging();
         }
         return this;
     }

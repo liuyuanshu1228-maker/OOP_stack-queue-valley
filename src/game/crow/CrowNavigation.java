@@ -17,7 +17,7 @@ import java.util.Optional;
  * states ({@link Foraging}, {@link Mobbing}, {@link Fleeing}), including to
  * push other actors back when the crow startles them.
  */
-class CrowNavigation {
+public class CrowNavigation {
 
     /** The actor that would be doing the stepping. */
     private final Actor actor;
@@ -31,7 +31,7 @@ class CrowNavigation {
      * @param actor the Actor that would be doing the stepping
      * @param from the Location to step from
      */
-    CrowNavigation(Actor actor, Location from) {
+    public CrowNavigation(Actor actor, Location from) {
         this.actor = actor;
         this.from = from;
     }
@@ -44,7 +44,7 @@ class CrowNavigation {
      * @return the best adjacent Location to step to, or empty if no adjacent
      * tile is enterable or gets any closer than staying put
      */
-    Optional<Location> stepToward(Location target) {
+    public Optional<Location> stepToward(Location target) {
         return onlyIfMoving(options().nearestTo(target));
     }
 
@@ -56,7 +56,7 @@ class CrowNavigation {
      * @return the best adjacent Location to step to, or empty if no adjacent
      * tile is enterable or gets any further away than staying put
      */
-    Optional<Location> stepAway(Location threat) {
+    public Optional<Location> stepAway(Location threat) {
         return onlyIfMoving(options().farthestFrom(threat));
     }
 

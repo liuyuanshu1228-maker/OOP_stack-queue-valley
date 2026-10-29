@@ -15,7 +15,7 @@ import java.util.Optional;
  * It also answers which Item that is, so the rule for "worth foraging" is
  * written once for the crow's senses and for its foraging.
  */
-class ForageableItems implements TileCondition {
+public class ForageableItems implements TileCondition {
 
     /** The creature that forages. */
     private final Actor creature;
@@ -25,7 +25,7 @@ class ForageableItems implements TileCondition {
      *
      * @param creature the creature that forages
      */
-    ForageableItems(Actor creature) {
+    public ForageableItems(Actor creature) {
         this.creature = creature;
     }
 
@@ -44,7 +44,7 @@ class ForageableItems implements TileCondition {
      * @param tile the tile to look at
      * @return the first forageable Item, or empty if there is none
      */
-    Optional<Item> firstAt(Location tile) {
+    public Optional<Item> firstAt(Location tile) {
         for (Item item : tile.getItems()) {
             if (isForageable(item)) {
                 return Optional.of(item);

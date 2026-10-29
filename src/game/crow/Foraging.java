@@ -23,9 +23,6 @@ import java.util.Optional;
  */
 public class Foraging extends BaseCreatureState {
 
-    /** The shared instance used by the game; this state holds no per-creature data. */
-    public static final Foraging INSTANCE = new Foraging();
-
     /** How far around a found item the crow searches for a hiding spot. */
     private static final int CACHE_SEARCH_RADIUS = 4;
 
@@ -33,8 +30,10 @@ public class Foraging extends BaseCreatureState {
     private static final int MIN_CACHE_DISTANCE = 2;
 
     /**
-     * Creates this state. The game shares {@link #INSTANCE} because the state is
-     * stateless, but another instance (e.g. of a subclass) can be created freely.
+     * Creates this state. A new instance is created every time a transition
+     * returns this state; {@link BaseCreatureState} gives every instance of
+     * the same class the same identity, so creating a fresh one each time
+     * costs nothing.
      */
     public Foraging() {
     }
@@ -107,10 +106,10 @@ public class Foraging extends BaseCreatureState {
     }
 
     /**
-     * Moves to Fleeing if the crow feels crowded (at least
-     * {@value CrowSensing#CROWD_SIZE} actors within sensing range), or to
-     * Perching once there is nothing left to forage within sensing range.
-     * The condition for moving to Mobbing is added once that state exists.
+     * Moves to Fleeing if the crow feels crowded (see
+     * {@link CrowSensing#isCrowded()}), or to Perching once there is nothing
+     * left to forage within sensing range. The condition for moving to
+     * Mobbing is added once that state exists.
      *
      * @param creature the crow whose next state is being decided
      * @param map the map the crow is on
@@ -120,13 +119,13 @@ public class Foraging extends BaseCreatureState {
     public CreatureState nextState(Actor creature, GameMap map) {
         CrowSensing sensing = new CrowSensing(creature, map.locationOf(creature));
         if (sensing.isCrowded()) {
-            return Fleeing.INSTANCE;
+            return new Fleeing();
         }
 
         boolean foodNearby = sensing.foodWithinRange();
 
         if (!foodNearby) {
-            return Perching.INSTANCE;
+            return new Perching();
         }
 
         return this;

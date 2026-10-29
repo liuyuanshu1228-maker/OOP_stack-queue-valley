@@ -26,16 +26,14 @@ import java.util.List;
  */
 public class Perching extends BaseCreatureState {
 
-    /** The shared instance used by the game; this state holds no per-creature data. */
-    public static final Perching INSTANCE = new Perching();
-
     /** Decides where the crow hops on an ordinary turn. */
     private final Behaviour<Actor, Action> wander;
 
     /**
-     * Creates this state with the default wandering behaviour. The game shares
-     * {@link #INSTANCE} because the state holds no per-creature data, but another
-     * instance (e.g. of a subclass) can be created freely.
+     * Creates this state with the default wandering behaviour. A new instance
+     * is created every time a transition returns this state; {@link BaseCreatureState}
+     * gives every instance of the same class the same identity, so creating a
+     * fresh one each time costs nothing.
      */
     public Perching() {
         this(new WanderBehaviour());
@@ -88,11 +86,11 @@ public class Perching extends BaseCreatureState {
         CrowSensing sensing = new CrowSensing(creature, map.locationOf(creature));
 
         if (sensing.hasLoneTargetWithItems()) {
-            return Mobbing.INSTANCE;
+            return new Mobbing();
         }
 
         if (sensing.nearestFood().isPresent()) {
-            return Foraging.INSTANCE;
+            return new Foraging();
         }
 
         return this;
