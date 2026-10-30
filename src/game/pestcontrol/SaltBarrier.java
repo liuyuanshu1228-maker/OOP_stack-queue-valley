@@ -23,7 +23,7 @@ public class SaltBarrier extends DeterrentItem {
     private static final String NAME = "Bag of Salt";
 
     /** The character shown on the map. */
-    private static final char DISPLAY_CHAR = 'k';
+    private static final char DISPLAY_CHAR = 'f';
 
     /** Damage dealt to a pest caught on a tile when it is salted. */
     private static final int SALT_DAMAGE = 2;
