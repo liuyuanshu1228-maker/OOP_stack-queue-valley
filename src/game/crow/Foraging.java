@@ -84,26 +84,47 @@ public class Foraging extends BaseCreatureState {
             throw new IllegalStateException("cache() called with nothing forageable at " + here);
         }
         Item item = forageable.get();
-        AreaFactory areaFactory = areaFactoryOf(creature);
-        Optional<Location> chosenSpot = areaFactory.within(here, CACHE_SEARCH_RADIUS)
-                .filter(new OutsideOf(areaFactory.within(here, MIN_CACHE_DISTANCE - 1)))
-                .filter(new BareOfItems())
-                .randomTile();
-
-        if (chosenSpot.isEmpty()) {
+        Optional<Location> hidingSpot = findHidingSpot(here, areaFactoryOf(creature));
+        if (hidingSpot.isEmpty()) {
             return creature + " spots the " + item + " at " + here
                     + ", but can't find anywhere to hide it.";
         }
+        hide(creature, item, here, hidingSpot.get());
+        return creature + " snatches the " + item + " from " + here
+                + " and hides it at " + hidingSpot.get() + ".";
+    }
 
-        Location hidingSpot = chosenSpot.get();
-        here.removeItem(item);
+    /**
+     * Picks a random empty tile within {@value #CACHE_SEARCH_RADIUS} tiles of
+     * here, but at least {@value #MIN_CACHE_DISTANCE} tiles away from it.
+     *
+     * @param here the Location the item is being picked up from
+     * @param areaFactory builds the Areas searched
+     * @return a hiding spot, or empty if there is none
+     */
+    private Optional<Location> findHidingSpot(Location here, AreaFactory areaFactory) {
+        return areaFactory.within(here, CACHE_SEARCH_RADIUS)
+                .filter(new OutsideOf(areaFactory.within(here, MIN_CACHE_DISTANCE - 1)))
+                .filter(new BareOfItems())
+                .randomTile();
+    }
+
+    /**
+     * Moves an item to its hiding spot, and lets the creature remember it, if
+     * the creature can remember items, so it will not hide the same item again.
+     *
+     * @param creature the crow doing the caching
+     * @param item the item being hidden
+     * @param from the Location the item is taken from
+     * @param hidingSpot the Location the item is hidden at
+     */
+    private void hide(Actor creature, Item item, Location from, Location hidingSpot) {
+        from.removeItem(item);
         hidingSpot.addItem(item);
         Optional<ItemCache> cache = creature.asCapability(ItemCache.class);
         if (cache.isPresent()) {
             cache.get().remember(item);
         }
-        return creature + " snatches the " + item + " from " + here
-                + " and hides it at " + hidingSpot + ".";
     }
 
     /**
