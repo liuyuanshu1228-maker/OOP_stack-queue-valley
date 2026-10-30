@@ -1,13 +1,17 @@
 package game.enchantments;
 
+import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.StackQueueValleyWorld;
 import game.pests.SlimeSnail;
+import game.positions.area.AreaFactory;
 import game.status.StunnedStatus;
+import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -18,11 +22,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ShatterEnchantmentTest {
 
+    private final FixedRandom random = new FixedRandom();
+    private final AreaFactory areaFactory = new AreaFactory(random);
+
     private final GameMap map = TestFarm.map("...", "...", "...");
 
+    @BeforeEach
+    void registerMap() {
+        new StackQueueValleyWorld(new Display()).addGameMap(map);
+    }
+
     @Test
-    void stunsTheActorStandingOnAnAffectedTile() {
-        SlimeSnail victim = new SlimeSnail();
+    void stunsTheActorStandingOnAnAffectedTile() throws Exception {
+        SlimeSnail victim = new SlimeSnail(random, areaFactory);
         Location tile = map.at(1, 1);
         tile.addActor(victim);
 
@@ -32,8 +44,8 @@ class ShatterEnchantmentTest {
     }
 
     @Test
-    void successMessageNamesTheStunnedTiles() {
-        SlimeSnail victim = new SlimeSnail();
+    void successMessageNamesTheStunnedTiles() throws Exception {
+        SlimeSnail victim = new SlimeSnail(random, areaFactory);
         Location tile = map.at(2, 1);
         tile.addActor(victim);
 

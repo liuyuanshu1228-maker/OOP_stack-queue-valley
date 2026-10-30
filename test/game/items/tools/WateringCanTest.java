@@ -2,11 +2,12 @@ package game.items.tools;
 
 import edu.monash.fit2099.engine.positions.GameMap;
 import game.actors.Farmer;
+import game.positions.area.AreaFactory;
 import game.positions.farm.Puddle;
+import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -19,6 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class WateringCanTest {
 
+    private final FixedRandom random = new FixedRandom();
+    private final AreaFactory areaFactory = new AreaFactory(random);
+
     /**
      * One Dirt tile ('.') surrounded by Soil (','), which is not Waterable --
      * so exactly one neighbour of the centre can be spread to, making the
@@ -30,7 +34,7 @@ class WateringCanTest {
 
     @Test
     void unenchantedWateringCanTriggersNothing() {
-        WateringCan wateringCan = new WateringCan(List.of());
+        WateringCan wateringCan = new WateringCan(List.of(), areaFactory);
 
         String result = wateringCan.triggerEnchantment(farmer, map.at(1, 1));
 
@@ -39,7 +43,7 @@ class WateringCanTest {
 
     @Test
     void watersTheAdjacentDirtAndFiresTheEnchantment() {
-        WateringCan wateringCan = new WateringCan(List.of());
+        WateringCan wateringCan = new WateringCan(List.of(), areaFactory);
         wateringCan.enchant(new RecordingEnchantment());
 
         String message = wateringCan.triggerEnchantment(farmer, map.at(1, 1));
@@ -51,7 +55,7 @@ class WateringCanTest {
     @Test
     void whenNoAdjacentWaterableTileExistsReportsNothingToWaterButStillFiresTheEnchantment() {
         GameMap allSoil = TestFarm.map(",,,", ",,,", ",,,");
-        WateringCan wateringCan = new WateringCan(List.of());
+        WateringCan wateringCan = new WateringCan(List.of(), areaFactory);
         RecordingEnchantment enchantment = new RecordingEnchantment();
         wateringCan.enchant(enchantment);
 
@@ -63,7 +67,7 @@ class WateringCanTest {
 
     @Test
     void firingEmptiesTheEnchantmentSlot() {
-        WateringCan wateringCan = new WateringCan(List.of());
+        WateringCan wateringCan = new WateringCan(List.of(), areaFactory);
         wateringCan.enchant(new RecordingEnchantment());
 
         wateringCan.triggerEnchantment(farmer, map.at(1, 1));

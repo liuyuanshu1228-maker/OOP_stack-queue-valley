@@ -2,15 +2,14 @@ package game.items.tools;
 
 import edu.monash.fit2099.engine.positions.GameMap;
 import game.actors.Farmer;
+import game.positions.area.AreaFactory;
 import game.positions.farm.Dirt;
 import game.positions.mine.CopperNode;
 import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
-import org.junit.jupiter.api.AfterEach;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -23,24 +22,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class PickaxeTest {
 
+    private final FixedRandom random = new FixedRandom();
+    private final AreaFactory areaFactory = new AreaFactory(random);
+
     private final GameMap map = TestFarm.map("...", "...", "...");
     private final Farmer farmer = new Farmer("Test");
 
-    private FixedRandom random;
 
     @BeforeEach
     void setUp() {
-        random = FixedRandom.install();
     }
 
-    @AfterEach
-    void tearDown() {
-        FixedRandom.uninstall();
-    }
 
     @Test
     void unenchantedPickaxeTriggersNothing() {
-        Pickaxe pickaxe = new Pickaxe(List.of());
+        Pickaxe pickaxe = new Pickaxe(List.of(), random, areaFactory);
 
         String result = pickaxe.triggerEnchantment(farmer, map.at(1, 1));
 
@@ -49,9 +45,9 @@ class PickaxeTest {
 
     @Test
     void whenTheChainRollSucceedsBreaksTheAdjacentCopperNodeAndFiresTheEnchantment() {
-        Pickaxe pickaxe = new Pickaxe(List.of());
+        Pickaxe pickaxe = new Pickaxe(List.of(), random, areaFactory);
         pickaxe.enchant(new RecordingEnchantment());
-        map.at(2, 1).setGround(new CopperNode());
+        map.at(2, 1).setGround(new CopperNode(areaFactory));
         random.setRollsSucceed(true);
 
         String message = pickaxe.triggerEnchantment(farmer, map.at(1, 1));
@@ -62,10 +58,10 @@ class PickaxeTest {
 
     @Test
     void whenTheChainRollFailsNothingBreaksButTheEnchantmentStillFires() {
-        Pickaxe pickaxe = new Pickaxe(List.of());
+        Pickaxe pickaxe = new Pickaxe(List.of(), random, areaFactory);
         RecordingEnchantment enchantment = new RecordingEnchantment();
         pickaxe.enchant(enchantment);
-        map.at(2, 1).setGround(new CopperNode());
+        map.at(2, 1).setGround(new CopperNode(areaFactory));
         random.setRollsSucceed(false);
 
         pickaxe.triggerEnchantment(farmer, map.at(1, 1));
@@ -76,7 +72,7 @@ class PickaxeTest {
 
     @Test
     void firingEmptiesTheEnchantmentSlot() {
-        Pickaxe pickaxe = new Pickaxe(List.of());
+        Pickaxe pickaxe = new Pickaxe(List.of(), random, areaFactory);
         pickaxe.enchant(new RecordingEnchantment());
         random.setRollsSucceed(false);
 

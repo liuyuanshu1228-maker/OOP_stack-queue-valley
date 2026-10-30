@@ -3,10 +3,11 @@ package game.items.tools;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.pests.SlimeSnail;
+import game.positions.area.AreaFactory;
+import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -21,10 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class EnchantmentSlotTest {
 
+    private final FixedRandom random = new FixedRandom();
+    private final AreaFactory areaFactory = new AreaFactory(random);
+
     private final GameMap map = TestFarm.map("...", "...", "...");
 
     /** Stands in for whichever Actor triggered the tool; never dereferenced by this test. */
-    private final SlimeSnail activator = new SlimeSnail();
+    private final SlimeSnail activator = new SlimeSnail(random, areaFactory);
 
     @Test
     void startsEmpty() {

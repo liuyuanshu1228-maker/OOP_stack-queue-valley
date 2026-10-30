@@ -4,13 +4,12 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.crops.StrawberrySeedling;
 import game.crops.StrawberrySprout;
+import game.positions.area.AreaFactory;
 import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
-import org.junit.jupiter.api.AfterEach;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,22 +24,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class BountyEnchantmentTest {
 
+    private final FixedRandom random = new FixedRandom();
+    private final AreaFactory areaFactory = new AreaFactory(random);
+
     /** How many turns of age a StrawberrySeedling waits between growth attempts. */
     private static final int GROWTH_INTERVAL_TURNS = 5;
 
     private final GameMap map = TestFarm.map("...", "...", "...");
 
-    private FixedRandom random;
 
     @BeforeEach
     void setUp() {
-        random = FixedRandom.install();
     }
 
-    @AfterEach
-    void tearDown() {
-        FixedRandom.uninstall();
-    }
 
     /**
      * @return the tile of a StrawberrySeedling that just reached its periodic
@@ -48,7 +44,7 @@ class BountyEnchantmentTest {
      */
     private Location seedlingThatJustFailedToGrow() {
         Location location = map.at(1, 1);
-        location.setGround(new StrawberrySeedling());
+        location.setGround(new StrawberrySeedling(random, areaFactory));
         random.setRollsSucceed(false);
         TestFarm.tick(location, GROWTH_INTERVAL_TURNS);
         return location;
