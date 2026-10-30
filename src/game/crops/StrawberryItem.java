@@ -46,15 +46,13 @@ public class StrawberryItem extends ConsumableItem {
     @Override
     public String consume(Actor actor) {
         if (rotten) {
-            actor.addStatus(new StrawberryPoisonStatus(actor));
-            return actor + " eats the rotten strawberry and is poisoned for "
-                    + StrawberryPoisonStatus.DAMAGE_PER_TURN + " damage per turn over "
-                    + StrawberryPoisonStatus.DURATION_TURNS + " turns.";
+            StrawberryPoisonStatus status = new StrawberryPoisonStatus(actor);
+            actor.addStatus(status);
+            return actor + " eats the rotten strawberry and is " + status.describeEffect() + ".";
         }
 
-        actor.addStatus(new StrawberryHealStatus(actor));
-        return actor + " eats the strawberry and is healed for "
-                + StrawberryHealStatus.HEAL_PER_TURN + " HP per turn over "
-                + StrawberryHealStatus.DURATION_TURNS + " turns.";
+        StrawberryHealStatus status = new StrawberryHealStatus(actor);
+        actor.addStatus(status);
+        return actor + " eats the strawberry and is " + status.describeEffect() + ".";
     }
 }

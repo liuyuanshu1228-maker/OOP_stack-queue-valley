@@ -10,9 +10,9 @@ import game.status.TimedStatus;
 public class StrawberryPoisonStatus extends TimedStatus {
 
     /** Damage dealt to the actor on each turn the status lasts. */
-    public static final int DAMAGE_PER_TURN = 1;
+    private static final int DAMAGE_PER_TURN = 1;
     /** Number of turns the poison lasts. */
-    public static final int DURATION_TURNS = 3;
+    private static final int DURATION_TURNS = 3;
 
     private final Actor poisonedActor;
 
@@ -32,6 +32,16 @@ public class StrawberryPoisonStatus extends TimedStatus {
     @Override
     protected void applyEffect() {
         poisonedActor.hurt(DAMAGE_PER_TURN);
+    }
+
+    /**
+     * Describes this status's own effect, so callers do not need to know its
+     * internal damage amount or duration.
+     *
+     * @return a description of the poison, e.g. "poisoned for 1 damage per turn over 3 turns"
+     */
+    public String describeEffect() {
+        return "poisoned for " + DAMAGE_PER_TURN + " damage per turn over " + DURATION_TURNS + " turns";
     }
 
     /**
