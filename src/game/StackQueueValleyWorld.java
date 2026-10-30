@@ -51,7 +51,15 @@ import game.travel.AlienDevice;
 import game.travel.Ladder;
 import game.travel.TeleportationCircle;
 import game.travel.TravelGround;
+import game.wanderer.Wanderer;
+import game.wanderer.WeatherInterpreter;
+import game.weather.ApiKeyLoader;
+import game.weather.OpenWeatherClient;
+import game.weather.OpenWeatherParser;
+import game.weather.MapGeography;
+import game.weather.WeatherSource;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -87,6 +95,15 @@ public class StackQueueValleyWorld extends World {
     private static final String TO_FARM = "the farm";
     /** Destination name of the mines, shown in the travel menus. */
     private static final String TO_MINES = "the mines";
+
+    /** The environment variable (or .env line) OpenWeatherClient reads its API key from. */
+    private static final String OPENWEATHER_API_KEY_NAME = "OPENWEATHER_API_KEY";
+    /** The latitude of the farm map's top-left tile (Melbourne). */
+    private static final double FARM_ORIGIN_LATITUDE = -37.81;
+    /** The longitude of the farm map's top-left tile (Melbourne). */
+    private static final double FARM_ORIGIN_LONGITUDE = 144.96;
+    /** How many degrees of latitude/longitude one farm tile covers. */
+    private static final double FARM_DEGREES_PER_TILE = 2.0;
 
     /**
      * A fixed position on a map.
@@ -204,6 +221,7 @@ public class StackQueueValleyWorld extends World {
         placeActor(inheritedFarmMap, occupiedLocations, new SlimeSnail(randomUtils, areaFactory), randomUtils);
         placeActor(inheritedFarmMap, occupiedLocations, new LocustSwarm(randomUtils, areaFactory), randomUtils);
         placeActor(inheritedFarmMap, occupiedLocations, new BurrowingMole(randomUtils, areaFactory), randomUtils);
+        placeActor(inheritedFarmMap, occupiedLocations, buildWanderer(randomUtils, areaFactory), randomUtils);
 
         Location alienDeviceFarmDestination =
                 locate(inheritedFarmMap, ALIEN_DEVICE_DESTINATIONS.farm());
@@ -248,6 +266,25 @@ public class StackQueueValleyWorld extends World {
         farm.at(6, 5).setGround(new Cauliflower(randomUtils, areaFactory));
         farm.at(8, 5).setGround(new Parsnip(randomUtils, areaFactory));
     }
+    /**
+     * Builds a Wanderer wired to the real OpenWeatherMap-backed WeatherSource
+     * and to this farm's geography, so the weather it asks about is the real
+     * weather at the tile it stands on.
+     *
+     * @param randomUtils the randomness used to build the Wanderer's fallback
+     *                    wandering behaviour
+     * @param areaFactory builds the Area each WeatherReaction it performs affects
+     * @return a new Wanderer
+     */
+    private Wanderer buildWanderer(RandomUtils randomUtils, AreaFactory areaFactory) {
+        ApiKeyLoader apiKeyLoader = new ApiKeyLoader(OPENWEATHER_API_KEY_NAME,
+                System.getenv(), Path.of(".env"));
+        WeatherSource weatherSource = new OpenWeatherClient(apiKeyLoader, new OpenWeatherParser());
+        MapGeography mapGeography = new MapGeography(FARM_ORIGIN_LATITUDE, FARM_ORIGIN_LONGITUDE,
+                FARM_DEGREES_PER_TILE);
+        return new Wanderer(randomUtils, weatherSource, mapGeography, new WeatherInterpreter(areaFactory));
+    }
+
     /**
      * Builds a list of brand-new Rocks, each wired with the given dependencies.
      * A fresh instance is built for every tile, exactly as a fresh instance

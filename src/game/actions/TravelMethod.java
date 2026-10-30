@@ -24,7 +24,7 @@ public interface TravelMethod {
      * @param intended the Location the Actor chose to travel to
      * @return the Location the Actor lands on
      */
-    default Location chooseLanding(Actor actor, GameMap map, Location intended) {
+    public default Location chooseLanding(Actor actor, GameMap map, Location intended) {
         return intended;
     }
 
@@ -36,7 +36,7 @@ public interface TravelMethod {
      * @param landing the Location the Actor landed on
      * @return a description of what happened, or an empty string if nothing did
      */
-    default String onArrival(Actor actor, Location landing) {
+    public default String onArrival(Actor actor, Location landing) {
         return "";
     }
 }

@@ -36,7 +36,7 @@ public interface Harvestable {
      *
      * @return true if the crop can be harvested right now
      */
-    default boolean canHarvest() {
+    public default boolean canHarvest() {
         return true;
     }
 
@@ -47,7 +47,7 @@ public interface Harvestable {
      * @param actor the Actor attempting to harvest the crop
      * @return a description of why the harvest failed
      */
-    default String cannotHarvestMessage(Actor actor) {
+    public default String cannotHarvestMessage(Actor actor) {
         return actor + " cannot harvest the " + this + " yet.";
     }
 }
