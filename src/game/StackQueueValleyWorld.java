@@ -12,15 +12,15 @@ import game.actors.Chicken;
 import game.actors.Cow;
 import game.actors.Farmer;
 import game.actors.Merchant;
-import game.crops.suppliers.CauliflowerGroundSupplier;
-import game.crops.suppliers.CauliflowerSproutGroundSupplier;
-import game.crops.suppliers.MelonGroundSupplier;
-import game.crops.suppliers.MelonSproutGroundSupplier;
-import game.crops.suppliers.ParsnipGroundSupplier;
-import game.crops.suppliers.StrawberryGroundSupplier;
-import game.crops.suppliers.StrawberrySeedlingGroundSupplier;
-import game.crops.suppliers.StrawberrySproutGroundSupplier;
-import game.crops.suppliers.TomatoGroundSupplier;
+import game.crops.Cauliflower;
+import game.crops.CauliflowerSprout;
+import game.crops.Melon;
+import game.crops.MelonSprout;
+import game.crops.Parsnip;
+import game.crops.Strawberry;
+import game.crops.StrawberrySeedling;
+import game.crops.StrawberrySprout;
+import game.crops.Tomato;
 import game.crow.Crow;
 import game.travel.AlienDevice;
 import game.enchantments.BlazeEnchantment;
@@ -145,31 +145,21 @@ public class StackQueueValleyWorld extends World {
         DefaultGroundCreator groundCreator = new DefaultGroundCreator();
         groundCreator.registerGround('.', Dirt::new);
         groundCreator.registerGround(',', Soil::new);
-        groundCreator.registerGround('\'', new StrawberrySeedlingGroundSupplier(randomUtils, areaFactory));
-        groundCreator.registerGround('v', new StrawberrySproutGroundSupplier(randomUtils, areaFactory));
-        groundCreator.registerGround('y', new CauliflowerSproutGroundSupplier(randomUtils, areaFactory));
-        groundCreator.registerGround('t', new MelonSproutGroundSupplier(randomUtils, areaFactory));
-        groundCreator.registerGround('S', new StrawberryGroundSupplier(randomUtils, areaFactory));
-        groundCreator.registerGround('K', new CauliflowerGroundSupplier(randomUtils, areaFactory));
-        groundCreator.registerGround('M', new MelonGroundSupplier(randomUtils, areaFactory));
-        groundCreator.registerGround('T', new TomatoGroundSupplier(randomUtils, areaFactory));
-        groundCreator.registerGround('P', new ParsnipGroundSupplier(randomUtils, areaFactory));
 
-        // One of every plant, each with Soil around it to spread onto. The
-        // Cauliflower is kept away from the ladders and circles, as watering
-        // it may turn its neighbours into puddles.
+        // Dirt and Soil only; plantCrops then puts one of every plant on the Soil.
         List<String> inheritedFarm = Arrays.asList(
                 "..,,,,,,..",
-                ".,',v,,S,.",
                 ".,,,,,,,,.",
-                ".,t,,.,M,.",
                 ".,,,,,,,,.",
-                ".,T,y,K,P.",
+                ".,,,,.,,,.",
+                ".,,,,,,,,.",
+                ".,,,,,,,,.",
                 ".........."
         );
 
         GameMap inheritedFarmMap = new GameMap("Inherited Farm", groundCreator, inheritedFarm);
         this.addGameMap(inheritedFarmMap);
+        plantCrops(inheritedFarmMap, randomUtils, areaFactory);
         GameMap minesMap = new GameMap(MINES_MAP_NAME, groundCreator, '.',
                 MINES_WIDTH, MINES_HEIGHT);
         this.addGameMap(minesMap);
@@ -230,6 +220,35 @@ public class StackQueueValleyWorld extends World {
         scatterItems(minesMap, minesOccupiedLocations, buildGeodes(randomUtils, areaFactory, GEODE_COUNT), randomUtils);
     }
 
+
+    /**
+     * Puts one of every plant in its fixed place on the farm. Each plant has
+     * Soil around it to spread onto, and the Cauliflower is kept away from the
+     * ladders and circles, as watering it may turn its neighbours into puddles.
+     * <pre>
+     *   x: 0123456789
+     * y=1  .,',v,,S,.     ' Strawberry Seedling, v Strawberry Sprout, S Strawberry
+     * y=3  .,t,,.,M,.     t Melon Sprout, M Melon
+     * y=5  .,T,y,K,P.     T Tomato, y Cauliflower Sprout, K Cauliflower, P Parsnip
+     * </pre>
+     * The plants are built here, rather than from characters in the map text,
+     * because each one needs the RandomUtils and AreaFactory passed to it.
+     *
+     * @param farm the farm map to plant on
+     * @param randomUtils the randomness handed to every plant
+     * @param areaFactory the AreaFactory handed to every plant
+     */
+    private void plantCrops(GameMap farm, RandomUtils randomUtils, AreaFactory areaFactory) {
+        farm.at(2, 1).setGround(new StrawberrySeedling(randomUtils, areaFactory));
+        farm.at(4, 1).setGround(new StrawberrySprout(randomUtils, areaFactory));
+        farm.at(7, 1).setGround(new Strawberry(randomUtils, areaFactory));
+        farm.at(2, 3).setGround(new MelonSprout(randomUtils, areaFactory));
+        farm.at(7, 3).setGround(new Melon(randomUtils, areaFactory));
+        farm.at(2, 5).setGround(new Tomato(randomUtils, areaFactory));
+        farm.at(4, 5).setGround(new CauliflowerSprout(randomUtils, areaFactory));
+        farm.at(6, 5).setGround(new Cauliflower(randomUtils, areaFactory));
+        farm.at(8, 5).setGround(new Parsnip(randomUtils, areaFactory));
+    }
     /**
      * Builds a list of brand-new Rocks, each wired with the given dependencies.
      * A fresh instance is built for every tile, exactly as a fresh instance
