@@ -53,7 +53,104 @@ The tests do not depend on luck. `game.testsupport.FixedRandom` extends the game
 | REQ1 Second Spring | `game.plants.PeriodicAbilityTest`, `GrowTest`, `SelfReplicateTest`, `ProduceTest`, `PlantStateTest` |
 | REQ3 Pests and pest control | `game.pests.SlimeSnailTest`, `LocustSwarmTest`, `BurrowingMoleTest`, `PestTurnTest`, `PestPresentTest`; `game.pestcontrol.LadybugTest`, `SaltBarrierTest`, `SaltGroundTest`, `TrapGroundTest`, `DeployDeterrentActionTest`; `game.behaviours.SeekPlantBehaviourTest`; `game.positions.TemporaryGroundTest` |
 | REQ4 Enchanted Tools | `game.enchantments.BlazeEnchantmentTest`, `BountyEnchantmentTest`, `ShatterEnchantmentTest`; `game.items.tools.EnchantmentSlotTest`, `PickaxeTest`, `WateringCanTest`; `game.actions.TillActionTest` |
-| REQ5 API | Not written yet |
+| REQ5 The Wanderer (API) | `game.weather.WeatherReadingTest`, `MapGeographyTest`, `ApiKeyLoaderTest`, `OpenWeatherParserTest`, `OpenWeatherClientTest`. None of them uses the network or a real API key. |
+
+## A3 REQ3 — Infestation and Pest Control
+
+Pests move towards the Farmer's plants and eat them. The Farmer fights back with three defences. The full design is in `feature-proposal.md`, `docs/A3_REQ3_Design_Rationale.md` and `docs/UML/A3_REQ3_Infestation_UML.drawio`.
+
+**Where to find it in the game:** Run `game.Application`. The world places one pest of each kind on a free tile of the farm. The Farmer starts with one of each defence in their inventory.
+
+| On the map | What it is |
+|---|---|
+| `q` | Slime Snail: crawls one tile; leaves slime (`:`) on the bare ground around a plant it eats |
+| `z` | Locust Swarm: jumps like a chess knight; sets back every plant around it; may split; flies away after four meals |
+| `r` | Burrowing Mole: moves one or two tiles in a straight line; turns the Soil around it back into Dirt |
+| `X` | A set pest trap |
+| `+` | Salt ground |
+| `e` | A ladybug |
+
+**How to use a defence:** Pick it from the Farmer's menu, for example `Farmer Bob uses the Pest Trap`.
+
+- **Pest Trap:** set on the tile the Farmer stands on. It is not offered when the Farmer stands on a plant.
+- **Jar of Ladybugs:** releases up to three ladybugs around the Farmer.
+- **Bag of Salt:** salts the bare Soil and Dirt around the Farmer.
+
+**How to read the messages:** Every message names the tile it happened on, for example:
+
+```
+Locust Swarm (3/3) descends on the plants around (2, 3) on Inherited Farm. Melon Sprout at (2, 3) on Inherited Farm is set back to Dirt.
+Pest Trap at (5, 3) on Inherited Farm: Pulled Burrowing Mole (8/8) to (4, 4) on Inherited Farm. Captured Burrowing Mole (8/8) at (4, 4) on Inherited Farm.
+```
+
+A pest that eats nothing, and a trap that pulls and captures nothing, print nothing that turn.
+
+## A3 REQ5 — The Wanderer (API, HD)
+
+A Wanderer roams the farm, and what it does depends on the real weather at the place on Earth where it stands. The farm map is laid on the real world, so the Wanderer's own position decides which place the game asks the weather for. The full design, the request and the reply format are in `feature-proposal.md`.
+
+### What it does
+
+- **Every 5 turns** the Wanderer asks for the current weather where it stands, and reacts:
+  - **Wind of 10 m/s or more:** it builds a shelter that blocks the tiles around it for a while.
+  - **Rain, Drizzle or Thunderstorm:** it turns the bare Dirt around it into Soil and waters the crops around it.
+  - **10°C or colder:** it lights a campfire that spreads to more tiles the colder it is.
+- **When the Farmer asks for the forecast** (a menu option when standing next to the Wanderer), it asks for tomorrow's weather where it stands, and an omen follows:
+  - **Snow, or 2°C or colder:** the plants around it stop growing for a few turns.
+  - **Rain, Drizzle or Thunderstorm:** Strawberry Seedlings take root on the bare Soil around it.
+  - **Clear and 25°C or hotter:** the Farmer loses stamina every turn for a few turns.
+- Every message names the weather that caused it and the tiles that changed.
+
+### Where on Earth the farm is
+
+The top-left tile of the farm is Melbourne (latitude -37.81, longitude 144.96). Each tile is 2 degrees: one step right is 2 degrees east, one step down is 2 degrees south. A Wanderer at tile (3, 1) asks about latitude -39.81, longitude 150.96.
+
+### Step 1: Get a free API key
+
+1. Go to <https://home.openweathermap.org/users/sign_up> and create a free account.
+2. Confirm your email address. OpenWeatherMap sends a link.
+3. Sign in and open the **API keys** tab: <https://home.openweathermap.org/api_keys>. A key called "Default" is already there. Copy it.
+4. A new key can take up to a couple of hours to start working. Until then, requests are refused and the game runs without the weather.
+
+The free plan is enough: the game uses only the "Current weather" and "5 day / 3 hour forecast" endpoints, and asks at most once every 5 turns.
+
+### Step 2: Give the key to the game
+
+The game looks for a variable called `OPENWEATHER_API_KEY`. Use **one** of these ways. Never put the key in the code.
+
+**A. A `.env` file (easiest).** Create a file called `.env` in the project folder (the folder with `pom.xml`), containing one line:
+
+```
+OPENWEATHER_API_KEY=paste_your_key_here
+```
+
+`.env` is listed in `.gitignore`, so Git never commits it. Run `git status` to check: `.env` must not appear in the list.
+
+**B. An environment variable in IntelliJ.** Open **Run → Edit Configurations…**, choose the `Application` configuration, and in **Environment variables** add `OPENWEATHER_API_KEY=paste_your_key_here`.
+
+**C. An environment variable in a terminal**, set in the same terminal that runs the game:
+
+```bash
+export OPENWEATHER_API_KEY=paste_your_key_here
+```
+
+On Windows PowerShell, use `$env:OPENWEATHER_API_KEY="paste_your_key_here"` instead.
+
+An environment variable wins over the `.env` file when both are set.
+
+### Step 3: Run the game
+
+1. In IntelliJ, right-click `pom.xml` and choose **Maven → Reload project**, so that Gson (the JSON library the API needs) is downloaded.
+2. Run `game.Application`. Its working directory must be the project folder, so that the `.env` file is found. This is IntelliJ's default.
+3. The Wanderer appears on the farm. Stand next to it to see the **ask for the forecast** option.
+
+### Without a key or without the network
+
+The game still runs. If there is no key, no network, or the request fails or takes more than 5 seconds, the Wanderer only wanders and no weather effect happens. The game never stops because of the API.
+
+### How the tests avoid the network
+
+The game only knows the `WeatherSource` interface, so every test of the Wanderer, the reactions and the omens can use fixed weather readings. The tests of `OpenWeatherClient` replace the method that sends the request, so they check the request address without sending it. `ApiKeyLoaderTest` uses a temporary folder and never reads your real `.env`.
 
 ## A2 REQ5 — Stateful Creature: The Crow
 
