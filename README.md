@@ -46,19 +46,24 @@ mvn test
 
 In IntelliJ, right-click `pom.xml` and choose **Add as Maven Project** once. After that you can run the tests from the Maven panel (**Lifecycle → test**), or right-click the `test` folder and choose **Run 'All Tests'**.
 
-The tests do not depend on luck. `game.testsupport.FixedRandom` replaces the game's `RandomUtils`, so every chance either always succeeds or always fails, and every random pick takes the first option. `game.testsupport.TestFarm` builds small maps where `.` is Dirt and `,` is Soil.
+The tests do not depend on luck. `game.testsupport.FixedRandom` extends the game's `RandomUtils`, and a test passes it to the class under test through its constructor, just as `StackQueueValleyWorld` passes the real `RandomUtils`. With it, every chance either always succeeds or always fails, and every random pick takes the first option. `game.testsupport.TestFarm` builds small maps where `.` is Dirt and `,` is Soil.
 
 | Requirement | Test classes |
 |---|---|
 | REQ1 Second Spring | `game.plants.PeriodicAbilityTest`, `GrowTest`, `SelfReplicateTest`, `ProduceTest`, `PlantStateTest` |
+| REQ3 Pests and pest control | `game.pests.SlimeSnailTest`, `LocustSwarmTest`, `BurrowingMoleTest`, `PestTurnTest`, `PestPresentTest`; `game.pestcontrol.LadybugTest`, `SaltBarrierTest`, `SaltGroundTest`, `TrapGroundTest`, `DeployDeterrentActionTest`; `game.behaviours.SeekPlantBehaviourTest`; `game.positions.TemporaryGroundTest` |
+| REQ4 Enchanted Tools | `game.enchantments.BlazeEnchantmentTest`, `BountyEnchantmentTest`, `ShatterEnchantmentTest`; `game.items.tools.EnchantmentSlotTest`, `PickaxeTest`, `WateringCanTest`; `game.actions.TillActionTest` |
+| REQ5 API | Not written yet |
 
-## REQ5 (HD) — Stateful Creature: The Crow
+## A2 REQ5 — Stateful Creature: The Crow
+
+This section describes Assignment 2's REQ5, which is still in the game. Requirement numbers in this section are Assignment 2's. It is not Assignment 3's REQ5.
 
 Our group has three people, so we build **one** stateful creature. It is a `Crow` (`src/game/crow/Crow.java`) with exactly **four** states. Each state is its own class in `src/game/crow`. Every state implements the `game.creaturestate.CreatureState` interface, which has three methods: `act`, `nextState` and `onEnter`.
 
-The states hold no data about one creature. So the game shares one public `INSTANCE` of each state (the State pattern in its flyweight form). The state classes are not `final` and have public constructors. This lets us create a variant later, for example a subclass with a different transition rule. Every state extends `game.creaturestate.BaseCreatureState`. This base class treats two states of the same class as equal (`equals` and `hashCode`). So a new instance of a state never changes how the state machine behaves.
+The states hold no data about one creature. A transition simply creates a new object of the next state, for example `new Mobbing()`. There is no shared instance and no static field. The state classes are not `final` and have public constructors. This lets us create a variant later, for example a subclass with a different transition rule. Every state extends `game.creaturestate.BaseCreatureState`. This base class treats two states of the same class as equal (`equals` and `hashCode`). So a new instance of a state never changes how the state machine behaves.
 
-Data that differs between crows lives on the `Crow` object. This includes the items the crow has hidden and the number of turns it has felt safe. The crow keeps this data behind two small capability interfaces, `ItemCache` and `Composure`. The state objects never keep it. This is why every crow on the map can share the same four state instances.
+Data that differs between crows lives on the `Crow` object. This includes the items the crow has hidden and the number of turns it has felt safe. The crow keeps this data behind two small capability interfaces, `ItemCache` and `Composure`. The state objects never keep it. This is why a state object can be created fresh on every transition without losing anything. When a state needs the crow's randomness, area queries or sensing radius, it asks the crow at that moment through the `RandomnessSource`, `AreaFactorySource` and `SensingRange` capabilities.
 
 **Where to find it in the game:** Run `game.Application`. The crow appears as `b` on the farm map. The game places it on a random free tile when it creates the world.
 
@@ -112,7 +117,7 @@ Fleeing   --[safe this turn, and food is within range]----------> Foraging
 Fleeing   --[otherwise]-------------------------------------------> Fleeing (stays)
 ```
 
-`CrowSensing` works out all the conditions. This package-private helper serves all four states. So each state's transition logic stays short, and no state repeats the tile scanning. `CrowSensing` counts the actors within a 2-tile sensing radius (`Crow.SENSING_RADIUS`). It finds the nearest forageable item (`CrowSensing.nearestFood()`, which uses `Area.nearestTo`). For Fleeing, it also keeps a count of consecutive safe turns through the `Composure` capability.
+`CrowSensing` works out all the conditions. This public helper serves all four states. So each state's transition logic stays short, and no state repeats the tile scanning. `CrowSensing` counts the actors within the crow's 2-tile sensing radius, which it reads through the `SensingRange` capability. It finds the nearest forageable item (`CrowSensing.nearestFood()`, which uses `Area.nearestTo`). For Fleeing, it also keeps a count of consecutive safe turns through the `Composure` capability.
 
 **The crow never uses a random number to pick the next state.** Randomness only appears inside `act()` and `onEnter()`. There it decides small things, such as which tile hides an item and which item the crow steals.
 
@@ -128,14 +133,14 @@ One generic `CreatureStateAction` (`src/game/actions/CreatureStateAction.java`) 
 
 The engine's `Behaviour<Actor, Action>` lets a non-player actor decide what to do on its own turn. `game.behaviours.WanderBehaviour` implements it. It picks one adjacent tile that the actor can enter, with equal chance for each tile. Then it returns the `MoveActorAction` for that tile. It returns `null` when no tile is free. Two places share it:
 
-- `WanderingActor` is the base class of the Chicken, Cow and Merchant. It receives its behaviour when it is created. The default is a `WanderBehaviour`, and the second constructor accepts any other `Behaviour`.
-- The crow's `Perching` state uses it for its ordinary turn. So the rule "take one random step" exists once in the whole game.
+- `WanderingActor` is the base class of the Chicken, Cow and Merchant. Its constructor must be given a `Behaviour`; there is no hidden default. `Animal` (the Chicken and Cow) and `Merchant` each pass a `WanderBehaviour` built with the injected `RandomUtils`.
+- The crow's `Perching` state builds a `WanderBehaviour` with the crow's own randomness for its ordinary turn. So the rule "take one random step" exists once in the whole game.
 
 The player's moves stay `Action`s. The crow's own turn is still one `CreatureStateAction`. Foraging, Mobbing and Fleeing keep `CrowNavigation` for stepping toward and away from a target. Their steps depend on the state and on what the crow senses. So a general `Behaviour` does not fit them.
 
 ### How to test it in the game
 
-The crow senses everything within **2 tiles**. This is a 5x5 square around it (`Crow.SENSING_RADIUS`). Here, "actor" means *any* actor. The Farmer, the Chicken (`n`), the Cow (`B`) and the Merchant (`$`) all count.
+The crow senses everything within **2 tiles**. This is a 5x5 square around it (the crow's `SensingRange`). Here, "actor" means *any* actor. The Farmer, the Chicken (`c`), the Cow (`C`) and the Merchant (`$`) all count.
 
 | To see | Do this | Expect a line like |
 |---|---|---|
@@ -169,6 +174,6 @@ The ordinary-turn behaviours work in the same way. Examples are `... finds nothi
 - **SRP:** Each `CreatureState` implementation owns the three duties of exactly one state: its own `act`, `nextState` and `onEnter`. `Crow` only holds data and hands the work to the states. `CreatureStateAction` only drives the generic transition protocol.
 - **OCP:** A fifth state is one new class. We also edit the existing states that must lead to it, and any explicit transition graph needs this. `CreatureStateAction`, `StatefulCreature` and `Crow.playConsciousTurn()` never change. A second, unrelated stateful creature can reuse `CreatureStateAction`, `StatefulCreature` and `CreatureState` without any change.
 - **LSP:** Any `CreatureState` can replace another wherever `CreatureStateAction` uses one. All four states follow the same three-method contract, and none of them adds a surprising precondition.
-- **ISP:** `CreatureState` is a small three-method interface. `StatefulCreature`, `ItemCache` and `Composure` are separate, small capability interfaces. So `Crow` takes on only the data that a state needs. No single large interface forces every `Actor` to implement everything.
-- **DIP (wandering):** `Perching` and `WanderingActor` depend on the engine's `Behaviour` interface, not on `WanderBehaviour`. `WanderBehaviour` is only their default. A constructor can accept any other `Behaviour`.
+- **ISP:** `CreatureState` is a small three-method interface. `StatefulCreature`, `ItemCache`, `Composure`, `SensingRange`, `AreaFactorySource` and `RandomnessSource` are separate, small capability interfaces. So `Crow` takes on only the data that a state needs. No single large interface forces every `Actor` to implement everything.
+- **DIP (wandering):** `WanderingActor` depends only on the engine's `Behaviour` interface, never on `WanderBehaviour`, and its constructor accepts any `Behaviour`. `Perching` is the exception: it creates a `WanderBehaviour` itself, because a state object is created fresh on each transition and has no constructor through which a behaviour could be injected.
 - **DIP (the driver):** `CreatureStateAction` depends only on the `StatefulCreature` and `CreatureState` abstractions. It never names `Crow` or any concrete state. The state machine has no `instanceof` and no `switch` on a type. In the same way, the free watering in `Perching` depends only on the `FreelyWaterable` capability, never on the concrete `Crop` class. So `game.crow` does not depend on `game.crops`.
