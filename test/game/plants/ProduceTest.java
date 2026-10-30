@@ -6,14 +6,13 @@ import game.crops.Cauliflower;
 import game.crops.Parsnip;
 import game.crops.Strawberry;
 import game.crops.Tomato;
+import game.testsupport.PlantFactory;
 import game.testsupport.TestFarm;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.List;
-import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,17 +25,17 @@ class ProduceTest extends PlantTestBase {
 
     static List<Arguments> producingCrops() {
         return List.of(
-                Arguments.of((Supplier<Plant>) Strawberry::new, 5, "Strawberry"),
-                Arguments.of((Supplier<Plant>) Tomato::new, 7, "Tomato"),
-                Arguments.of((Supplier<Plant>) Parsnip::new, 15, "Parsnip"));
+                Arguments.of((PlantFactory) Strawberry::new, 5, "Strawberry"),
+                Arguments.of((PlantFactory) Tomato::new, 7, "Tomato"),
+                Arguments.of((PlantFactory) Parsnip::new, 15, "Parsnip"));
     }
 
     @ParameterizedTest
     @MethodSource("producingCrops")
-    void dropsProduceNearbyEveryInterval(Supplier<Plant> crop, int interval, String name) {
+    void dropsProduceNearbyEveryInterval(PlantFactory crop, int interval, String name) {
         GameMap map = TestFarm.map("...", "...", "...");
         Location centre = map.at(1, 1);
-        centre.setGround(crop.get());
+        centre.setGround(crop.create(random, areaFactory));
 
         TestFarm.tick(centre, interval - 1);
         assertEquals(0, TestFarm.countItems(map), "nothing before the interval");
@@ -53,7 +52,7 @@ class ProduceTest extends PlantTestBase {
     @Test
     void cauliflowerDoesNothingOnItsOwn() {
         GameMap map = TestFarm.map(",,,", ",,,", ",,,");
-        map.at(1, 1).setGround(new Cauliflower());
+        map.at(1, 1).setGround(new Cauliflower(random, areaFactory));
 
         TestFarm.tick(map.at(1, 1), 60);
 

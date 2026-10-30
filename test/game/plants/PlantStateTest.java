@@ -12,14 +12,13 @@ import game.crops.StrawberrySprout;
 import game.crops.Tomato;
 import game.positions.farm.Dirt;
 import game.status.GrowthPausedStatus;
+import game.testsupport.PlantFactory;
 import game.testsupport.TestFarm;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.List;
-import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -32,15 +31,15 @@ class PlantStateTest extends PlantTestBase {
 
     static List<Arguments> earlierStages() {
         return List.of(
-                Arguments.of((Supplier<Plant>) StrawberrySeedling::new, Dirt.class),
-                Arguments.of((Supplier<Plant>) StrawberrySprout::new, StrawberrySeedling.class),
-                Arguments.of((Supplier<Plant>) Strawberry::new, StrawberrySprout.class),
-                Arguments.of((Supplier<Plant>) CauliflowerSprout::new, Dirt.class),
-                Arguments.of((Supplier<Plant>) Cauliflower::new, CauliflowerSprout.class),
-                Arguments.of((Supplier<Plant>) MelonSprout::new, Dirt.class),
-                Arguments.of((Supplier<Plant>) Melon::new, MelonSprout.class),
-                Arguments.of((Supplier<Plant>) Tomato::new, Dirt.class),
-                Arguments.of((Supplier<Plant>) Parsnip::new, Dirt.class));
+                Arguments.of((PlantFactory) StrawberrySeedling::new, Dirt.class),
+                Arguments.of((PlantFactory) StrawberrySprout::new, StrawberrySeedling.class),
+                Arguments.of((PlantFactory) Strawberry::new, StrawberrySprout.class),
+                Arguments.of((PlantFactory) CauliflowerSprout::new, Dirt.class),
+                Arguments.of((PlantFactory) Cauliflower::new, CauliflowerSprout.class),
+                Arguments.of((PlantFactory) MelonSprout::new, Dirt.class),
+                Arguments.of((PlantFactory) Melon::new, MelonSprout.class),
+                Arguments.of((PlantFactory) Tomato::new, Dirt.class),
+                Arguments.of((PlantFactory) Parsnip::new, Dirt.class));
     }
 
     private Location plantOnDirt(Plant plant) {
@@ -51,7 +50,7 @@ class PlantStateTest extends PlantTestBase {
 
     @Test
     void ageStartsAtZeroAndGoesUpOncePerTurn() {
-        Plant plant = new CauliflowerSprout();
+        Plant plant = new CauliflowerSprout(random, areaFactory);
         Location location = plantOnDirt(plant);
         assertEquals(0, plant.getAge());
 
@@ -64,7 +63,7 @@ class PlantStateTest extends PlantTestBase {
 
     @Test
     void pausedPlantStillAgesButDoesNotGrow() {
-        Plant seedling = new StrawberrySeedling();
+        Plant seedling = new StrawberrySeedling(random, areaFactory);
         Location location = plantOnDirt(seedling);
         seedling.addStatus(new GrowthPausedStatus(5));
 
@@ -77,7 +76,7 @@ class PlantStateTest extends PlantTestBase {
 
     @Test
     void plantGrowsOnItsNextTurnAfterThePauseEnds() {
-        Plant seedling = new StrawberrySeedling();
+        Plant seedling = new StrawberrySeedling(random, areaFactory);
         Location location = plantOnDirt(seedling);
         seedling.addStatus(new GrowthPausedStatus(5));
 
@@ -88,8 +87,8 @@ class PlantStateTest extends PlantTestBase {
 
     @ParameterizedTest
     @MethodSource("earlierStages")
-    void regressGoesBackToTheEarlierStage(Supplier<Plant> stage, Class<?> earlier) {
-        Location location = plantOnDirt(stage.get());
+    void regressGoesBackToTheEarlierStage(PlantFactory stage, Class<?> earlier) {
+        Location location = plantOnDirt(stage.create(random, areaFactory));
 
         location.getGroundAs(Regressible.class).regress(location);
 

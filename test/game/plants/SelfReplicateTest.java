@@ -24,7 +24,7 @@ class SelfReplicateTest extends PlantTestBase {
     void sproutSpreadsASeedlingOntoAdjacentSoil() {
         GameMap map = TestFarm.map(",,,", ",,,", ",,,");
         Location centre = map.at(1, 1);
-        centre.setGround(new StrawberrySprout());
+        centre.setGround(new StrawberrySprout(random, areaFactory));
 
         TestFarm.tick(centre, 5);
 
@@ -36,7 +36,7 @@ class SelfReplicateTest extends PlantTestBase {
     void spreadsOnlyOntoSoilNotDirt() {
         GameMap map = TestFarm.map("..,", "...", "...");
         Location centre = map.at(1, 1);
-        centre.setGround(new MelonSprout());
+        centre.setGround(new MelonSprout(random, areaFactory));
 
         TestFarm.tick(centre, 10);
 
@@ -48,7 +48,7 @@ class SelfReplicateTest extends PlantTestBase {
     void noAdjacentSoilMeansNothingHappens() {
         GameMap map = TestFarm.map("...", "...", "...");
         Location centre = map.at(1, 1);
-        centre.setGround(new StrawberrySprout());
+        centre.setGround(new StrawberrySprout(random, areaFactory));
 
         TestFarm.tick(centre, 5);
 
@@ -60,7 +60,7 @@ class SelfReplicateTest extends PlantTestBase {
     void growingTakesPriorityOverSpreadingOnTheSameTurn() {
         GameMap map = TestFarm.map(",,,", ",,,", ",,,");
         Location centre = map.at(1, 1);
-        centre.setGround(new StrawberrySprout());
+        centre.setGround(new StrawberrySprout(random, areaFactory));
         TestFarm.tick(centre, 5);
 
         TestFarm.tick(centre, 5);
@@ -73,7 +73,7 @@ class SelfReplicateTest extends PlantTestBase {
     void failedGrowthFallsThroughToSpreading() {
         GameMap map = TestFarm.map(",,,", ",,,", ",,,");
         Location centre = map.at(1, 1);
-        centre.setGround(new StrawberrySprout());
+        centre.setGround(new StrawberrySprout(random, areaFactory));
         random.setRollsSucceed(false);
 
         TestFarm.tick(centre, 10);
@@ -86,7 +86,7 @@ class SelfReplicateTest extends PlantTestBase {
     void melonCropSpreadsASproutEveryTwentyTurns() {
         GameMap map = TestFarm.map(",,,", ",,,", ",,,");
         Location centre = map.at(1, 1);
-        centre.setGround(new Melon());
+        centre.setGround(new Melon(random, areaFactory));
 
         TestFarm.tick(centre, 19);
         assertEquals(0, TestFarm.countGround(map, MelonSprout.class));
@@ -98,11 +98,11 @@ class SelfReplicateTest extends PlantTestBase {
     @Test
     void tomatoSpreadDependsOnItsChance() {
         GameMap lucky = TestFarm.map(",,,", ",,,", ",,,");
-        lucky.at(1, 1).setGround(new Tomato());
+        lucky.at(1, 1).setGround(new Tomato(random, areaFactory));
         TestFarm.tick(lucky.at(1, 1), 20);
 
         GameMap unlucky = TestFarm.map(",,,", ",,,", ",,,");
-        unlucky.at(1, 1).setGround(new Tomato());
+        unlucky.at(1, 1).setGround(new Tomato(random, areaFactory));
         random.setRollsSucceed(false);
         TestFarm.tick(unlucky.at(1, 1), 20);
 

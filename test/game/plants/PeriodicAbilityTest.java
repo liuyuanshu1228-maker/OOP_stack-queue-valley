@@ -1,6 +1,7 @@
 package game.plants;
 
 import edu.monash.fit2099.engine.positions.Location;
+import game.random.RandomUtils;
 import game.testsupport.TestFarm;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,8 +21,8 @@ class PeriodicAbilityTest extends PlantTestBase {
     private static class CountingAbility extends PeriodicAbility {
         private int performed = 0;
 
-        CountingAbility(int intervalTurns, int chancePercent) {
-            super(intervalTurns, chancePercent);
+        CountingAbility(int intervalTurns, int chancePercent, RandomUtils randomUtils) {
+            super(intervalTurns, chancePercent, randomUtils);
         }
 
         @Override
@@ -47,7 +48,7 @@ class PeriodicAbilityTest extends PlantTestBase {
     @ParameterizedTest
     @ValueSource(ints = {1, 5, 20})
     void performsOnlyOnMultiplesOfTheInterval(int interval) {
-        CountingAbility ability = new CountingAbility(interval, 100);
+        CountingAbility ability = new CountingAbility(interval, 100, random);
         Location location = plantAt(ability);
 
         TestFarm.tick(location, interval - 1);
@@ -62,7 +63,7 @@ class PeriodicAbilityTest extends PlantTestBase {
 
     @Test
     void failedChanceRollMeansNothingHappens() {
-        CountingAbility ability = new CountingAbility(5, 50);
+        CountingAbility ability = new CountingAbility(5, 50, random);
         Location location = plantAt(ability);
         random.setRollsSucceed(false);
 
@@ -74,7 +75,7 @@ class PeriodicAbilityTest extends PlantTestBase {
 
     @Test
     void zeroChanceNeverHappensEvenWhenRollsSucceed() {
-        CountingAbility ability = new CountingAbility(1, 0);
+        CountingAbility ability = new CountingAbility(1, 0, random);
         Location location = plantAt(ability);
 
         TestFarm.tick(location, 10);
@@ -85,24 +86,24 @@ class PeriodicAbilityTest extends PlantTestBase {
     @ParameterizedTest
     @ValueSource(ints = {0, -1, -20})
     void intervalThatIsNotPositiveIsRejected(int interval) {
-        assertThrows(IllegalArgumentException.class, () -> new CountingAbility(interval, 50));
+        assertThrows(IllegalArgumentException.class, () -> new CountingAbility(interval, 50, random));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {-1, 101, 1000})
     void chanceOutsideZeroToHundredIsRejected(int chance) {
-        assertThrows(IllegalArgumentException.class, () -> new CountingAbility(5, chance));
+        assertThrows(IllegalArgumentException.class, () -> new CountingAbility(5, chance, random));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {0, 100})
     void chanceAtEitherLimitIsAccepted(int chance) {
-        assertDoesNotThrow(() -> new CountingAbility(5, chance));
+        assertDoesNotThrow(() -> new CountingAbility(5, chance, random));
     }
 
     @Test
     void successfulAbilityIsReported() {
-        Location location = plantAt(new CountingAbility(3, 100));
+        Location location = plantAt(new CountingAbility(3, 100, random));
 
         TestFarm.tick(location, 3);
 
