@@ -4,7 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.enchantments.Enchantment;
 import game.positions.Breakable;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.positions.area.BreakableTile;
 import game.random.RandomUtils;
 
@@ -27,14 +27,24 @@ public class Pickaxe extends AbstractEnchantableTool implements BreakingTool {
     /** Chance, out of 100, that the chain-break effect spreads to an adjacent tile. */
     private static final int CHAIN_BREAK_CHANCE_PERCENT = 40;
 
+    /** The randomness used to roll the chain-break chance. */
+    private final RandomUtils randomUtils;
+
+    /** Builds the Area searched for a tile to chain the break to. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Pickaxe.
      *
      * @param offeredEnchantments the Enchantments this Pickaxe can be enchanted with
+     * @param randomUtils the randomness used to roll the chain-break chance
+     * @param areaFactory builds the Area searched for a tile to chain the break to
      */
-    public Pickaxe(List<Enchantment> offeredEnchantments) {
+    public Pickaxe(List<Enchantment> offeredEnchantments, RandomUtils randomUtils, AreaFactory areaFactory) {
         super("Pickaxe", 'x', offeredEnchantments);
         this.makePortable();
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -65,8 +75,8 @@ public class Pickaxe extends AbstractEnchantableTool implements BreakingTool {
         }
         List<Location> affectedTiles = new ArrayList<>();
         String chainMessage = "";
-        if (RandomUtils.rollPercent(CHAIN_BREAK_CHANCE_PERCENT)) {
-            Optional<Location> spot = Area.adjacentTo(location).filter(new BreakableTile()).randomTile();
+        if (randomUtils.rollPercent(CHAIN_BREAK_CHANCE_PERCENT)) {
+            Optional<Location> spot = areaFactory.adjacentTo(location).filter(new BreakableTile()).randomTile();
             if (spot.isPresent()) {
                 Breakable breakable = spot.get().getGroundAs(Breakable.class);
                 String breakReport = breakable.breakUp(actor, spot.get());

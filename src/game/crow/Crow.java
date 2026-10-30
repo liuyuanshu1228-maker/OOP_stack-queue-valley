@@ -11,6 +11,8 @@ import game.creaturestate.Composure;
 import game.creaturestate.CreatureState;
 import game.creaturestate.ItemCache;
 import game.creaturestate.StatefulCreature;
+import game.positions.area.AreaFactory;
+import game.random.RandomUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,9 +22,16 @@ import java.util.Set;
  * {@link Foraging}, {@link Mobbing}, and {@link Fleeing}.
  * <p>
  * It is displayed as 'b' (for bird), since 'v' is the Strawberry Sprout.
+ * <p>
+ * The crow's states must stay constructible with no arguments (a new
+ * instance is created on every transition), so they cannot hold their own
+ * {@link RandomUtils} or {@link AreaFactory}. Instead the crow carries both
+ * and exposes them through the {@link RandomnessSource} and
+ * {@link AreaFactorySource} capabilities, which its states query at the
+ * point of use.
  */
 public class Crow extends ConsciousActor
-        implements StatefulCreature, ItemCache, Composure, SensingRange {
+        implements StatefulCreature, ItemCache, Composure, SensingRange, AreaFactorySource, RandomnessSource {
 
     /** The crow's starting (and maximum) hit points. */
     private static final int STARTING_HP = 30;
@@ -44,13 +53,23 @@ public class Crow extends ConsciousActor
     /** Number of consecutive turns this crow has felt safe (no actors within sensing range). */
     private int safeTurns = 0;
 
+    /** The randomness this crow hands to its states when they need one. */
+    private final RandomUtils randomUtils;
+
+    /** The AreaFactory this crow hands to its states when they need one. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Crow.
      *
      * @param name the crow's name
+     * @param randomUtils the randomness this crow hands to its states when they need one
+     * @param areaFactory the AreaFactory this crow hands to its states when they need one
      */
-    public Crow(String name) {
+    public Crow(String name, RandomUtils randomUtils, AreaFactory areaFactory) {
         super(name, 'b', STARTING_HP);
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -124,6 +143,22 @@ public class Crow extends ConsciousActor
     @Override
     public int sensingRadius() {
         return SENSING_RADIUS;
+    }
+
+    /**
+     * @return the randomness this crow hands to its states when they need one
+     */
+    @Override
+    public RandomUtils randomUtils() {
+        return randomUtils;
+    }
+
+    /**
+     * @return the AreaFactory this crow hands to its states when they need one
+     */
+    @Override
+    public AreaFactory areaFactory() {
+        return areaFactory;
     }
 
     /**

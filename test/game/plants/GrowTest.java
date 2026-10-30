@@ -8,6 +8,7 @@ import game.crops.MelonSprout;
 import game.crops.Strawberry;
 import game.crops.StrawberrySeedling;
 import game.crops.StrawberrySprout;
+import game.testsupport.PlantFactory;
 import game.testsupport.TestFarm;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,7 +16,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -29,10 +29,10 @@ class GrowTest extends PlantTestBase {
 
     static List<Arguments> growthStages() {
         return List.of(
-                Arguments.of((Supplier<Plant>) StrawberrySeedling::new, 5, StrawberrySprout.class),
-                Arguments.of((Supplier<Plant>) StrawberrySprout::new, 10, Strawberry.class),
-                Arguments.of((Supplier<Plant>) CauliflowerSprout::new, 15, Cauliflower.class),
-                Arguments.of((Supplier<Plant>) MelonSprout::new, 15, Melon.class));
+                Arguments.of((PlantFactory) StrawberrySeedling::new, 5, StrawberrySprout.class),
+                Arguments.of((PlantFactory) StrawberrySprout::new, 10, Strawberry.class),
+                Arguments.of((PlantFactory) CauliflowerSprout::new, 15, Cauliflower.class),
+                Arguments.of((PlantFactory) MelonSprout::new, 15, Melon.class));
     }
 
     private Location plantOnDirt(Plant plant) {
@@ -43,8 +43,8 @@ class GrowTest extends PlantTestBase {
 
     @ParameterizedTest
     @MethodSource("growthStages")
-    void growsIntoTheNextStageAtTheRightAge(Supplier<Plant> stage, int turns, Class<?> nextStage) {
-        Plant young = stage.get();
+    void growsIntoTheNextStageAtTheRightAge(PlantFactory stage, int turns, Class<?> nextStage) {
+        Plant young = stage.create(random, areaFactory);
         Location location = plantOnDirt(young);
 
         TestFarm.tick(location, turns - 1);
@@ -57,8 +57,8 @@ class GrowTest extends PlantTestBase {
 
     @ParameterizedTest
     @MethodSource("growthStages")
-    void failedGrowthChanceKeepsTheSameStage(Supplier<Plant> stage, int turns, Class<?> nextStage) {
-        Plant young = stage.get();
+    void failedGrowthChanceKeepsTheSameStage(PlantFactory stage, int turns, Class<?> nextStage) {
+        Plant young = stage.create(random, areaFactory);
         Location location = plantOnDirt(young);
         random.setRollsSucceed(false);
 
@@ -69,7 +69,7 @@ class GrowTest extends PlantTestBase {
 
     @Test
     void growthMessageNamesThePlantAndItsCoordinates() {
-        Location location = plantOnDirt(new StrawberrySeedling());
+        Location location = plantOnDirt(new StrawberrySeedling(random, areaFactory));
 
         TestFarm.tick(location, 5);
 
@@ -81,7 +81,7 @@ class GrowTest extends PlantTestBase {
 
     @Test
     void seedlingBecomesAStrawberryAfterBothStages() {
-        Location location = plantOnDirt(new StrawberrySeedling());
+        Location location = plantOnDirt(new StrawberrySeedling(random, areaFactory));
 
         TestFarm.tick(location, 5 + 10);
 

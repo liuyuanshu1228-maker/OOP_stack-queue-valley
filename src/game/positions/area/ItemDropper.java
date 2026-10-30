@@ -26,17 +26,6 @@ public class ItemDropper {
     }
 
     /**
-     * Creates a dropper that places Items on the tiles adjacent to the given
-     * Location (but not on the Location itself).
-     *
-     * @param centre the Location whose adjacent tiles receive the Items
-     * @return a dropper for the tiles around the given Location
-     */
-    public static ItemDropper adjacentTo(Location centre) {
-        return new ItemDropper(Area.adjacentTo(centre));
-    }
-
-    /**
      * Places the given Item on a randomly chosen tile of the area.
      * Does nothing if the area has no tiles.
      *
@@ -49,6 +38,19 @@ public class ItemDropper {
             tile.get().addItem(item);
         }
         return tile;
+    }
+
+    /**
+     * Places a freshly created Item, from the given factory, on every tile
+     * of the area. A new Item is constructed for each tile, so no two tiles
+     * ever share the same Item instance.
+     *
+     * @param factory produces one new Item per tile
+     */
+    public void placeOnEveryTile(ItemFactory factory) {
+        for (Location tile : area.tiles()) {
+            tile.addItem(factory.create());
+        }
     }
 
     /**

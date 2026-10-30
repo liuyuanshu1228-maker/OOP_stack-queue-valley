@@ -9,6 +9,8 @@ import game.actions.MerchantContext;
 import game.actions.Purchasable;
 import game.actions.SellAction;
 import game.actions.Sellable;
+import game.behaviours.WanderBehaviour;
+import game.random.RandomUtils;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -31,10 +33,11 @@ public class Merchant extends WanderingActor {
      * products (Dependency Inversion), and different Merchants can carry different
      * catalogs without modifying this class (Open/Closed).
      *
+     * @param randomUtils the randomness used to build this Merchant's wandering behaviour
      * @param offerings the purchasable products offered by this Merchant
      */
-    public Merchant(Purchasable... offerings) {
-        super("Merchant", '$', MAX_HP);
+    public Merchant(RandomUtils randomUtils, Purchasable... offerings) {
+        super("Merchant", '$', MAX_HP, new WanderBehaviour(randomUtils));
         this.catalog = Arrays.copyOf(offerings, offerings.length);
     }
 

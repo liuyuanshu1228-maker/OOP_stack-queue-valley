@@ -4,6 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.positions.area.HoldsActor;
 
 import java.util.Optional;
@@ -14,8 +15,13 @@ import java.util.Optional;
  * what to do, so each state's transition logic stays a short, readable
  * expression instead of repeating the same checks.
  * <p>
- * One instance describes one crow at one Location; the states are shared
- * between crows, so they create a new one each time they need to sense.
+ * One instance describes one creature at one Location; the states are shared
+ * between crows, so they create a new one each time they need to sense. The
+ * creature passed in is always the one doing the sensing (unlike
+ * {@link CrowNavigation}, which can also navigate another actor), so this
+ * class queries the creature's own {@link SensingRange} and
+ * {@link AreaFactorySource} capabilities directly rather than having them
+ * passed in.
  */
 public class CrowSensing {
 
@@ -34,20 +40,32 @@ public class CrowSensing {
     /** How far, in tiles, the creature can sense around itself. */
     private final int sensingRadius;
 
+    /** Builds the Area of tiles within sensing range. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates the senses of a creature at a Location. The creature's own
      * sensing radius is asked for through its {@link SensingRange} capability,
      * rather than this class assuming the creature is a {@link Crow}, so these
-     * senses could later be reused by another kind of stateful creature.
+     * senses could later be reused by another kind of stateful creature; a
+     * creature without one is simply assumed to have no sensing range at all.
+     * The AreaFactory used to search for food and actors, however, has no
+     * such sensible default, so it is required through the creature's
+     * {@link AreaFactorySource} capability instead.
      *
      * @param creature the creature doing the sensing
      * @param here the Location the creature senses from
+     * @throws IllegalStateException if the creature has no AreaFactorySource capability
      */
     public CrowSensing(Actor creature, Location here) {
         this.creature = creature;
         this.here = here;
         Optional<SensingRange> range = creature.asCapability(SensingRange.class);
         this.sensingRadius = range.isPresent() ? range.get().sensingRadius() : DEFAULT_SENSING_RADIUS;
+        this.areaFactory = creature.asCapability(AreaFactorySource.class)
+                .orElseThrow(() -> new IllegalStateException(
+                        creature + " has no AreaFactorySource to sense its surroundings with"))
+                .areaFactory();
     }
 
     /**
@@ -143,6 +161,6 @@ public class CrowSensing {
      * @return the tiles within the crow's sensing range, not including its own
      */
     private Area withinRange() {
-        return Area.within(here, sensingRadius);
+        return areaFactory.within(here, sensingRadius);
     }
 }

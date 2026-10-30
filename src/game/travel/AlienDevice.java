@@ -6,7 +6,7 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.TravelMethod;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.random.RandomUtils;
 
 import java.util.Optional;
@@ -24,12 +24,24 @@ public class AlienDevice extends Item implements TravelMethod {
 
     private final DestinationList destinations = new DestinationList();
 
+    /** The randomness used to roll the malfunction chance. */
+    private final RandomUtils randomUtils;
+
+    /** Builds the Area of the whole map, searched for a random landing tile on a malfunction. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new AlienDevice.
+     *
+     * @param randomUtils the randomness used to roll the malfunction chance
+     * @param areaFactory builds the Area of the whole map, searched for a
+     *                    random landing tile on a malfunction
      */
-    public AlienDevice() {
+    public AlienDevice(RandomUtils randomUtils, AreaFactory areaFactory) {
         super("Alien device", 'a');
         this.makePortable();
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -66,8 +78,8 @@ public class AlienDevice extends Item implements TravelMethod {
      */
     @Override
     public Location chooseLanding(Actor actor, GameMap map, Location intended) {
-        if (RandomUtils.rollPercent(MALFUNCTION_CHANCE_PERCENT)) {
-            Optional<Location> landing = Area.wholeMap(map).randomEnterableTile(actor);
+        if (randomUtils.rollPercent(MALFUNCTION_CHANCE_PERCENT)) {
+            Optional<Location> landing = areaFactory.wholeMap(map).randomEnterableTile(actor);
             if (landing.isPresent()) {
                 return landing.get();
             }

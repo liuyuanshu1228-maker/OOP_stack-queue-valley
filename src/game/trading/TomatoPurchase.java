@@ -4,6 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.crops.Crop;
 import game.crops.Tomato;
+import game.positions.area.AreaFactory;
 import game.random.RandomUtils;
 
 /** Buying a Tomato crop: 500 coins, 50% chance the merchant plants it free. */
@@ -14,11 +15,24 @@ public class TomatoPurchase extends CropPurchase {
     /** Chance (out of 100) that the Merchant plants the crop without taking payment. */
     private static final int WAIVE_CHANCE_PERCENT = 50;
 
+    /** The randomness used to roll the payment-waiver chance and handed to the planted Tomato. */
+    private final RandomUtils randomUtils;
+
+    /** Builds Areas for the planted Tomato's own abilities. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new TomatoPurchase. Initializes the purchase option with a price of 500 coins.
+     *
+     * @param randomUtils the randomness used to roll the payment-waiver chance,
+     *                    and handed to the planted Tomato
+     * @param areaFactory builds the Area searched for a planting tile, and
+     *                    handed to the planted Tomato for its own abilities
      */
-    public TomatoPurchase() {
-        super("Tomato crop", PRICE);
+    public TomatoPurchase(RandomUtils randomUtils, AreaFactory areaFactory) {
+        super("Tomato crop", PRICE, areaFactory);
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -28,7 +42,7 @@ public class TomatoPurchase extends CropPurchase {
      */
     @Override
     protected boolean rollPaymentWaiver() {
-        return RandomUtils.rollPercent(WAIVE_CHANCE_PERCENT);
+        return randomUtils.rollPercent(WAIVE_CHANCE_PERCENT);
     }
 
     /**
@@ -38,7 +52,7 @@ public class TomatoPurchase extends CropPurchase {
      */
     @Override
     protected Crop createCrop() {
-        return new Tomato();
+        return new Tomato(randomUtils, areaFactory);
     }
 
     /**

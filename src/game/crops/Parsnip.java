@@ -5,6 +5,7 @@ import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import game.plants.Produce;
+import game.positions.area.AreaFactory;
 import game.positions.area.ItemDropper;
 import game.random.RandomUtils;
 import game.statistics.StatisticAdjuster;
@@ -39,11 +40,22 @@ public class Parsnip extends Crop implements Waterable {
     /** How many turns between parsnips dropped by the plant itself. */
     private static final int PRODUCE_INTERVAL = 15;
 
+    /** The randomness used by this crop's own chances. */
+    private final RandomUtils randomUtils;
+
+    /** Builds Areas for this crop's own production and bonus spawning. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Parsnip.
+     *
+     * @param randomUtils the randomness used to roll this crop's chances
+     * @param areaFactory builds Areas for this crop's production and bonus spawning
      */
-    public Parsnip() {
-        super('P', "Parsnip", new Produce(PRODUCE_INTERVAL));
+    public Parsnip(RandomUtils randomUtils, AreaFactory areaFactory) {
+        super('P', "Parsnip", new Produce(PRODUCE_INTERVAL, randomUtils, areaFactory));
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -80,8 +92,8 @@ public class Parsnip extends Crop implements Waterable {
         actor.getInventory().add(new ParsnipItem());
         removeCrop(location);
 
-        if (RandomUtils.rollPercent(BONUS_SPAWN_CHANCE_PERCENT)) {
-            ItemDropper.adjacentTo(location).dropOnRandomTile(new ParsnipItem());
+        if (randomUtils.rollPercent(BONUS_SPAWN_CHANCE_PERCENT)) {
+            new ItemDropper(areaFactory.adjacentTo(location)).dropOnRandomTile(new ParsnipItem());
         }
 
         return actor + " harvests the " + this + ".";
@@ -116,7 +128,7 @@ public class Parsnip extends Crop implements Waterable {
                         ActorStatistics.HEALTH, HEAL_AMOUNT).describe("points") + ".";
 
         int damageChancePercent = BASE_DAMAGE_CHANCE_PERCENT + getWateringCount();
-        if (RandomUtils.rollPercent(damageChancePercent)) {
+        if (randomUtils.rollPercent(damageChancePercent)) {
             removeCrop(location);
             message += " The " + this + " couldn't take it and was destroyed.";
         }

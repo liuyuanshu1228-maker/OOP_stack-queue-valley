@@ -5,9 +5,10 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.plants.Produce;
+import game.positions.Waterable;
+import game.positions.area.AreaFactory;
 import game.positions.area.ItemDropper;
 import game.random.RandomUtils;
-import game.positions.Waterable;
 
 /**
  * A strawberry crop. It can be watered, which scatters strawberries onto
@@ -41,11 +42,24 @@ public class Strawberry extends Crop implements Waterable {
     /** How many turns between strawberries dropped by the plant itself. */
     private static final int PRODUCE_INTERVAL = 5;
 
+    /** The randomness used by this crop's own chances and its StrawberryItems. */
+    private final RandomUtils randomUtils;
+
+    /** Builds Areas for this crop's own production, watering and its earlier stage. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Strawberry.
+     *
+     * @param randomUtils the randomness used to roll this crop's chances and
+     *                    the rotten chance of the StrawberryItems it creates
+     * @param areaFactory builds Areas for this crop's production, watering,
+     *                    and the stage it regresses to
      */
-    public Strawberry() {
-        super('S', "Strawberry", new Produce(PRODUCE_INTERVAL));
+    public Strawberry(RandomUtils randomUtils, AreaFactory areaFactory) {
+        super('S', "Strawberry", new Produce(PRODUCE_INTERVAL, randomUtils, areaFactory));
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -55,7 +69,7 @@ public class Strawberry extends Crop implements Waterable {
      */
     @Override
     protected Item produce() {
-        return new StrawberryItem();
+        return new StrawberryItem(randomUtils);
     }
 
     /**
@@ -65,7 +79,7 @@ public class Strawberry extends Crop implements Waterable {
      */
     @Override
     protected Ground previousStage() {
-        return new StrawberrySprout();
+        return new StrawberrySprout(randomUtils, areaFactory);
     }
 
     /**
@@ -90,14 +104,14 @@ public class Strawberry extends Crop implements Waterable {
     @Override
     public String harvest(Actor actor, Location location) {
         for (int i = 0; i < STRAWBERRIES_PER_HARVEST; i++) {
-            actor.getInventory().add(new StrawberryItem());
+            actor.getInventory().add(new StrawberryItem(randomUtils));
         }
 
         String message = actor + " harvests the " + this + " and gets "
                 + STRAWBERRIES_PER_HARVEST + " strawberries.";
 
         int destructionChancePercent = BASE_DESTRUCTION_CHANCE_PERCENT - getWateringCount();
-        if (RandomUtils.rollPercent(destructionChancePercent)) {
+        if (randomUtils.rollPercent(destructionChancePercent)) {
             removeCrop(location);
             message += " The " + this + " couldn't withstand the harvest and was destroyed.";
         }
@@ -126,8 +140,9 @@ public class Strawberry extends Crop implements Waterable {
     @Override
     public String water(Actor actor, Location location) {
         recordWatering();
+        ItemDropper dropper = new ItemDropper(areaFactory.adjacentTo(location));
         for (int i = 0; i < STRAWBERRIES_PER_WATERING; i++) {
-            ItemDropper.adjacentTo(location).dropOnRandomTile(new StrawberryItem());
+            dropper.dropOnRandomTile(new StrawberryItem(randomUtils));
         }
 
         return actor + " waters the " + this + ". Strawberries appear on the nearby tiles.";

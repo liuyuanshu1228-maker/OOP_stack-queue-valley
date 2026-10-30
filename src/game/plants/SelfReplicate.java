@@ -2,8 +2,9 @@ package game.plants;
 
 import edu.monash.fit2099.engine.positions.Location;
 import game.positions.Plantable;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.positions.area.PlantableTile;
+import game.random.RandomUtils;
 
 import java.util.Optional;
 
@@ -19,13 +20,19 @@ import java.util.Optional;
  */
 public class SelfReplicate extends PeriodicAbility {
 
+    /** Builds the Area of tiles this ability searches for a spot on. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a SelfReplicate ability that always happens on its turn.
      *
      * @param intervalTurns how many turns of age between attempts to spread
+     * @param randomUtils the randomness used to roll the chance
+     * @param areaFactory builds the Area of tiles searched for a spot to spread onto
      */
-    public SelfReplicate(int intervalTurns) {
-        super(intervalTurns);
+    public SelfReplicate(int intervalTurns, RandomUtils randomUtils, AreaFactory areaFactory) {
+        super(intervalTurns, randomUtils);
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -33,9 +40,12 @@ public class SelfReplicate extends PeriodicAbility {
      *
      * @param intervalTurns how many turns of age between attempts to spread
      * @param chancePercent the chance, as a percentage, of spreading on its turn
+     * @param randomUtils the randomness used to roll the chance
+     * @param areaFactory builds the Area of tiles searched for a spot to spread onto
      */
-    public SelfReplicate(int intervalTurns, int chancePercent) {
-        super(intervalTurns, chancePercent);
+    public SelfReplicate(int intervalTurns, int chancePercent, RandomUtils randomUtils, AreaFactory areaFactory) {
+        super(intervalTurns, chancePercent, randomUtils);
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -48,7 +58,7 @@ public class SelfReplicate extends PeriodicAbility {
      */
     @Override
     protected String perform(Plant plant, Location location) {
-        Optional<Location> target = Area.adjacentTo(location).filter(new PlantableTile()).randomTile();
+        Optional<Location> target = areaFactory.adjacentTo(location).filter(new PlantableTile()).randomTile();
         if (target.isEmpty()) {
             return "";
         }

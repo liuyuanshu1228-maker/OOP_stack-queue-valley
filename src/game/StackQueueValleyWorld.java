@@ -12,6 +12,15 @@ import game.actors.Chicken;
 import game.actors.Cow;
 import game.actors.Farmer;
 import game.actors.Merchant;
+import game.crops.CauliflowerGroundSupplier;
+import game.crops.CauliflowerSproutGroundSupplier;
+import game.crops.MelonGroundSupplier;
+import game.crops.MelonSproutGroundSupplier;
+import game.crops.ParsnipGroundSupplier;
+import game.crops.StrawberryGroundSupplier;
+import game.crops.StrawberrySeedlingGroundSupplier;
+import game.crops.StrawberrySproutGroundSupplier;
+import game.crops.TomatoGroundSupplier;
 import game.crow.Crow;
 import game.travel.AlienDevice;
 import game.enchantments.BlazeEnchantment;
@@ -21,28 +30,19 @@ import game.enchantments.ShatterEnchantment;
 import game.items.mine.Geode;
 import game.items.tools.Hoe;
 import game.items.tools.Pickaxe;
-import game.positions.area.Area;
 import game.items.tools.WateringCan;
-import game.crops.Cauliflower;
+import game.positions.area.AreaFactory;
 import game.positions.mine.CopperNode;
 import game.positions.farm.Dirt;
 import game.positions.farm.Soil;
-import game.crops.CauliflowerSprout;
-import game.crops.MelonSprout;
 import game.plants.Plant;
-import game.crops.StrawberrySeedling;
-import game.crops.StrawberrySprout;
 import game.positions.Plantable;
 import game.positions.facilities.DryingRack;
 import game.travel.Ladder;
-import game.crops.Melon;
-import game.crops.Parsnip;
 import game.positions.facilities.PreservesJar;
 import game.positions.mine.Rock;
 import game.random.RandomUtils;
-import game.crops.Strawberry;
 import game.travel.TeleportationCircle;
-import game.crops.Tomato;
 import game.pestcontrol.LadybugJar;
 import game.pestcontrol.PestTrap;
 import game.pestcontrol.SaltBarrier;
@@ -53,17 +53,21 @@ import game.travel.TravelGround;
 import game.trading.ParsnipPurchase;
 import game.trading.SwordPurchase;
 import game.trading.TomatoPurchase;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * Represents the game world of StackQueue Valley, responsible for initializing
  * the Inherited Farm and The Mines maps, linking travel grounds, and spawning
  * grounds, items, and actors (including the Farmer, Animals, and Merchant).
- *
+ * <p>
+ * This class is the game's composition root: the one place that constructs
+ * the shared {@link RandomUtils} and {@link AreaFactory} with {@code new} and
+ * hands them down to every Ground, Item and Actor that needs one. Nothing
+ * downstream ever reaches for its own global instance.
  */
 public class StackQueueValleyWorld extends World {
 
@@ -135,18 +139,21 @@ public class StackQueueValleyWorld extends World {
      * @throws Exception if an error occurs while placing actors or initializing the world
      */
     public void initialise() throws Exception {
+        RandomUtils randomUtils = new RandomUtils();
+        AreaFactory areaFactory = new AreaFactory(randomUtils);
+
         DefaultGroundCreator groundCreator = new DefaultGroundCreator();
         groundCreator.registerGround('.', Dirt::new);
         groundCreator.registerGround(',', Soil::new);
-        groundCreator.registerGround('\'',StrawberrySeedling::new);
-        groundCreator.registerGround('v', StrawberrySprout::new);
-        groundCreator.registerGround('y', CauliflowerSprout::new);
-        groundCreator.registerGround('t', MelonSprout::new);
-        groundCreator.registerGround('S', Strawberry::new);
-        groundCreator.registerGround('K', Cauliflower::new);
-        groundCreator.registerGround('M', Melon::new);
-        groundCreator.registerGround('T', Tomato::new);
-        groundCreator.registerGround('P', Parsnip::new);
+        groundCreator.registerGround('\'', new StrawberrySeedlingGroundSupplier(randomUtils, areaFactory));
+        groundCreator.registerGround('v', new StrawberrySproutGroundSupplier(randomUtils, areaFactory));
+        groundCreator.registerGround('y', new CauliflowerSproutGroundSupplier(randomUtils, areaFactory));
+        groundCreator.registerGround('t', new MelonSproutGroundSupplier(randomUtils, areaFactory));
+        groundCreator.registerGround('S', new StrawberryGroundSupplier(randomUtils, areaFactory));
+        groundCreator.registerGround('K', new CauliflowerGroundSupplier(randomUtils, areaFactory));
+        groundCreator.registerGround('M', new MelonGroundSupplier(randomUtils, areaFactory));
+        groundCreator.registerGround('T', new TomatoGroundSupplier(randomUtils, areaFactory));
+        groundCreator.registerGround('P', new ParsnipGroundSupplier(randomUtils, areaFactory));
 
         // One of every plant, each with Soil around it to spread onto. The
         // Cauliflower is kept away from the ladders and circles, as watering
@@ -172,47 +179,104 @@ public class StackQueueValleyWorld extends World {
         this.addPlayer(farmer, farmerStart);
         List<Enchantment> toolEnchantments =
                 List.of(new BlazeEnchantment(), new BountyEnchantment(), new ShatterEnchantment());
-        farmer.getInventory().add(new Hoe(toolEnchantments));
-        farmer.getInventory().add(new WateringCan(toolEnchantments));
-        farmer.getInventory().add(new Pickaxe(toolEnchantments));
-        farmer.getInventory().add(new PestTrap());
-        farmer.getInventory().add(new LadybugJar());
-        farmer.getInventory().add(new SaltBarrier());
+        farmer.getInventory().add(new Hoe(toolEnchantments, areaFactory));
+        farmer.getInventory().add(new WateringCan(toolEnchantments, areaFactory));
+        farmer.getInventory().add(new Pickaxe(toolEnchantments, randomUtils, areaFactory));
+        farmer.getInventory().add(new PestTrap(areaFactory));
+        farmer.getInventory().add(new LadybugJar(randomUtils));
+        farmer.getInventory().add(new SaltBarrier(areaFactory));
 
         Set<Location> occupiedLocations = new HashSet<>();
         occupiedLocations.add(farmerStart);
-        reservePlantsAndSoil(inheritedFarmMap, occupiedLocations);
+        reservePlantsAndSoil(inheritedFarmMap, occupiedLocations, areaFactory);
         Set<Location> minesOccupiedLocations = new HashSet<>();
 
         linkMaps(inheritedFarmMap, minesMap, occupiedLocations, minesOccupiedLocations,
-                Ladder::new, LADDER_LINKS);
+                List.of(new Ladder(randomUtils), new Ladder(randomUtils)),
+                List.of(new Ladder(randomUtils), new Ladder(randomUtils)),
+                LADDER_LINKS, areaFactory);
         linkMaps(inheritedFarmMap, minesMap, occupiedLocations, minesOccupiedLocations,
-                TeleportationCircle::new, CIRCLE_LINKS);
+                List.of(new TeleportationCircle(areaFactory), new TeleportationCircle(areaFactory)),
+                List.of(new TeleportationCircle(areaFactory), new TeleportationCircle(areaFactory)),
+                CIRCLE_LINKS, areaFactory);
 
-        scatterGround(inheritedFarmMap, occupiedLocations, 1, DryingRack::new);
-        scatterGround(inheritedFarmMap, occupiedLocations, 1, PreservesJar::new);
+        scatterGround(inheritedFarmMap, occupiedLocations, List.of(new DryingRack()), randomUtils);
+        scatterGround(inheritedFarmMap, occupiedLocations, List.of(new PreservesJar()), randomUtils);
 
-        placeActor(inheritedFarmMap, occupiedLocations, new Chicken("Chicken"));
-        placeActor(inheritedFarmMap, occupiedLocations, new Cow("Cow"));
+        placeActor(inheritedFarmMap, occupiedLocations, new Chicken("Chicken", randomUtils, areaFactory), randomUtils);
+        placeActor(inheritedFarmMap, occupiedLocations, new Cow("Cow", randomUtils, areaFactory), randomUtils);
         placeActor(inheritedFarmMap, occupiedLocations,
-                new Merchant(new ParsnipPurchase(), new TomatoPurchase(), new SwordPurchase()));
-        placeActor(inheritedFarmMap, occupiedLocations, new Crow("Crow"));
-        placeActor(inheritedFarmMap, occupiedLocations, new SlimeSnail());
-        placeActor(inheritedFarmMap, occupiedLocations, new LocustSwarm());
-        placeActor(inheritedFarmMap, occupiedLocations, new BurrowingMole());
+                new Merchant(randomUtils,
+                        new ParsnipPurchase(randomUtils, areaFactory),
+                        new TomatoPurchase(randomUtils, areaFactory),
+                        new SwordPurchase(randomUtils)),
+                randomUtils);
+        placeActor(inheritedFarmMap, occupiedLocations, new Crow("Crow", randomUtils, areaFactory), randomUtils);
+        placeActor(inheritedFarmMap, occupiedLocations, new SlimeSnail(randomUtils, areaFactory), randomUtils);
+        placeActor(inheritedFarmMap, occupiedLocations, new LocustSwarm(randomUtils, areaFactory), randomUtils);
+        placeActor(inheritedFarmMap, occupiedLocations, new BurrowingMole(randomUtils, areaFactory), randomUtils);
 
         Location alienDeviceFarmDestination =
                 locate(inheritedFarmMap, ALIEN_DEVICE_DESTINATIONS.farm());
         Location alienDeviceMinesDestination = locate(minesMap, ALIEN_DEVICE_DESTINATIONS.mines());
-        AlienDevice alienDevice = new AlienDevice();
+        AlienDevice alienDevice = new AlienDevice(randomUtils, areaFactory);
         alienDevice.addDestination(TO_FARM, alienDeviceFarmDestination);
         alienDevice.addDestination(TO_MINES, alienDeviceMinesDestination);
         minesOccupiedLocations.add(alienDeviceMinesDestination);
-        scatterItems(inheritedFarmMap, occupiedLocations, 1, () -> alienDevice);
+        scatterItems(inheritedFarmMap, occupiedLocations, List.of(alienDevice), randomUtils);
 
-        scatterGround(minesMap, minesOccupiedLocations, ROCK_COUNT, Rock::new);
-        scatterGround(minesMap, minesOccupiedLocations, COPPER_NODE_COUNT, CopperNode::new);
-        scatterItems(minesMap, minesOccupiedLocations, GEODE_COUNT, Geode::new);
+        scatterGround(minesMap, minesOccupiedLocations, buildRocks(randomUtils, areaFactory, ROCK_COUNT), randomUtils);
+        scatterGround(minesMap, minesOccupiedLocations, buildCopperNodes(areaFactory, COPPER_NODE_COUNT), randomUtils);
+        scatterItems(minesMap, minesOccupiedLocations, buildGeodes(randomUtils, areaFactory, GEODE_COUNT), randomUtils);
+    }
+
+    /**
+     * Builds a list of brand-new Rocks, each wired with the given dependencies.
+     * A fresh instance is built for every tile, exactly as a fresh instance
+     * was built for every tile when this scattered a Supplier.
+     *
+     * @param randomUtils the randomness handed to every Rock built
+     * @param areaFactory the AreaFactory handed to every Rock built
+     * @param count how many Rocks to build
+     * @return a list of {@code count} distinct new Rocks
+     */
+    private List<Ground> buildRocks(RandomUtils randomUtils, AreaFactory areaFactory, int count) {
+        List<Ground> rocks = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            rocks.add(new Rock(randomUtils, areaFactory));
+        }
+        return rocks;
+    }
+
+    /**
+     * Builds a list of brand-new CopperNodes, each wired with the given AreaFactory.
+     *
+     * @param areaFactory the AreaFactory handed to every CopperNode built
+     * @param count how many CopperNodes to build
+     * @return a list of {@code count} distinct new CopperNodes
+     */
+    private List<Ground> buildCopperNodes(AreaFactory areaFactory, int count) {
+        List<Ground> copperNodes = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            copperNodes.add(new CopperNode(areaFactory));
+        }
+        return copperNodes;
+    }
+
+    /**
+     * Builds a list of brand-new Geodes, each wired with the given dependencies.
+     *
+     * @param randomUtils the randomness handed to every Geode built
+     * @param areaFactory the AreaFactory handed to every Geode built
+     * @param count how many Geodes to build
+     * @return a list of {@code count} distinct new Geodes
+     */
+    private List<Item> buildGeodes(RandomUtils randomUtils, AreaFactory areaFactory, int count) {
+        List<Item> geodes = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            geodes.add(new Geode(randomUtils, areaFactory));
+        }
+        return geodes;
     }
 
     /**
@@ -230,23 +294,27 @@ public class StackQueueValleyWorld extends World {
      *                              the newly used ones
      * @param minesOccupiedLocations mines locations that must not be used; updated with
      *                               the newly used ones
-     * @param groundFactory a supplier that creates a new instance of the travel ground to place
+     * @param farmSides a brand-new travel ground for the farm side of each link, in order
+     * @param minesSides a brand-new travel ground for the mines side of each link, in order
      * @param links the positions of each pair
+     * @param areaFactory builds the Area reserved around each placed ground
      */
     private void linkMaps(GameMap farmMap, GameMap minesMap, Set<Location> farmOccupiedLocations,
                           Set<Location> minesOccupiedLocations,
-                          Supplier<? extends TravelGround> groundFactory, List<Link> links) {
-        for (Link link : links) {
+                          List<TravelGround> farmSides, List<TravelGround> minesSides,
+                          List<Link> links, AreaFactory areaFactory) {
+        for (int i = 0; i < links.size(); i++) {
+            Link link = links.get(i);
             Location farmLocation = locate(farmMap, link.farm());
             Location minesLocation = locate(minesMap, link.mines());
-            TravelGround farmSide = groundFactory.get();
-            TravelGround minesSide = groundFactory.get();
+            TravelGround farmSide = farmSides.get(i);
+            TravelGround minesSide = minesSides.get(i);
             farmLocation.setGround(farmSide);
             minesLocation.setGround(minesSide);
             farmSide.addDestination(TO_MINES, minesLocation);
             minesSide.addDestination(TO_FARM, farmLocation);
-            reserveWithNeighbours(farmOccupiedLocations, farmLocation);
-            reserveWithNeighbours(minesOccupiedLocations, minesLocation);
+            reserveWithNeighbours(farmOccupiedLocations, farmLocation, areaFactory);
+            reserveWithNeighbours(minesOccupiedLocations, minesLocation, areaFactory);
         }
     }
 
@@ -257,9 +325,10 @@ public class StackQueueValleyWorld extends World {
      *
      * @param map the map whose plants and Soil to reserve
      * @param occupiedLocations the set of used locations to update
+     * @param areaFactory builds the Area of the whole map
      */
-    private void reservePlantsAndSoil(GameMap map, Set<Location> occupiedLocations) {
-        for (Location location : Area.wholeMap(map).tiles()) {
+    private void reservePlantsAndSoil(GameMap map, Set<Location> occupiedLocations, AreaFactory areaFactory) {
+        for (Location location : areaFactory.wholeMap(map).tiles()) {
             if (location.getGroundAs(Plant.class) != null
                     || location.getGroundAs(Plantable.class) != null) {
                 occupiedLocations.add(location);
@@ -272,44 +341,45 @@ public class StackQueueValleyWorld extends World {
      *
      * @param occupiedLocations the set of used locations to update
      * @param location the location to reserve together with its neighbours
+     * @param areaFactory builds the Area of the location and its neighbours
      */
-    private void reserveWithNeighbours(Set<Location> occupiedLocations, Location location) {
-        occupiedLocations.addAll(Area.centredOn(location).tiles());
+    private void reserveWithNeighbours(Set<Location> occupiedLocations, Location location, AreaFactory areaFactory) {
+        occupiedLocations.addAll(areaFactory.centredOn(location).tiles());
     }
 
     /**
-     * Places a number of Grounds on random, distinct tiles of the given map,
-     * avoiding any location already recorded in {@code occupiedLocations}.
+     * Places each of the given Grounds on a random, distinct tile of the given
+     * map, avoiding any location already recorded in {@code occupiedLocations}.
      * Every newly used location is added to {@code occupiedLocations}, so
      * repeated calls for different Grounds (or Actors, via {@link #placeActor})
      * never overlap.
      *
      * @param map the map to place Grounds on
      * @param occupiedLocations locations that must not be used; updated with the newly used ones
-     * @param count how many Grounds to place
-     * @param groundFactory a supplier that creates a new instance of the Ground to place
+     * @param grounds the brand-new Ground instances to place, one tile each
+     * @param randomUtils the randomness used to pick each tile
      */
-    private void scatterGround(GameMap map, Set<Location> occupiedLocations, int count,
-                               Supplier<? extends Ground> groundFactory) {
-        for (int placed = 0; placed < count; placed++) {
-            claimRandomFreeLocation(map, occupiedLocations).setGround(groundFactory.get());
+    private void scatterGround(GameMap map, Set<Location> occupiedLocations, List<Ground> grounds,
+                               RandomUtils randomUtils) {
+        for (Ground ground : grounds) {
+            claimRandomFreeLocation(map, occupiedLocations, randomUtils).setGround(ground);
         }
     }
 
     /**
-     * Places a number of Items on random, distinct tiles of the given map,
-     * avoiding any location already recorded in {@code occupiedLocations}.
+     * Places each of the given Items on a random, distinct tile of the given
+     * map, avoiding any location already recorded in {@code occupiedLocations}.
      * Every newly used location is added to {@code occupiedLocations}.
      *
      * @param map the map to place Items on
      * @param occupiedLocations locations that must not be used; updated with the newly used ones
-     * @param count how many Items to place
-     * @param itemFactory a supplier that creates a new instance of the Item to place
+     * @param items the Item instances to place, one tile each
+     * @param randomUtils the randomness used to pick each tile
      */
-    private void scatterItems(GameMap map, Set<Location> occupiedLocations, int count,
-                              Supplier<? extends Item> itemFactory) {
-        for (int placed = 0; placed < count; placed++) {
-            claimRandomFreeLocation(map, occupiedLocations).addItem(itemFactory.get());
+    private void scatterItems(GameMap map, Set<Location> occupiedLocations, List<Item> items,
+                              RandomUtils randomUtils) {
+        for (Item item : items) {
+            claimRandomFreeLocation(map, occupiedLocations, randomUtils).addItem(item);
         }
     }
 
@@ -320,10 +390,11 @@ public class StackQueueValleyWorld extends World {
      * @param map the map to place the Actor on
      * @param occupiedLocations locations that must not be used; updated with the newly used one
      * @param actor the Actor to place
+     * @param randomUtils the randomness used to pick the tile
      */
-    private void placeActor(GameMap map, Set<Location> occupiedLocations, Actor actor)
+    private void placeActor(GameMap map, Set<Location> occupiedLocations, Actor actor, RandomUtils randomUtils)
             throws Exception {
-        claimRandomFreeLocation(map, occupiedLocations).addActor(actor);
+        claimRandomFreeLocation(map, occupiedLocations, randomUtils).addActor(actor);
     }
 
     /**
@@ -332,12 +403,13 @@ public class StackQueueValleyWorld extends World {
      *
      * @param map the map to pick a location on
      * @param occupiedLocations locations that must not be used; updated with the chosen one
+     * @param randomUtils the randomness used to pick the location
      * @return the chosen location
      */
-    private Location claimRandomFreeLocation(GameMap map, Set<Location> occupiedLocations) {
+    private Location claimRandomFreeLocation(GameMap map, Set<Location> occupiedLocations, RandomUtils randomUtils) {
         Location location;
         do {
-            location = randomLocation(map);
+            location = randomLocation(map, randomUtils);
         } while (occupiedLocations.contains(location));
         occupiedLocations.add(location);
         return location;
@@ -345,11 +417,12 @@ public class StackQueueValleyWorld extends World {
 
     /**
      * @param map the map to pick a location on
+     * @param randomUtils the randomness used to pick the location
      * @return a uniformly random location on the map
      */
-    private Location randomLocation(GameMap map) {
-        int x = RandomUtils.randomInt(map.getXRange().max() + 1);
-        int y = RandomUtils.randomInt(map.getYRange().max() + 1);
+    private Location randomLocation(GameMap map, RandomUtils randomUtils) {
+        int x = randomUtils.randomInt(map.getXRange().max() + 1);
+        int y = randomUtils.randomInt(map.getYRange().max() + 1);
         return map.at(x, y);
     }
 

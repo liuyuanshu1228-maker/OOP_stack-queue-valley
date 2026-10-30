@@ -8,7 +8,7 @@ import game.crops.Unplanted;
 import game.pests.PestPresent;
 import game.positions.Plantable;
 import game.positions.Tillable;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +31,17 @@ public class SaltBarrier extends DeterrentItem {
     /** Finds the pests on the salted tiles. */
     private final PestPresent pestFinder = new PestPresent();
 
+    /** Builds the Area of tiles around the user that get salted. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a bag of salt.
+     *
+     * @param areaFactory builds the Area of tiles around the user that get salted
      */
-    public SaltBarrier() {
+    public SaltBarrier(AreaFactory areaFactory) {
         super(NAME, DISPLAY_CHAR);
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -49,7 +55,7 @@ public class SaltBarrier extends DeterrentItem {
     @Override
     public String deterAround(Location here, GameMap map) {
         List<Location> salted = new ArrayList<>();
-        for (Location tile : Area.adjacentTo(here).filter(new Unplanted()).tiles()) {
+        for (Location tile : areaFactory.adjacentTo(here).filter(new Unplanted()).tiles()) {
             if (tile.getGroundAs(Plantable.class) != null || tile.getGroundAs(Tillable.class) != null) {
                 tile.setGround(new SaltGround(tile.getGround()));
                 salted.add(tile);

@@ -3,7 +3,7 @@ package game.pests;
 import edu.monash.fit2099.engine.GameEngineException;
 import edu.monash.fit2099.engine.positions.Location;
 import game.plants.Regressible;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.random.RandomUtils;
 
 import java.util.ArrayList;
@@ -45,11 +45,22 @@ public class LocustSwarm extends Pest {
     /** How many more meals this swarm can eat before it flies away. */
     private int mealsLeft;
 
+    /** The randomness used to roll the split chance, and handed to a split-off swarm. */
+    private final RandomUtils randomUtils;
+
+    /** Builds the Areas used to find plants and a landing tile, and handed to a split-off swarm. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a full-sized locust swarm.
+     *
+     * @param randomUtils the randomness used to roll the split chance, and
+     *                    handed to a split-off swarm
+     * @param areaFactory builds the Areas used to find plants and a landing
+     *                    tile, and handed to a split-off swarm
      */
-    public LocustSwarm() {
-        this(STARTING_MEALS);
+    public LocustSwarm(RandomUtils randomUtils, AreaFactory areaFactory) {
+        this(STARTING_MEALS, randomUtils, areaFactory);
     }
 
     /**
@@ -57,14 +68,20 @@ public class LocustSwarm extends Pest {
      * when a swarm splits.
      *
      * @param meals how many meals the swarm can eat
+     * @param randomUtils the randomness used to roll the split chance, and
+     *                    handed to a split-off swarm
+     * @param areaFactory builds the Areas used to find plants and a landing
+     *                    tile, and handed to a split-off swarm
      * @throws IllegalArgumentException if meals is less than 1
      */
-    private LocustSwarm(int meals) {
-        super(NAME, DISPLAY_CHAR, HIT_POINTS, JUMP_OFFSETS);
+    private LocustSwarm(int meals, RandomUtils randomUtils, AreaFactory areaFactory) {
+        super(NAME, DISPLAY_CHAR, HIT_POINTS, JUMP_OFFSETS, randomUtils, areaFactory);
         if (meals < 1) {
             throw new IllegalArgumentException("A swarm needs at least one meal, got " + meals);
         }
         this.mealsLeft = meals;
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -111,11 +128,11 @@ public class LocustSwarm extends Pest {
      * @return what happened, or an empty string if the swarm did not split
      */
     private String splitAt(Location here) {
-        if (mealsLeft < MEALS_NEEDED_TO_SPLIT || !RandomUtils.rollPercent(SPLIT_CHANCE_PERCENT)) {
+        if (mealsLeft < MEALS_NEEDED_TO_SPLIT || !randomUtils.rollPercent(SPLIT_CHANCE_PERCENT)) {
             return "";
         }
-        LocustSwarm offshoot = new LocustSwarm(mealsLeft / 2);
-        Optional<Location> landing = Area.adjacentTo(here).randomEnterableTile(offshoot);
+        LocustSwarm offshoot = new LocustSwarm(mealsLeft / 2, randomUtils, areaFactory);
+        Optional<Location> landing = areaFactory.adjacentTo(here).randomEnterableTile(offshoot);
         if (landing.isEmpty()) {
             return "";
         }
@@ -134,7 +151,7 @@ public class LocustSwarm extends Pest {
      */
     private List<Location> plantTilesAround(Location here) {
         List<Location> plantTiles = new ArrayList<>();
-        for (Location tile : Area.centredOn(here).tiles()) {
+        for (Location tile : areaFactory.centredOn(here).tiles()) {
             if (tile.getGroundAs(Regressible.class) != null) {
                 plantTiles.add(tile);
             }

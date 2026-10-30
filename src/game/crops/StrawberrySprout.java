@@ -4,6 +4,8 @@ import edu.monash.fit2099.engine.positions.Ground;
 import game.plants.Grow;
 import game.plants.Plant;
 import game.plants.SelfReplicate;
+import game.positions.area.AreaFactory;
+import game.random.RandomUtils;
 
 /**
  * The second growth stage of a strawberry plant, between
@@ -32,13 +34,26 @@ public class StrawberrySprout extends Plant {
     /** How many turns between plantings of a seedling nearby. */
     private static final int SPREAD_INTERVAL = 5;
 
+    /** The randomness this plant hands to its neighbouring stages. */
+    private final RandomUtils randomUtils;
+
+    /** Builds Areas for this plant's own spreading, and for its neighbouring stages. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Strawberry Sprout with an age of 0.
+     *
+     * @param randomUtils the randomness used to roll this plant's chances,
+     *                    and handed to its neighbouring stages
+     * @param areaFactory builds Areas for this plant's spreading, and for its
+     *                    neighbouring stages
      */
-    public StrawberrySprout() {
+    public StrawberrySprout(RandomUtils randomUtils, AreaFactory areaFactory) {
         super('v', "Strawberry Sprout",
-                new Grow(GROW_INTERVAL, GROW_CHANCE_PERCENT),
-                new SelfReplicate(SPREAD_INTERVAL));
+                new Grow(GROW_INTERVAL, GROW_CHANCE_PERCENT, randomUtils),
+                new SelfReplicate(SPREAD_INTERVAL, randomUtils, areaFactory));
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -48,7 +63,7 @@ public class StrawberrySprout extends Plant {
      */
     @Override
     protected Plant nextStage() {
-        return new Strawberry();
+        return new Strawberry(randomUtils, areaFactory);
     }
 
     /**
@@ -58,7 +73,7 @@ public class StrawberrySprout extends Plant {
      */
     @Override
     protected Plant offspring() {
-        return new StrawberrySeedling();
+        return new StrawberrySeedling(randomUtils, areaFactory);
     }
 
     /**
@@ -68,6 +83,6 @@ public class StrawberrySprout extends Plant {
      */
     @Override
     protected Ground previousStage() {
-        return new StrawberrySeedling();
+        return new StrawberrySeedling(randomUtils, areaFactory);
     }
 }

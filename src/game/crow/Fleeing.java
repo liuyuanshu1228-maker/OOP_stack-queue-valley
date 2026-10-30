@@ -7,7 +7,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.creaturestate.Composure;
 import game.creaturestate.BaseCreatureState;
 import game.creaturestate.CreatureState;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.positions.area.ItemDropper;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class Fleeing extends BaseCreatureState {
                     + safeTurns + "/" + CALM_DOWN_TURNS + " turns before it calms down).";
         }
 
-        Optional<Location> escape = new CrowNavigation(creature, here).stepAway(threat.get());
+        Optional<Location> escape = new CrowNavigation(creature, here, areaFactoryOf(creature)).stepAway(threat.get());
         if (escape.isEmpty()) {
             return creature + " is cornered by " + threat.get().getActor() + " and flaps in place.";
         }
@@ -105,9 +105,10 @@ public class Fleeing extends BaseCreatureState {
             composure.get().resetComposure();
         }
         Location here = map.locationOf(creature);
+        AreaFactory areaFactory = areaFactoryOf(creature);
 
-        List<Item> dropped = ItemDropper.adjacentTo(here).dropAllCarriedBy(creature);
-        List<String> startled = startleNeighbours(here, map);
+        List<Item> dropped = new ItemDropper(areaFactory.adjacentTo(here)).dropAllCarriedBy(creature);
+        List<String> startled = startleNeighbours(here, map, areaFactory);
 
         String droppedText = dropped.isEmpty()
                 ? "it carries nothing to drop"
@@ -143,26 +144,40 @@ public class Fleeing extends BaseCreatureState {
 
     /**
      * Pushes every actor adjacent to here one step further away from it, if
-     * there is an enterable tile for them to step back onto.
+     * there is an enterable tile for them to step back onto. The AreaFactory
+     * is the panicking crow's own: the neighbour being pushed is not
+     * necessarily a crow, so {@link CrowNavigation} cannot obtain one from it.
      *
      * @param here the Location the actors are pushed away from
      * @param map the map the actors are on
+     * @param areaFactory the panicking crow's own AreaFactory
      * @return where each actor was pushed, e.g. "Farmer Bob (100/100) to (3, 2) on Inherited Farm"
      */
-    private List<String> startleNeighbours(Location here, GameMap map) {
+    private List<String> startleNeighbours(Location here, GameMap map, AreaFactory areaFactory) {
         List<String> startled = new ArrayList<>();
-        for (Location neighbour : Area.adjacentTo(here).tiles()) {
+        for (Location neighbour : areaFactory.adjacentTo(here).tiles()) {
             if (!neighbour.containsAnActor()) {
                 continue;
             }
             Actor actor = neighbour.getActor();
-            Optional<Location> backStep = new CrowNavigation(actor, neighbour).stepAway(here);
+            Optional<Location> backStep = new CrowNavigation(actor, neighbour, areaFactory).stepAway(here);
             if (backStep.isPresent()) {
                 map.moveActor(actor, backStep.get());
                 startled.add(actor + " to " + backStep.get());
             }
         }
         return startled;
+    }
+
+    /**
+     * @param creature the crow acting
+     * @return the AreaFactory this crow hands out through its AreaFactorySource capability
+     * @throws IllegalStateException if the crow has no AreaFactorySource capability
+     */
+    private AreaFactory areaFactoryOf(Actor creature) {
+        return creature.asCapability(AreaFactorySource.class)
+                .orElseThrow(() -> new IllegalStateException(creature + " has no AreaFactorySource to flee with"))
+                .areaFactory();
     }
 
     /** @return the name of this state */

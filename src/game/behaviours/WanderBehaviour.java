@@ -23,6 +23,18 @@ import java.util.List;
  */
 public class WanderBehaviour implements Behaviour<Actor, Action> {
 
+    /** The randomness used to choose a step. */
+    private final RandomUtils randomUtils;
+
+    /**
+     * Creates a wandering behaviour.
+     *
+     * @param randomUtils the randomness used to choose a step
+     */
+    public WanderBehaviour(RandomUtils randomUtils) {
+        this.randomUtils = randomUtils;
+    }
+
     /**
      * Picks one of the exits of the actor's location, uniformly at random,
      * among the exits whose destination the actor is able to enter.
@@ -45,7 +57,7 @@ public class WanderBehaviour implements Behaviour<Actor, Action> {
             return null;
         }
 
-        Exit chosen = RandomUtils.pickRandom(enterableExits);
+        Exit chosen = randomUtils.pickRandom(enterableExits);
         return new MoveActorAction(chosen.getDestination(), chosen.getName(), chosen.getHotKey());
     }
 }

@@ -8,6 +8,7 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.plants.Regressible;
 import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,18 +36,23 @@ public class SeekPlantBehaviour implements Behaviour<Actor, Action> {
     /** What to do when no landing tile can be entered. */
     private final Behaviour<Actor, Action> fallback;
 
+    /** Builds the Areas used to find a landing tile and the nearest plant. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates the behaviour.
      *
      * @param landingOffsets the landing tiles as {dx, dy} pairs; copied, so
      *                       later changes to the array have no effect
      * @param fallback what to do when no landing tile can be entered
+     * @param areaFactory builds the Areas used to find a landing tile and the nearest plant
      * @throws IllegalArgumentException if there are no offsets or an offset
      *                                  is not a {dx, dy} pair
      */
-    public SeekPlantBehaviour(int[][] landingOffsets, Behaviour<Actor, Action> fallback) {
+    public SeekPlantBehaviour(int[][] landingOffsets, Behaviour<Actor, Action> fallback, AreaFactory areaFactory) {
         this.landingOffsets = copyOf(landingOffsets);
         this.fallback = fallback;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -58,7 +64,7 @@ public class SeekPlantBehaviour implements Behaviour<Actor, Action> {
      */
     @Override
     public Action operate(Actor actor, Location location) {
-        Area landings = new Area(enterableLandings(actor, location));
+        Area landings = areaFactory.of(enterableLandings(actor, location));
         Optional<Location> plant = nearestPlant(location);
         Optional<Location> landing;
         if (plant.isPresent()) {
@@ -100,12 +106,12 @@ public class SeekPlantBehaviour implements Behaviour<Actor, Action> {
      */
     private Optional<Location> nearestPlant(Location from) {
         List<Location> plants = new ArrayList<>();
-        for (Location tile : Area.within(from, SENSING_RADIUS).tiles()) {
+        for (Location tile : areaFactory.within(from, SENSING_RADIUS).tiles()) {
             if (tile.getGroundAs(Regressible.class) != null) {
                 plants.add(tile);
             }
         }
-        return new Area(plants).nearestTo(from);
+        return areaFactory.of(plants).nearestTo(from);
     }
 
     /**

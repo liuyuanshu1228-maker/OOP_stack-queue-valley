@@ -4,7 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.Stone;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.random.RandomUtils;
 
 import java.util.Optional;
@@ -19,11 +19,24 @@ public class Rock extends BreakableGround {
     /** Chance (out of 100) that breaking a rock releases a shockwave. */
     private static final int SHOCKWAVE_CHANCE_PERCENT = 50;
 
+    /** The randomness used to roll the shockwave chance, and handed to the dropped Stone. */
+    private final RandomUtils randomUtils;
+
+    /** Builds the Area searched for a tile to throw the breaker to, and handed to the dropped Stone. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Rock.
+     *
+     * @param randomUtils the randomness used to roll the shockwave chance, and
+     *                    handed to the dropped Stone
+     * @param areaFactory builds the Area searched for a tile to throw the
+     *                    breaker to, and handed to the dropped Stone
      */
-    public Rock() {
+    public Rock(RandomUtils randomUtils, AreaFactory areaFactory) {
         super('#', "Rock");
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -31,7 +44,7 @@ public class Rock extends BreakableGround {
      */
     @Override
     protected Item createDrop() {
-        return new Stone(new RockFactory());
+        return new Stone(new RockFactory(randomUtils, areaFactory), areaFactory);
     }
 
     /**
@@ -44,10 +57,10 @@ public class Rock extends BreakableGround {
      */
     @Override
     protected String afterBreaking(Actor actor, Location location) {
-        if (!RandomUtils.rollPercent(SHOCKWAVE_CHANCE_PERCENT)) {
+        if (!randomUtils.rollPercent(SHOCKWAVE_CHANCE_PERCENT)) {
             return "The rock crumbles quietly.";
         }
-        Optional<Location> landing = Area.adjacentTo(location).randomEnterableTile(actor);
+        Optional<Location> landing = areaFactory.adjacentTo(location).randomEnterableTile(actor);
         if (landing.isEmpty()) {
             return "A shockwave ripples out, but there is nowhere to throw " + actor + ".";
         }

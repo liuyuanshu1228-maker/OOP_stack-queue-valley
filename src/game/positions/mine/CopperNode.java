@@ -5,7 +5,7 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.mine.CopperOre;
 import game.positions.Chargeable;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 
 /**
  * A copper node. It cannot be entered, so it has to be broken to clear the
@@ -14,11 +14,17 @@ import game.positions.area.Area;
  */
 public class CopperNode extends BreakableGround {
 
+    /** Builds the Area of tiles around this node that may get charged. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new CopperNode.
+     *
+     * @param areaFactory builds the Area of tiles around this node that may get charged
      */
-    public CopperNode() {
+    public CopperNode(AreaFactory areaFactory) {
         super('N', "Copper node");
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -39,7 +45,7 @@ public class CopperNode extends BreakableGround {
     @Override
     protected String afterBreaking(Actor actor, Location location) {
         int chargedCount = 0;
-        for (Location nearby : Area.adjacentTo(location).tiles()) {
+        for (Location nearby : areaFactory.adjacentTo(location).tiles()) {
             Chargeable chargeable = nearby.getGroundAs(Chargeable.class);
             if (chargeable != null) {
                 nearby.setGround(chargeable.getChargedResult());

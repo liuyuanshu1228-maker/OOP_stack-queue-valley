@@ -9,6 +9,8 @@ import game.actors.WanderingActor;
 import game.behaviours.SeekPlantBehaviour;
 import game.behaviours.WanderBehaviour;
 import game.plants.Regressible;
+import game.positions.area.AreaFactory;
+import game.random.RandomUtils;
 
 /**
  * A creature that moves towards plants and feeds on them.
@@ -30,10 +32,14 @@ public abstract class Pest extends WanderingActor implements Infestation {
      * @param hitPoints the pest's starting hit points
      * @param landingOffsets the tiles it can land on in one move, as
      *                       {dx, dy} pairs
+     * @param randomUtils the randomness used to build this pest's fallback
+     *                    wandering behaviour
+     * @param areaFactory builds the Area its {@link SeekPlantBehaviour} searches for plants and a landing tile
      */
-    protected Pest(String name, char displayChar, int hitPoints, int[][] landingOffsets) {
+    protected Pest(String name, char displayChar, int hitPoints, int[][] landingOffsets,
+                   RandomUtils randomUtils, AreaFactory areaFactory) {
         super(name, displayChar, hitPoints,
-                new SeekPlantBehaviour(landingOffsets, new WanderBehaviour()));
+                new SeekPlantBehaviour(landingOffsets, new WanderBehaviour(randomUtils), areaFactory));
     }
 
     /**

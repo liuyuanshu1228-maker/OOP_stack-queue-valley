@@ -13,11 +13,17 @@ public class Milk extends SellableItem {
     /** Percentage chance that the Merchant takes the Milk without paying. */
     private static final int NO_PAYMENT_CHANCE_PERCENT = 50;
 
+    /** The randomness used to roll the refusal chance. */
+    private final RandomUtils randomUtils;
+
     /**
      * Creates a new Milk. Initializes the portable Milk item with display character 'i'.
+     *
+     * @param randomUtils the randomness used to roll the refusal chance
      */
-    public Milk() {
+    public Milk(RandomUtils randomUtils) {
         super("Milk", 'i', SELL_PRICE);
+        this.randomUtils = randomUtils;
     }
 
     /**
@@ -27,6 +33,6 @@ public class Milk extends SellableItem {
      */
     @Override
     protected boolean merchantRefusesPayment() {
-        return RandomUtils.rollPercent(NO_PAYMENT_CHANCE_PERCENT);
+        return randomUtils.rollPercent(NO_PAYMENT_CHANCE_PERCENT);
     }
 }

@@ -2,6 +2,8 @@ package game.crops;
 
 import game.plants.Grow;
 import game.plants.Plant;
+import game.positions.area.AreaFactory;
+import game.random.RandomUtils;
 
 /**
  * The first growth stage of a strawberry plant.
@@ -21,12 +23,28 @@ public class StrawberrySeedling extends Plant {
     /** The chance, as a percentage, of growing on its turn. */
     private static final int GROW_CHANCE_PERCENT = 50;
 
+    /** The randomness this plant hands to its next stage. */
+    private final RandomUtils randomUtils;
+
+    /**
+     * Builds Areas for the next stage; this seedling does not use it itself
+     * (it has no spreading ability of its own), only forwards it, since
+     * {@link StrawberrySprout} needs one for its own spreading.
+     */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Strawberry Seedling with an age of 0.
+     *
+     * @param randomUtils the randomness used to roll this plant's chances,
+     *                    and handed to the stage it grows into
+     * @param areaFactory builds Areas for the stage this plant grows into
      */
-    public StrawberrySeedling() {
+    public StrawberrySeedling(RandomUtils randomUtils, AreaFactory areaFactory) {
         super('\'', "Strawberry Seedling",
-                new Grow(GROW_INTERVAL, GROW_CHANCE_PERCENT));
+                new Grow(GROW_INTERVAL, GROW_CHANCE_PERCENT, randomUtils));
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -36,6 +54,6 @@ public class StrawberrySeedling extends Plant {
      */
     @Override
     protected Plant nextStage() {
-        return new StrawberrySprout();
+        return new StrawberrySprout(randomUtils, areaFactory);
     }
 }

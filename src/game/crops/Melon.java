@@ -6,7 +6,7 @@ import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.plants.Plant;
 import game.plants.SelfReplicate;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.positions.area.Explosion;
 import game.random.RandomUtils;
 import game.statistics.StatisticAdjuster;
@@ -44,11 +44,23 @@ public class Melon extends Crop implements Waterable {
     /** How many turns between plantings of a sprout nearby. */
     private static final int SPREAD_INTERVAL = 20;
 
+    /** The randomness used by this crop's own chances. */
+    private final RandomUtils randomUtils;
+
+    /** Builds Areas for this crop's own spreading, harvesting and the stage it regresses to. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Melon.
+     *
+     * @param randomUtils the randomness used to roll this crop's chances
+     * @param areaFactory builds Areas for this crop's spreading, harvesting
+     *                    and the stage it regresses to
      */
-    public Melon() {
-        super('M', "Melon", new SelfReplicate(SPREAD_INTERVAL));
+    public Melon(RandomUtils randomUtils, AreaFactory areaFactory) {
+        super('M', "Melon", new SelfReplicate(SPREAD_INTERVAL, randomUtils, areaFactory));
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -58,7 +70,7 @@ public class Melon extends Crop implements Waterable {
      */
     @Override
     protected Ground previousStage() {
-        return new MelonSprout();
+        return new MelonSprout(randomUtils, areaFactory);
     }
 
     /**
@@ -68,7 +80,7 @@ public class Melon extends Crop implements Waterable {
      */
     @Override
     protected Plant offspring() {
-        return new MelonSprout();
+        return new MelonSprout(randomUtils, areaFactory);
     }
 
     /**
@@ -94,9 +106,9 @@ public class Melon extends Crop implements Waterable {
     public String harvest(Actor actor, Location location) {
         removeCrop(location);
 
-        if (RandomUtils.rollPercent(EXPLOSION_CHANCE_PERCENT)) {
+        if (randomUtils.rollPercent(EXPLOSION_CHANCE_PERCENT)) {
             int damage = Math.max(0, BASE_EXPLOSION_DAMAGE - getWateringCount());
-            new Explosion(damage).detonateOn(Area.centredOn(location));
+            new Explosion(damage).detonateOn(areaFactory.centredOn(location));
             return actor + " harvests the " + this + ". It explodes, dealing " + damage
                     + " damage to everyone nearby!";
         }
@@ -128,7 +140,7 @@ public class Melon extends Crop implements Waterable {
         recordWatering();
         String message = actor + " waters the " + this + ".";
 
-        if (RandomUtils.rollPercent(MAX_STAMINA_INCREASE_CHANCE_PERCENT)) {
+        if (randomUtils.rollPercent(MAX_STAMINA_INCREASE_CHANCE_PERCENT)) {
             message += " Its maximum stamina increases by "
                     + new StatisticAdjuster(actor).increaseMaximum(
                             ActorStatistics.STAMINA, MAX_STAMINA_INCREASE_AMOUNT).describe() + ".";

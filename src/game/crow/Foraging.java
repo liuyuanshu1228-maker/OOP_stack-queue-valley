@@ -7,7 +7,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.creaturestate.BaseCreatureState;
 import game.creaturestate.CreatureState;
 import game.creaturestate.ItemCache;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.positions.area.BareOfItems;
 import game.positions.area.ItemDropper;
 import game.positions.area.OutsideOf;
@@ -60,7 +60,7 @@ public class Foraging extends BaseCreatureState {
             return creature + " finds nothing worth foraging.";
         }
 
-        Optional<Location> step = new CrowNavigation(creature, here).stepToward(itemLocation.get());
+        Optional<Location> step = new CrowNavigation(creature, here, areaFactoryOf(creature)).stepToward(itemLocation.get());
         if (step.isEmpty()) {
             return creature + " can't find a way toward the food.";
         }
@@ -84,8 +84,9 @@ public class Foraging extends BaseCreatureState {
             throw new IllegalStateException("cache() called with nothing forageable at " + here);
         }
         Item item = forageable.get();
-        Optional<Location> chosenSpot = Area.within(here, CACHE_SEARCH_RADIUS)
-                .filter(new OutsideOf(Area.within(here, MIN_CACHE_DISTANCE - 1)))
+        AreaFactory areaFactory = areaFactoryOf(creature);
+        Optional<Location> chosenSpot = areaFactory.within(here, CACHE_SEARCH_RADIUS)
+                .filter(new OutsideOf(areaFactory.within(here, MIN_CACHE_DISTANCE - 1)))
                 .filter(new BareOfItems())
                 .randomTile();
 
@@ -150,7 +151,7 @@ public class Foraging extends BaseCreatureState {
                     + ", without swooping anywhere, so no items are scattered.";
         }
 
-        List<String> scattered = scatterNearbyItems(itemLocation.get());
+        List<String> scattered = scatterNearbyItems(itemLocation.get(), areaFactoryOf(creature));
         if (scattered.isEmpty()) {
             return creature + " swoops down toward the food at " + itemLocation.get()
                     + ", but there are no other items around it to scatter.";
@@ -165,10 +166,11 @@ public class Foraging extends BaseCreatureState {
      * moved exactly once even if it lands on a tile not yet visited.
      *
      * @param centre the Location to scatter items around
+     * @param areaFactory builds the Area of tiles around centre
      * @return where each item landed, e.g. "Egg to (3, 4) on Inherited Farm"
      */
-    private List<String> scatterNearbyItems(Location centre) {
-        ItemDropper dropper = new ItemDropper(Area.adjacentTo(centre));
+    private List<String> scatterNearbyItems(Location centre, AreaFactory areaFactory) {
+        ItemDropper dropper = new ItemDropper(areaFactory.adjacentTo(centre));
         List<String> scattered = new ArrayList<>();
 
         for (Item item : dropper.liftAll()) {
@@ -179,6 +181,17 @@ public class Foraging extends BaseCreatureState {
         }
 
         return scattered;
+    }
+
+    /**
+     * @param creature the crow acting
+     * @return the AreaFactory this crow hands out through its AreaFactorySource capability
+     * @throws IllegalStateException if the crow has no AreaFactorySource capability
+     */
+    private AreaFactory areaFactoryOf(Actor creature) {
+        return creature.asCapability(AreaFactorySource.class)
+                .orElseThrow(() -> new IllegalStateException(creature + " has no AreaFactorySource to forage with"))
+                .areaFactory();
     }
 
     /** @return the name of this state */

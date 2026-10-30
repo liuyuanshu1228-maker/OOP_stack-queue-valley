@@ -3,6 +3,8 @@ package game.crops;
 import game.plants.Grow;
 import game.plants.Plant;
 import game.plants.SelfReplicate;
+import game.positions.area.AreaFactory;
+import game.random.RandomUtils;
 
 /**
  * The only early growth stage of a melon plant, before the mature
@@ -31,13 +33,26 @@ public class MelonSprout extends Plant {
     /** How many turns between plantings of a sprout nearby. */
     private static final int SPREAD_INTERVAL = 10;
 
+    /** The randomness this plant hands to the Melon it grows into and its own offspring. */
+    private final RandomUtils randomUtils;
+
+    /** Builds Areas for this plant's own spreading, and for the Melon it grows into. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Melon Sprout with an age of 0.
+     *
+     * @param randomUtils the randomness used to roll this plant's chances,
+     *                    and handed to the Melon it grows into and its own offspring
+     * @param areaFactory builds Areas for this plant's spreading, and for the
+     *                    Melon it grows into
      */
-    public MelonSprout() {
+    public MelonSprout(RandomUtils randomUtils, AreaFactory areaFactory) {
         super('t', "Melon Sprout",
-                new Grow(GROW_INTERVAL, GROW_CHANCE_PERCENT),
-                new SelfReplicate(SPREAD_INTERVAL));
+                new Grow(GROW_INTERVAL, GROW_CHANCE_PERCENT, randomUtils),
+                new SelfReplicate(SPREAD_INTERVAL, randomUtils, areaFactory));
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -47,7 +62,7 @@ public class MelonSprout extends Plant {
      */
     @Override
     protected Plant nextStage() {
-        return new Melon();
+        return new Melon(randomUtils, areaFactory);
     }
 
     /**
@@ -57,6 +72,6 @@ public class MelonSprout extends Plant {
      */
     @Override
     protected Plant offspring() {
-        return new MelonSprout();
+        return new MelonSprout(randomUtils, areaFactory);
     }
 }

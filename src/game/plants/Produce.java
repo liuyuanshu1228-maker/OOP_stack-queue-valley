@@ -2,7 +2,9 @@ package game.plants;
 
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
+import game.positions.area.AreaFactory;
 import game.positions.area.ItemDropper;
+import game.random.RandomUtils;
 
 import java.util.Optional;
 
@@ -16,13 +18,19 @@ import java.util.Optional;
  */
 public class Produce extends PeriodicAbility {
 
+    /** Builds the Area of tiles the produce is dropped onto. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a Produce ability that always happens on its turn.
      *
      * @param intervalTurns how many turns of age between drops
+     * @param randomUtils the randomness used to roll the chance
+     * @param areaFactory builds the Area of tiles the produce is dropped onto
      */
-    public Produce(int intervalTurns) {
-        super(intervalTurns);
+    public Produce(int intervalTurns, RandomUtils randomUtils, AreaFactory areaFactory) {
+        super(intervalTurns, randomUtils);
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -36,7 +44,7 @@ public class Produce extends PeriodicAbility {
     @Override
     protected String perform(Plant plant, Location location) {
         Item item = plant.produce();
-        Optional<Location> tile = ItemDropper.adjacentTo(location).dropOnRandomTile(item);
+        Optional<Location> tile = new ItemDropper(areaFactory.adjacentTo(location)).dropOnRandomTile(item);
         if (tile.isEmpty()) {
             return "";
         }

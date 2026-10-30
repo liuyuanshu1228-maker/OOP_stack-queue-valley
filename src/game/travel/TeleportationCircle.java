@@ -2,7 +2,8 @@ package game.travel;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.items.Fire;
+import game.items.FireFactory;
+import game.positions.area.AreaFactory;
 import game.positions.area.ItemDropper;
 
 /**
@@ -18,11 +19,17 @@ public class TeleportationCircle extends TravelGround {
     /** How many turns the burn the fire inflicts lasts. */
     private static final int BURN_DURATION_TURNS = 3;
 
+    /** Builds the Area of tiles around the arrival tile that catch fire. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new TeleportationCircle.
+     *
+     * @param areaFactory builds the Area of tiles around the arrival tile that catch fire
      */
-    public TeleportationCircle() {
+    public TeleportationCircle(AreaFactory areaFactory) {
         super('O', "Teleportation circle");
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -34,8 +41,8 @@ public class TeleportationCircle extends TravelGround {
      */
     @Override
     public String onArrival(Actor actor, Location landing) {
-        ItemDropper.adjacentTo(landing).placeOnEveryTile(
-                () -> new Fire(FIRE_LIFETIME_TURNS, BURN_DAMAGE_PER_TURN, BURN_DURATION_TURNS));
+        new ItemDropper(areaFactory.adjacentTo(landing)).placeOnEveryTile(
+                new FireFactory(FIRE_LIFETIME_TURNS, BURN_DAMAGE_PER_TURN, BURN_DURATION_TURNS));
         return "The ground around " + actor + " bursts into flames!";
     }
 }

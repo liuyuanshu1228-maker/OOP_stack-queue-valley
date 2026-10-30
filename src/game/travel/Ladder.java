@@ -15,11 +15,17 @@ public class Ladder extends TravelGround {
     /** Damage taken by an Actor who falls. */
     private static final int FALL_DAMAGE = 25;
 
+    /** The randomness used to roll the fall chance. */
+    private final RandomUtils randomUtils;
+
     /**
      * Creates a new Ladder.
+     *
+     * @param randomUtils the randomness used to roll the fall chance
      */
-    public Ladder() {
+    public Ladder(RandomUtils randomUtils) {
         super('=', "Ladder");
+        this.randomUtils = randomUtils;
     }
 
     /**
@@ -31,7 +37,7 @@ public class Ladder extends TravelGround {
      */
     @Override
     public String onArrival(Actor actor, Location landing) {
-        if (!RandomUtils.rollPercent(FALL_CHANCE_PERCENT)) {
+        if (!randomUtils.rollPercent(FALL_CHANCE_PERCENT)) {
             return "";
         }
         actor.hurt(FALL_DAMAGE);

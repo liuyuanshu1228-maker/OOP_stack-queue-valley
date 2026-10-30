@@ -34,16 +34,22 @@ public abstract class PeriodicAbility implements PlantAbility {
     private final int chancePercent;
 
     /**
+     * The randomness used to roll the chance.
+     */
+    private final RandomUtils randomUtils;
+
+    /**
      * Creates an ability that happens every given number of turns, with the
      * given chance.
      *
      * @param intervalTurns how many turns of age between attempts; must be positive
      * @param chancePercent the chance, as a percentage, that it happens on its turn;
      *                      must be from 0 to 100
+     * @param randomUtils the randomness used to roll the chance
      * @throws IllegalArgumentException if the interval is not positive or the
      *                                  chance is outside 0 to 100
      */
-    protected PeriodicAbility(int intervalTurns, int chancePercent) {
+    protected PeriodicAbility(int intervalTurns, int chancePercent, RandomUtils randomUtils) {
         if (intervalTurns <= 0) {
             throw new IllegalArgumentException("intervalTurns must be positive, but was " + intervalTurns);
         }
@@ -53,16 +59,18 @@ public abstract class PeriodicAbility implements PlantAbility {
         }
         this.intervalTurns = intervalTurns;
         this.chancePercent = chancePercent;
+        this.randomUtils = randomUtils;
     }
 
     /**
      * Creates an ability that always happens every given number of turns.
      *
      * @param intervalTurns how many turns of age between attempts; must be positive
+     * @param randomUtils the randomness used to roll the chance
      * @throws IllegalArgumentException if the interval is not positive
      */
-    protected PeriodicAbility(int intervalTurns) {
-        this(intervalTurns, ALWAYS_PERCENT);
+    protected PeriodicAbility(int intervalTurns, RandomUtils randomUtils) {
+        this(intervalTurns, ALWAYS_PERCENT, randomUtils);
     }
 
     /**
@@ -79,7 +87,7 @@ public abstract class PeriodicAbility implements PlantAbility {
         if (plant.getAge() % intervalTurns != 0) {
             return "";
         }
-        if (!RandomUtils.rollPercent(chancePercent)) {
+        if (!randomUtils.rollPercent(chancePercent)) {
             return "";
         }
         return perform(plant, location);

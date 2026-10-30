@@ -14,26 +14,18 @@ import game.behaviours.WanderBehaviour;
  * themselves each turn.
  * <p>
  * How such an actor chooses its move is the job of an engine {@link Behaviour},
- * which is given to it when it is created: by default a {@link WanderBehaviour},
- * which steps onto a random tile that the actor can enter. The actor itself only
- * decides whether it can act at all, so a variant that moves differently needs a
+ * which is given to it when it is created: often a {@link WanderBehaviour},
+ * which steps onto a random tile that the actor can enter, but this class
+ * takes no view on that -- a {@code WanderBehaviour} needs randomness of its
+ * own to build, so building one is left to each caller (or to a shared base
+ * such as {@link Animal}), not defaulted here. The actor itself only decides
+ * whether it can act at all, so a variant that moves differently needs a
  * different behaviour, not a different class hierarchy.
  */
 public abstract class WanderingActor extends ConsciousActor {
 
     /** Decides where this actor goes on its turn. */
     private final Behaviour<Actor, Action> behaviour;
-
-    /**
-     * Creates a WanderingActor that wanders at random.
-     *
-     * @param name the name of the Actor
-     * @param displayChar the character that will represent the Actor in the display
-     * @param hitPoints the Actor's starting hit points
-     */
-    public WanderingActor(String name, char displayChar, int hitPoints) {
-        this(name, displayChar, hitPoints, new WanderBehaviour());
-    }
 
     /**
      * Creates a WanderingActor that moves according to the given behaviour.

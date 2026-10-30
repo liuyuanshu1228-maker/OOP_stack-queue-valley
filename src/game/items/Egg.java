@@ -4,7 +4,7 @@ import edu.monash.fit2099.engine.GameEngineException;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.MerchantContext;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.random.RandomUtils;
 
 import java.util.Optional;
@@ -25,14 +25,24 @@ public class Egg extends SellableItem {
     /** Factory that produces the Actor spawned adjacent to the Merchant on a successful sale. */
     private final ActorFactory animalFactory;
 
+    /** The randomness used to roll the spawn chance. */
+    private final RandomUtils randomUtils;
+
+    /** Builds the Area the spawned animal lands on. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Egg.
      *
      * @param animalFactory a factory that produces the Actor spawned when this Egg is sold
+     * @param randomUtils the randomness used to roll the spawn chance
+     * @param areaFactory builds the Area the spawned animal lands on
      */
-    public Egg(ActorFactory animalFactory) {
+    public Egg(ActorFactory animalFactory, RandomUtils randomUtils, AreaFactory areaFactory) {
         super("Egg", '0', SELL_PRICE);
         this.animalFactory = animalFactory;
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -45,11 +55,11 @@ public class Egg extends SellableItem {
      */
     @Override
     protected String applySaleEffect(Actor seller, MerchantContext merchantContext) {
-        if (!RandomUtils.rollPercent(ANIMAL_SPAWN_CHANCE_PERCENT)) {
+        if (!randomUtils.rollPercent(ANIMAL_SPAWN_CHANCE_PERCENT)) {
             return "";
         }
         Actor animal = animalFactory.create();
-        Optional<Location> spot = Area.adjacentTo(merchantContext.getLocation())
+        Optional<Location> spot = areaFactory.adjacentTo(merchantContext.getLocation())
                 .randomEnterableTile(animal);
         if (spot.isEmpty()) {
             return "";

@@ -5,7 +5,8 @@ import game.crops.Unplanted;
 import game.plants.Regressible;
 import game.positions.Plantable;
 import game.positions.Tillable;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
+import game.random.RandomUtils;
 
 /**
  * A slow pest that crawls one tile at a time. When it feeds, the plant goes
@@ -30,11 +31,20 @@ public class SlimeSnail extends Pest {
             {-1, 1}, {0, 1}, {1, 1}
     };
 
+    /** Builds the Area of tiles around this snail that may get slimed. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a slime snail.
+     *
+     * @param randomUtils the randomness forwarded to this snail's fallback
+     *                    wandering behaviour; this snail's own feeding has no
+     *                    randomness of its own, so nothing is kept here
+     * @param areaFactory builds the Area of tiles around this snail that may get slimed
      */
-    public SlimeSnail() {
-        super(NAME, DISPLAY_CHAR, HIT_POINTS, CRAWL_OFFSETS);
+    public SlimeSnail(RandomUtils randomUtils, AreaFactory areaFactory) {
+        super(NAME, DISPLAY_CHAR, HIT_POINTS, CRAWL_OFFSETS, randomUtils, areaFactory);
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -52,7 +62,7 @@ public class SlimeSnail extends Pest {
         }
         String report = plant.regress(here);
         int slimed = 0;
-        for (Location tile : Area.adjacentTo(here).filter(new Unplanted()).tiles()) {
+        for (Location tile : areaFactory.adjacentTo(here).filter(new Unplanted()).tiles()) {
             if (isBareFarmGround(tile)) {
                 tile.setGround(new SlimeGround(tile.getGround()));
                 slimed++;

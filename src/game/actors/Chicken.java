@@ -3,6 +3,7 @@ package game.actors;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.Egg;
+import game.positions.area.AreaFactory;
 import game.positions.area.ItemDropper;
 import game.random.RandomUtils;
 
@@ -20,13 +21,23 @@ public class Chicken extends Animal {
     /** Chance (out of 100) that a second Egg is dropped. */
     private static final int BONUS_EGG_CHANCE_PERCENT = 50;
 
+    /** The randomness used to roll the bonus Egg chance. */
+    private final RandomUtils randomUtils;
+
+    /** Builds the Area the Eggs are dropped onto. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Chicken.
      *
      * @param name the name of the Chicken
+     * @param randomUtils the randomness used to roll the bonus Egg chance
+     * @param areaFactory builds the Area the Eggs are dropped onto
      */
-    public Chicken(String name) {
-        super(name, 'c', MAX_HP);
+    public Chicken(String name, RandomUtils randomUtils, AreaFactory areaFactory) {
+        super(name, 'c', MAX_HP, randomUtils);
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -42,9 +53,9 @@ public class Chicken extends Animal {
     public String feed(Actor farmer, Location farmerLocation) {
         this.heal(HEAL_AMOUNT);
 
-        ItemDropper dropper = ItemDropper.adjacentTo(farmerLocation);
+        ItemDropper dropper = new ItemDropper(areaFactory.adjacentTo(farmerLocation));
         dropper.dropOnRandomTile(layEgg());
-        if (RandomUtils.rollPercent(BONUS_EGG_CHANCE_PERCENT)) {
+        if (randomUtils.rollPercent(BONUS_EGG_CHANCE_PERCENT)) {
             dropper.dropOnRandomTile(layEgg());
         }
 
@@ -57,6 +68,6 @@ public class Chicken extends Animal {
      * @return a new Chicken Egg
      */
     private Egg layEgg() {
-        return new Egg(new ChickenFactory());
+        return new Egg(new ChickenFactory(randomUtils, areaFactory), randomUtils, areaFactory);
     }
 }

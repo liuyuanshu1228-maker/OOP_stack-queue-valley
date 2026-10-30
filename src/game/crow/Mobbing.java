@@ -7,7 +7,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.actions.Consumable;
 import game.creaturestate.BaseCreatureState;
 import game.creaturestate.CreatureState;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.positions.area.ItemDropper;
 import game.random.RandomUtils;
 
@@ -50,6 +50,7 @@ public class Mobbing extends BaseCreatureState {
      */
     @Override
     public String act(Actor creature, GameMap map) {
+        AreaFactory areaFactory = areaFactoryOf(creature);
         Location here = map.locationOf(creature);
         Optional<Location> targetLoc = new CrowSensing(creature, here).nearestActor();
 
@@ -59,11 +60,11 @@ public class Mobbing extends BaseCreatureState {
 
         Location target = targetLoc.get();
 
-        if (Area.adjacentTo(here).tiles().contains(target)) {
+        if (areaFactory.adjacentTo(here).tiles().contains(target)) {
             return steal(creature, target.getActor());
         }
 
-        Optional<Location> step = new CrowNavigation(creature, here).stepToward(target);
+        Optional<Location> step = new CrowNavigation(creature, here, areaFactory).stepToward(target);
         if (step.isEmpty()) {
             return creature + " cannot get closer to mob.";
         }
@@ -86,7 +87,7 @@ public class Mobbing extends BaseCreatureState {
         if (victimItems.isEmpty()) {
             return creature + " harasses " + victim + " but finds nothing to steal.";
         }
-        Item stolen = RandomUtils.pickRandom(victimItems);
+        Item stolen = randomUtilsOf(creature).pickRandom(victimItems);
         victim.getInventory().remove(stolen);
         return creature + " steals " + stolen + " from " + victim + "! " + eatOrKeep(creature, stolen);
     }
@@ -148,7 +149,8 @@ public class Mobbing extends BaseCreatureState {
         }
 
         Actor target = targetLoc.get().getActor();
-        List<Item> knockedLoose = ItemDropper.adjacentTo(targetLoc.get()).dropAllCarriedBy(target);
+        List<Item> knockedLoose = new ItemDropper(areaFactoryOf(creature).adjacentTo(targetLoc.get()))
+                .dropAllCarriedBy(target);
 
         if (knockedLoose.isEmpty()) {
             return creature + " dives aggressively at " + target + ", but " + target
@@ -157,6 +159,28 @@ public class Mobbing extends BaseCreatureState {
         return creature + " dives aggressively at " + target
                 + ", knocking everything they carry onto the tiles around "
                 + targetLoc.get() + ": " + knockedLoose + "!";
+    }
+
+    /**
+     * @param creature the crow acting
+     * @return the AreaFactory this crow hands out through its AreaFactorySource capability
+     * @throws IllegalStateException if the crow has no AreaFactorySource capability
+     */
+    private AreaFactory areaFactoryOf(Actor creature) {
+        return creature.asCapability(AreaFactorySource.class)
+                .orElseThrow(() -> new IllegalStateException(creature + " has no AreaFactorySource to mob with"))
+                .areaFactory();
+    }
+
+    /**
+     * @param creature the crow acting
+     * @return the randomness this crow hands out through its RandomnessSource capability
+     * @throws IllegalStateException if the crow has no RandomnessSource capability
+     */
+    private RandomUtils randomUtilsOf(Actor creature) {
+        return creature.asCapability(RandomnessSource.class)
+                .orElseThrow(() -> new IllegalStateException(creature + " has no RandomnessSource to steal with"))
+                .randomUtils();
     }
 
     /** @return the name of this state */

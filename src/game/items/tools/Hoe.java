@@ -4,7 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.enchantments.Enchantment;
 import game.positions.Tillable;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.positions.area.TileListDescription;
 
 import java.util.ArrayList;
@@ -24,14 +24,19 @@ public class Hoe extends AbstractEnchantableTool implements TillingTool {
     /** Stamina cost of tilling something with this hoe. */
     private static final int STAMINA_COST = 2;
 
+    /** Builds the Area searched for adjacent tiles to till. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Hoe.
      *
      * @param offeredEnchantments the Enchantments this Hoe can be enchanted with
+     * @param areaFactory builds the Area searched for adjacent tiles to till
      */
-    public Hoe(List<Enchantment> offeredEnchantments) {
+    public Hoe(List<Enchantment> offeredEnchantments, AreaFactory areaFactory) {
         super("Hoe", 'h', offeredEnchantments);
         this.makePortable();
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -68,7 +73,7 @@ public class Hoe extends AbstractEnchantableTool implements TillingTool {
             return "";
         }
         List<Location> tilledTiles = new ArrayList<>();
-        for (Location nearby : Area.adjacentTo(location).tiles()) {
+        for (Location nearby : areaFactory.adjacentTo(location).tiles()) {
             Tillable tillable = nearby.getGroundAs(Tillable.class);
             if (tillable != null) {
                 nearby.setGround(tillable.getTillResult());

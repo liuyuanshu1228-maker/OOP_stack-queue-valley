@@ -19,9 +19,11 @@ public class StrawberryItem extends ConsumableItem {
     /**
      * Creates a new StrawberryItem that has a {@value #ROTTEN_CHANCE_PERCENT}%
      * chance of being rotten.
+     *
+     * @param randomUtils the randomness used to roll the rotten chance
      */
-    public StrawberryItem() {
-        this(RandomUtils.rollPercent(ROTTEN_CHANCE_PERCENT));
+    public StrawberryItem(RandomUtils randomUtils) {
+        this(randomUtils.rollPercent(ROTTEN_CHANCE_PERCENT));
     }
 
     /**

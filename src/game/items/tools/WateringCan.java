@@ -4,7 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.enchantments.Enchantment;
 import game.positions.Waterable;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.positions.area.WaterableTile;
 
 import java.util.ArrayList;
@@ -27,14 +27,19 @@ public class WateringCan extends AbstractEnchantableTool implements WateringTool
     /** Stamina cost of watering something with this can. */
     private static final int STAMINA_COST = 2;
 
+    /** Builds the Area searched for an adjacent tile to also water. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new WateringCan.
      *
      * @param offeredEnchantments the Enchantments this WateringCan can be enchanted with
+     * @param areaFactory builds the Area searched for an adjacent tile to also water
      */
-    public WateringCan(List<Enchantment> offeredEnchantments) {
+    public WateringCan(List<Enchantment> offeredEnchantments, AreaFactory areaFactory) {
         super("Watering Can", 'w', offeredEnchantments);
         this.makePortable();
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -74,7 +79,7 @@ public class WateringCan extends AbstractEnchantableTool implements WateringTool
         }
         List<Location> affectedTiles = new ArrayList<>();
         String spreadMessage;
-        Optional<Location> spot = Area.adjacentTo(location).filter(new WaterableTile()).randomTile();
+        Optional<Location> spot = areaFactory.adjacentTo(location).filter(new WaterableTile()).randomTile();
         if (spot.isPresent()) {
             Waterable waterable = spot.get().getGroundAs(Waterable.class);
             String waterReport = waterable.water(actor, spot.get());

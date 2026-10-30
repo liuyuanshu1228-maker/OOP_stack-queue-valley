@@ -4,6 +4,7 @@ import edu.monash.fit2099.engine.GameEngineException;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.random.RandomUtils;
 
 /**
  * A jar of ladybugs. Using it releases a few ladybugs on the free tiles
@@ -20,11 +21,17 @@ public class LadybugJar extends DeterrentItem {
     /** How many ladybugs the jar holds. */
     private static final int LADYBUGS = 3;
 
+    /** The randomness handed to every Ladybug this jar releases. */
+    private final RandomUtils randomUtils;
+
     /**
      * Creates a jar of ladybugs.
+     *
+     * @param randomUtils the randomness handed to every Ladybug this jar releases
      */
-    public LadybugJar() {
+    public LadybugJar(RandomUtils randomUtils) {
         super(NAME, DISPLAY_CHAR);
+        this.randomUtils = randomUtils;
     }
 
     /**
@@ -43,7 +50,7 @@ public class LadybugJar extends DeterrentItem {
                 break;
             }
             Location tile = exit.getDestination();
-            Ladybug ladybug = new Ladybug();
+            Ladybug ladybug = new Ladybug(randomUtils);
             if (tile.canActorEnter(ladybug)) {
                 try {
                     tile.addActor(ladybug);

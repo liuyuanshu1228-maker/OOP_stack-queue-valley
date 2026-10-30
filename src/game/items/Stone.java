@@ -4,7 +4,7 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.MerchantContext;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 
 import java.util.Optional;
 
@@ -25,14 +25,19 @@ public class Stone extends SellableItem {
      */
     private final GroundFactory groundFactory;
 
+    /** Builds the Area searched for a tile to build the new Ground on. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Stone.
      *
      * @param groundFactory a factory that produces the Ground placed when this Stone is sold
+     * @param areaFactory builds the Area searched for a tile to build the new Ground on
      */
-    public Stone(GroundFactory groundFactory) {
+    public Stone(GroundFactory groundFactory, AreaFactory areaFactory) {
         super("Stone", '*', SELL_PRICE);
         this.groundFactory = groundFactory;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -45,7 +50,7 @@ public class Stone extends SellableItem {
      */
     @Override
     protected String applySaleEffect(Actor seller, MerchantContext merchantContext) {
-        Optional<Location> spot = Area.adjacentTo(merchantContext.getLocation()).randomTile();
+        Optional<Location> spot = areaFactory.adjacentTo(merchantContext.getLocation()).randomTile();
         if (spot.isEmpty()) {
             return "";
         }

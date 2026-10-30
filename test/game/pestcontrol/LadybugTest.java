@@ -7,10 +7,10 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.StackQueueValleyWorld;
 import game.pests.SlimeSnail;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
+import game.random.RandomUtils;
 import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,25 +24,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class LadybugTest {
 
-    private GameMap map;
     private final Display display = new Display();
+
+    private GameMap map;
+    private RandomUtils randomUtils;
+    private AreaFactory areaFactory;
 
     @BeforeEach
     void setUp() {
-        FixedRandom.install();
+        randomUtils = new FixedRandom();
+        areaFactory = new AreaFactory(randomUtils);
         map = TestFarm.map(",,,,", ",,,,", ",,,,");
         new StackQueueValleyWorld(display).addGameMap(map);
     }
 
-    @AfterEach
-    void tearDown() {
-        FixedRandom.uninstall();
-    }
-
     @Test
     void eatsAPestNextToIt() throws Exception {
-        Ladybug ladybug = new Ladybug();
-        SlimeSnail snail = new SlimeSnail();
+        Ladybug ladybug = new Ladybug(randomUtils);
+        SlimeSnail snail = new SlimeSnail(randomUtils, areaFactory);
         map.at(1, 1).addActor(ladybug);
         map.at(2, 1).addActor(snail);
 
@@ -55,7 +54,7 @@ class LadybugTest {
 
     @Test
     void livesForFiveTurns() throws Exception {
-        Ladybug ladybug = new Ladybug();
+        Ladybug ladybug = new Ladybug(randomUtils);
         map.at(1, 1).addActor(ladybug);
 
         for (int turn = 1; turn <= 5; turn++) {
@@ -71,7 +70,7 @@ class LadybugTest {
     void aJarReleasesThreeLadybugsAround() {
         Location here = map.at(1, 1);
 
-        String report = new LadybugJar().deterAround(here, map);
+        String report = new LadybugJar(randomUtils).deterAround(here, map);
 
         assertEquals(3, countActors(here));
         assertTrue(report.contains("3 ladybugs"), report);
@@ -81,14 +80,14 @@ class LadybugTest {
     void aJarReleasesOnlyAsManyAsThereIsRoomFor() throws Exception {
         Location here = map.at(1, 1);
         int blocked = 0;
-        for (Location tile : Area.adjacentTo(here).tiles()) {
+        for (Location tile : areaFactory.adjacentTo(here).tiles()) {
             if (blocked < 6) {
-                tile.addActor(new SlimeSnail());
+                tile.addActor(new SlimeSnail(randomUtils, areaFactory));
                 blocked++;
             }
         }
 
-        String report = new LadybugJar().deterAround(here, map);
+        String report = new LadybugJar(randomUtils).deterAround(here, map);
 
         assertEquals(8, countActors(here), "six snails and two ladybugs");
         assertTrue(report.contains("2 ladybugs"), report);
@@ -100,7 +99,7 @@ class LadybugTest {
      */
     private int countActors(Location here) {
         int count = 0;
-        for (Location tile : Area.adjacentTo(here).tiles()) {
+        for (Location tile : areaFactory.adjacentTo(here).tiles()) {
             if (tile.containsAnActor()) {
                 count++;
             }

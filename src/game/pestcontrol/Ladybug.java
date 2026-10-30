@@ -9,6 +9,7 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.actors.WanderingActor;
 import game.behaviours.WanderBehaviour;
 import game.pests.PestPresent;
+import game.random.RandomUtils;
 
 /**
  * A ladybug released from a jar. Each turn it eats a pest next to it, or
@@ -34,9 +35,11 @@ public class Ladybug extends WanderingActor {
 
     /**
      * Creates a ladybug.
+     *
+     * @param randomUtils the randomness used to build this ladybug's wandering behaviour
      */
-    public Ladybug() {
-        super(NAME, DISPLAY_CHAR, LIFESPAN_TURNS, new WanderBehaviour());
+    public Ladybug(RandomUtils randomUtils) {
+        super(NAME, DISPLAY_CHAR, LIFESPAN_TURNS, new WanderBehaviour(randomUtils));
     }
 
     /**

@@ -1,6 +1,7 @@
 package game.plants;
 
 import edu.monash.fit2099.engine.positions.Location;
+import game.random.RandomUtils;
 
 /**
  * A plant ability that replaces the plant with its next growth stage.
@@ -17,9 +18,10 @@ public class Grow extends PeriodicAbility {
      *
      * @param intervalTurns how many turns of age between attempts to grow
      * @param chancePercent the chance, as a percentage, of growing on its turn
+     * @param randomUtils the randomness used to roll the chance
      */
-    public Grow(int intervalTurns, int chancePercent) {
-        super(intervalTurns, chancePercent);
+    public Grow(int intervalTurns, int chancePercent, RandomUtils randomUtils) {
+        super(intervalTurns, chancePercent, randomUtils);
     }
 
     /**

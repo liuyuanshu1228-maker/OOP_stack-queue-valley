@@ -3,10 +3,10 @@ package game.crops;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
-import game.positions.area.Area;
+import game.positions.Waterable;
+import game.positions.area.AreaFactory;
 import game.positions.farm.Puddle;
 import game.random.RandomUtils;
-import game.positions.Waterable;
 
 /**
  * A cauliflower crop. Watering it may turn the surrounding ground into
@@ -33,11 +33,24 @@ public class Cauliflower extends Crop implements Waterable {
     /** Chance (out of 100) that watering turns the surrounding ground into puddles. */
     private static final int PUDDLE_CHANCE_PERCENT = 50;
 
+    /** The randomness used by this crop's own chances and its CauliflowerItems. */
+    private final RandomUtils randomUtils;
+
+    /** Builds Areas for this crop's watering and the stage it regresses to. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Cauliflower.
+     *
+     * @param randomUtils the randomness used to roll this crop's chances and
+     *                    the bonus chance of the CauliflowerItems it creates
+     * @param areaFactory builds Areas for this crop's watering and the stage
+     *                    it regresses to
      */
-    public Cauliflower() {
+    public Cauliflower(RandomUtils randomUtils, AreaFactory areaFactory) {
         super('K', "Cauliflower");
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -47,7 +60,7 @@ public class Cauliflower extends Crop implements Waterable {
      */
     @Override
     protected Ground previousStage() {
-        return new CauliflowerSprout();
+        return new CauliflowerSprout(randomUtils, areaFactory);
     }
 
     /**
@@ -94,8 +107,8 @@ public class Cauliflower extends Crop implements Waterable {
     public String harvest(Actor actor, Location location) {
         removeCrop(location);
 
-        if (RandomUtils.rollPercent(SUCCESS_CHANCE_PERCENT)) {
-            actor.getInventory().add(new CauliflowerItem());
+        if (randomUtils.rollPercent(SUCCESS_CHANCE_PERCENT)) {
+            actor.getInventory().add(new CauliflowerItem(randomUtils));
             return actor + " harvests the " + this + " and gets a cauliflower.";
         }
 
@@ -126,8 +139,8 @@ public class Cauliflower extends Crop implements Waterable {
         recordWatering();
         String message = actor + " waters the " + this + ".";
 
-        if (RandomUtils.rollPercent(PUDDLE_CHANCE_PERCENT)) {
-            for (Location adjacentLocation : Area.adjacentTo(location).filter(new Unplanted()).tiles()) {
+        if (randomUtils.rollPercent(PUDDLE_CHANCE_PERCENT)) {
+            for (Location adjacentLocation : areaFactory.adjacentTo(location).filter(new Unplanted()).tiles()) {
                 adjacentLocation.setGround(new Puddle());
             }
             message += " The surrounding ground turns into puddles.";

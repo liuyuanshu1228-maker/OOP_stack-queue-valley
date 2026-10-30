@@ -2,6 +2,8 @@ package game.crops;
 
 import game.plants.Grow;
 import game.plants.Plant;
+import game.positions.area.AreaFactory;
+import game.random.RandomUtils;
 
 /**
  * The only early growth stage of a cauliflower plant, before the mature
@@ -22,12 +24,28 @@ public class CauliflowerSprout extends Plant {
     /** The chance, as a percentage, of growing on its turn. */
     private static final int GROW_CHANCE_PERCENT = 25;
 
+    /** The randomness this plant hands to the Cauliflower it grows into. */
+    private final RandomUtils randomUtils;
+
+    /**
+     * Builds Areas for the Cauliflower this plant grows into; this sprout
+     * does not use it itself (it has no spreading ability of its own), only
+     * forwards it, since {@link Cauliflower} needs one for watering.
+     */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Cauliflower Sprout with an age of 0.
+     *
+     * @param randomUtils the randomness used to roll this plant's chances,
+     *                    and handed to the Cauliflower it grows into
+     * @param areaFactory builds Areas for the Cauliflower this plant grows into
      */
-    public CauliflowerSprout() {
+    public CauliflowerSprout(RandomUtils randomUtils, AreaFactory areaFactory) {
         super('y', "Cauliflower Sprout",
-                new Grow(GROW_INTERVAL, GROW_CHANCE_PERCENT));
+                new Grow(GROW_INTERVAL, GROW_CHANCE_PERCENT, randomUtils));
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -37,6 +55,6 @@ public class CauliflowerSprout extends Plant {
      */
     @Override
     protected Plant nextStage() {
-        return new Cauliflower();
+        return new Cauliflower(randomUtils, areaFactory);
     }
 }

@@ -7,6 +7,8 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.plants.Plant;
 import game.plants.Produce;
 import game.plants.SelfReplicate;
+import game.positions.area.AreaFactory;
+import game.random.RandomUtils;
 import game.statistics.StatisticAdjuster;
 
 /**
@@ -44,13 +46,26 @@ public class Tomato extends Crop {
     /** The chance, as a percentage, of planting a tomato nearby on its turn. */
     private static final int SPREAD_CHANCE_PERCENT = 10;
 
+    /** The randomness this plant hands to its own abilities and its offspring. */
+    private final RandomUtils randomUtils;
+
+    /** Builds Areas for this plant's own abilities and its offspring. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Tomato.
+     *
+     * @param randomUtils the randomness used by this plant's production and
+     *                    spreading, and handed to its offspring
+     * @param areaFactory builds Areas for this plant's production and
+     *                    spreading, and handed to its offspring
      */
-    public Tomato() {
+    public Tomato(RandomUtils randomUtils, AreaFactory areaFactory) {
         super('T', "Tomato",
-                new Produce(PRODUCE_INTERVAL),
-                new SelfReplicate(SPREAD_INTERVAL, SPREAD_CHANCE_PERCENT));
+                new Produce(PRODUCE_INTERVAL, randomUtils, areaFactory),
+                new SelfReplicate(SPREAD_INTERVAL, SPREAD_CHANCE_PERCENT, randomUtils, areaFactory));
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -70,7 +85,7 @@ public class Tomato extends Crop {
      */
     @Override
     protected Plant offspring() {
-        return new Tomato();
+        return new Tomato(randomUtils, areaFactory);
     }
 
     /**

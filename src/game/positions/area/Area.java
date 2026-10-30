@@ -1,7 +1,6 @@
 package game.positions.area;
 
 import edu.monash.fit2099.engine.actors.Actor;
-import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.random.RandomUtils;
 
@@ -13,11 +12,13 @@ import java.util.Optional;
 /**
  * A group of tiles on a map, and the choosing of tiles from it.
  * <p>
- * Any shape of area can be built directly with the constructor; the static
- * factories only name the shapes the game already uses. What is done to the
- * tiles of an area (placing Items, hurting Actors, ...) is the job of other
- * classes, such as {@link ItemDropper} and {@link Explosion}, so that this
- * class only changes when the way tiles are chosen changes.
+ * An Area is built by an {@link AreaFactory}, which names the shapes the game
+ * already uses and gives every Area it builds the same RandomUtils, so that
+ * {@link #randomTile()} shares one source of randomness with the rest of the
+ * game. What is done to the tiles of an area (placing Items, hurting Actors,
+ * ...) is the job of other classes, such as {@link ItemDropper} and
+ * {@link Explosion}, so that this class only changes when the way tiles are
+ * chosen changes.
  * <p>
  * Contract for subclasses: every method that chooses a tile
  * ({@link #randomTile()}, {@link #randomEnterableTile(Actor)},
@@ -25,9 +26,6 @@ import java.util.Optional;
  * ever return a tile that is one of {@link #tiles()}.
  */
 public class Area {
-
-    /** How far from a centre tile an "adjacent" tile may be. */
-    private static final int ADJACENT_RADIUS = 1;
 
     /** Direction for {@link #firstAtExtremeDistance}: the greatest distance wins. */
     private static final int FARTHEST = 1;
@@ -38,64 +36,18 @@ public class Area {
     /** The tiles of this area. */
     private final List<Location> tiles;
 
+    /** The randomness used to choose a tile of this area at random. */
+    private final RandomUtils randomUtils;
+
     /**
      * Creates an area made of the given tiles.
      *
      * @param tiles the tiles that make up the area
+     * @param randomUtils the randomness used to choose a tile at random
      */
-    public Area(List<Location> tiles) {
+    public Area(List<Location> tiles, RandomUtils randomUtils) {
         this.tiles = new ArrayList<>(tiles);
-    }
-
-    /**
-     * Creates the area of tiles within the given distance of a Location, not
-     * including the Location itself. Distance is measured as a king moves on a
-     * chessboard, so the area is a square around the centre.
-     *
-     * @param centre the Location at the middle of the area
-     * @param radius how many tiles away from the centre the area reaches
-     * @return the tiles within the radius
-     */
-    public static Area within(Location centre, int radius) {
-        return new Area(centre.getNearbyLocations(radius));
-    }
-
-    /**
-     * Creates the area of tiles adjacent to the given Location, not including it.
-     *
-     * @param centre the Location whose adjacent tiles form the area
-     * @return the adjacent tiles
-     */
-    public static Area adjacentTo(Location centre) {
-        return within(centre, ADJACENT_RADIUS);
-    }
-
-    /**
-     * Creates the area made of the given Location together with its adjacent tiles.
-     *
-     * @param centre the Location at the centre of the area
-     * @return the centre and its adjacent tiles
-     */
-    public static Area centredOn(Location centre) {
-        List<Location> centreAndAdjacent = new ArrayList<>(adjacentTo(centre).tiles);
-        centreAndAdjacent.add(centre);
-        return new Area(centreAndAdjacent);
-    }
-
-    /**
-     * Creates the area made of every tile on the given map.
-     *
-     * @param map the map whose tiles form the area
-     * @return every tile of the map
-     */
-    public static Area wholeMap(GameMap map) {
-        List<Location> allTiles = new ArrayList<>();
-        for (int y : map.getYRange()) {
-            for (int x : map.getXRange()) {
-                allTiles.add(map.at(x, y));
-            }
-        }
-        return new Area(allTiles);
+        this.randomUtils = randomUtils;
     }
 
     /**
@@ -119,7 +71,7 @@ public class Area {
                 matching.add(tile);
             }
         }
-        return new Area(matching);
+        return new Area(matching, randomUtils);
     }
 
     /**
@@ -131,7 +83,7 @@ public class Area {
         if (tiles.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(RandomUtils.pickRandom(tiles));
+        return Optional.of(randomUtils.pickRandom(tiles));
     }
 
     /**
@@ -192,6 +144,11 @@ public class Area {
      * The distance between two Locations on the same map, measured as the
      * number of steps a king would need on a chessboard (the same measure
      * {@link Location#getNearbyLocations} uses for its square radius).
+     * <p>
+     * This is a pure, stateless geometric calculation with no behaviour to
+     * substitute or override, so it stays a private static helper rather
+     * than an instance method: there is nothing here for DIP or OCP to apply
+     * to, the same way {@code Math.max} does not need to be injectable.
      *
      * @param a the first Location
      * @param b the second Location

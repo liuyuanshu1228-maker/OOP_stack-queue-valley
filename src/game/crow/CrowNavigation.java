@@ -3,6 +3,7 @@ package game.crow;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.positions.area.EnterableBy;
 
 import java.util.ArrayList;
@@ -15,7 +16,10 @@ import java.util.Optional;
  * <p>
  * One instance describes one actor at one Location. It is used by the crow's
  * states ({@link Foraging}, {@link Mobbing}, {@link Fleeing}), including to
- * push other actors back when the crow startles them.
+ * push other actors back when the crow startles them. Because the actor it
+ * navigates is not always the crow itself (a startled neighbour can be any
+ * kind of Actor), the AreaFactory it needs is passed in explicitly by the
+ * caller, rather than queried from the actor's own capabilities.
  */
 public class CrowNavigation {
 
@@ -25,15 +29,20 @@ public class CrowNavigation {
     /** The Location the actor would step from. */
     private final Location from;
 
+    /** Builds the Area of tiles the actor could step onto. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates the navigation of an actor at a Location.
      *
      * @param actor the Actor that would be doing the stepping
      * @param from the Location to step from
+     * @param areaFactory builds the Area of tiles the actor could step onto
      */
-    public CrowNavigation(Actor actor, Location from) {
+    public CrowNavigation(Actor actor, Location from, AreaFactory areaFactory) {
         this.actor = actor;
         this.from = from;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -71,8 +80,8 @@ public class CrowNavigation {
     private Area options() {
         List<Location> options = new ArrayList<>();
         options.add(from);
-        options.addAll(Area.adjacentTo(from).filter(new EnterableBy(actor)).tiles());
-        return new Area(options);
+        options.addAll(areaFactory.adjacentTo(from).filter(new EnterableBy(actor)).tiles());
+        return areaFactory.of(options);
     }
 
     /**

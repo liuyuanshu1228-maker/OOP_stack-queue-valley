@@ -6,9 +6,9 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.actions.BreakAction;
-import game.items.Fire;
+import game.items.FireFactory;
 import game.positions.Breakable;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.positions.area.Explosion;
 import game.positions.area.ItemDropper;
 import game.random.RandomUtils;
@@ -40,12 +40,24 @@ public class Geode extends Item implements Breakable {
     /** Context label used when the BreakAction is offered from the tile the Geode lies on. */
     private static final String ON_THE_GROUND = "on the ground";
 
+    /** The randomness used to roll the diamond chance, and handed to the Diamond it may reveal. */
+    private final RandomUtils randomUtils;
+
+    /** Builds the Areas used for the explosion and the fire it sets. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new Geode.
+     *
+     * @param randomUtils the randomness used to roll the diamond chance, and
+     *                    handed to the Diamond it may reveal
+     * @param areaFactory builds the Areas used for the explosion and the fire it sets
      */
-    public Geode() {
+    public Geode(RandomUtils randomUtils, AreaFactory areaFactory) {
         super("Geode", 'g');
         this.makePortable();
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -88,13 +100,13 @@ public class Geode extends Item implements Breakable {
         } else {
             location.removeItem(this);
         }
-        if (RandomUtils.rollPercent(DIAMOND_CHANCE_PERCENT)) {
-            location.addItem(new Diamond());
+        if (randomUtils.rollPercent(DIAMOND_CHANCE_PERCENT)) {
+            location.addItem(new Diamond(randomUtils));
             return actor + " breaks the " + this + ". It splits open, revealing a diamond!";
         }
-        new Explosion(EXPLOSION_DAMAGE).detonateOn(Area.centredOn(location));
-        ItemDropper.adjacentTo(location).placeOnEveryTile(
-                () -> new Fire(FIRE_LIFETIME_TURNS, BURN_DAMAGE_PER_TURN, BURN_DURATION_TURNS));
+        new Explosion(EXPLOSION_DAMAGE).detonateOn(areaFactory.centredOn(location));
+        new ItemDropper(areaFactory.adjacentTo(location)).placeOnEveryTile(
+                new FireFactory(FIRE_LIFETIME_TURNS, BURN_DAMAGE_PER_TURN, BURN_DURATION_TURNS));
         return actor + " breaks the " + this + ". It explodes, dealing " + EXPLOSION_DAMAGE
                 + " damage to everyone nearby and setting the ground alight!";
     }

@@ -7,7 +7,7 @@ import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.pests.PestPresent;
 import game.positions.TemporaryGround;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 
 /**
  * A set pest trap. Each turn it pulls every pest within two tiles one tile
@@ -40,6 +40,9 @@ public class TrapGround extends TemporaryGround {
     /** Finds the pests around the trap. */
     private final PestPresent pestFinder = new PestPresent();
 
+    /** Builds the Areas the trap searches for pests to pull and capture. */
+    private final AreaFactory areaFactory;
+
     /** How many more pests the trap can capture. */
     private int capturesLeft = MAX_CAPTURES;
 
@@ -47,9 +50,11 @@ public class TrapGround extends TemporaryGround {
      * Sets a trap on a ground.
      *
      * @param originalGround the ground to restore when the trap is used up
+     * @param areaFactory builds the Areas the trap searches for pests to pull and capture
      */
-    public TrapGround(Ground originalGround) {
+    public TrapGround(Ground originalGround, AreaFactory areaFactory) {
         super(DISPLAY_CHAR, NAME, originalGround, DURATION_TURNS);
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -78,7 +83,7 @@ public class TrapGround extends TemporaryGround {
      */
     private String capturePests(Location location) {
         StringBuilder report = new StringBuilder();
-        for (Location tile : Area.centredOn(location).filter(pestFinder).tiles()) {
+        for (Location tile : areaFactory.centredOn(location).filter(pestFinder).tiles()) {
             if (capturesLeft == 0) {
                 break;
             }
@@ -100,7 +105,7 @@ public class TrapGround extends TemporaryGround {
     private String pullPests(Location location) {
         GameMap map = location.map();
         StringBuilder report = new StringBuilder();
-        for (Location tile : Area.within(location, PULL_RADIUS).filter(pestFinder).tiles()) {
+        for (Location tile : areaFactory.within(location, PULL_RADIUS).filter(pestFinder).tiles()) {
             if (isNextTo(tile, location)) {
                 continue;
             }

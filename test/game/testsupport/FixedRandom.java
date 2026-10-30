@@ -8,6 +8,10 @@ import game.random.RandomUtils;
  * Every random integer is 0, so random picks always take the first option.
  * A chance of 100% always succeeds and a chance of 0% always fails; any
  * other chance succeeds or fails depending on {@link #setRollsSucceed}.
+ * <p>
+ * Unlike production code, a test simply constructs a {@code FixedRandom} and
+ * passes it to whatever it is testing, through that class's own constructor:
+ * there is no global instance to install, since {@link RandomUtils} has none.
  */
 public class FixedRandom extends RandomUtils {
 
@@ -16,24 +20,6 @@ public class FixedRandom extends RandomUtils {
 
     /** Whether a chance between 0% and 100% succeeds. */
     private boolean rollsSucceed = true;
-
-    /**
-     * Creates a FixedRandom and installs it for the whole game.
-     *
-     * @return the installed instance
-     */
-    public static FixedRandom install() {
-        FixedRandom fixed = new FixedRandom();
-        RandomUtils.setInstance(fixed);
-        return fixed;
-    }
-
-    /**
-     * Puts back a normal RandomUtils, so other tests are not affected.
-     */
-    public static void uninstall() {
-        RandomUtils.setInstance(new RandomUtils());
-    }
 
     /**
      * Sets whether a chance between 0% and 100% succeeds from now on.

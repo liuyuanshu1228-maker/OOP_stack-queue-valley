@@ -3,8 +3,9 @@ package game.pests;
 import edu.monash.fit2099.engine.positions.Location;
 import game.plants.Regressible;
 import game.positions.Plantable;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.positions.farm.Dirt;
+import game.random.RandomUtils;
 
 /**
  * A pest that burrows one or two tiles in a straight line, up, down, left or
@@ -28,11 +29,20 @@ public class BurrowingMole extends Pest {
             {0, -2}, {2, 0}, {0, 2}, {-2, 0}
     };
 
+    /** Builds the Area of tiles around this mole that may cave in. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a burrowing mole.
+     *
+     * @param randomUtils the randomness forwarded to this mole's fallback
+     *                    wandering behaviour; this mole's own feeding has no
+     *                    randomness of its own, so nothing is kept here
+     * @param areaFactory builds the Area of tiles around this mole that may cave in
      */
-    public BurrowingMole() {
-        super(NAME, DISPLAY_CHAR, HIT_POINTS, BURROW_OFFSETS);
+    public BurrowingMole(RandomUtils randomUtils, AreaFactory areaFactory) {
+        super(NAME, DISPLAY_CHAR, HIT_POINTS, BURROW_OFFSETS, randomUtils, areaFactory);
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -50,7 +60,7 @@ public class BurrowingMole extends Pest {
         }
         String report = plant.regress(here);
         int cavedIn = 0;
-        for (Location tile : Area.adjacentTo(here).tiles()) {
+        for (Location tile : areaFactory.adjacentTo(here).tiles()) {
             if (isStraightNeighbour(here, tile) && tile.getGroundAs(Plantable.class) != null) {
                 tile.setGround(new Dirt());
                 cavedIn++;

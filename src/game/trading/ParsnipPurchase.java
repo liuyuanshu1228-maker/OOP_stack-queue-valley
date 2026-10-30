@@ -4,12 +4,13 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.crops.ParsnipItem;
 import game.crops.Crop;
+import game.positions.area.AreaFactory;
 import game.positions.area.ItemDropper;
 import game.crops.Parsnip;
+import game.random.RandomUtils;
 
-/** 
- * Buying a Parsnip crop: 250 coins, drops 3 Parsnips once planted. 
- * 
+/**
+ * Buying a Parsnip crop: 250 coins, drops 3 Parsnips once planted.
  */
 public class ParsnipPurchase extends CropPurchase {
 
@@ -18,11 +19,24 @@ public class ParsnipPurchase extends CropPurchase {
     /** Number of Parsnips dropped next to the crop when it is bought. */
     private static final int PARSNIPS_PRODUCED = 3;
 
+    /** The randomness handed to the planted Parsnip. */
+    private final RandomUtils randomUtils;
+
+    /** Builds the Area the bonus Parsnips are dropped onto, and handed to the planted Parsnip. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new ParsnipPurchase. Initializes the purchase option with a price of 250 coins.
+     *
+     * @param randomUtils the randomness handed to the planted Parsnip
+     * @param areaFactory builds the Area searched for a planting tile and the
+     *                    Area the bonus Parsnips are dropped onto, and handed
+     *                    to the planted Parsnip for its own abilities
      */
-    public ParsnipPurchase() {
-        super("Parsnip crop", PRICE);
+    public ParsnipPurchase(RandomUtils randomUtils, AreaFactory areaFactory) {
+        super("Parsnip crop", PRICE, areaFactory);
+        this.randomUtils = randomUtils;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -32,7 +46,7 @@ public class ParsnipPurchase extends CropPurchase {
      */
     @Override
     protected Crop createCrop() {
-        return new Parsnip();
+        return new Parsnip(randomUtils, areaFactory);
     }
 
     /**
@@ -45,8 +59,9 @@ public class ParsnipPurchase extends CropPurchase {
      */
     @Override
     protected String applyPlantingEffect(Actor buyer, Actor merchant, Location cropLocation) {
+        ItemDropper dropper = new ItemDropper(areaFactory.adjacentTo(cropLocation));
         for (int i = 0; i < PARSNIPS_PRODUCED; i++) {
-            ItemDropper.adjacentTo(cropLocation).dropOnRandomTile(new ParsnipItem());
+            dropper.dropOnRandomTile(new ParsnipItem());
         }
         return buyer + " buys a Parsnip crop from " + merchant + ", planted at " + cropLocation + ".";
     }

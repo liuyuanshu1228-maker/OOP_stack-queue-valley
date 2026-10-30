@@ -19,11 +19,17 @@ public class Diamond extends SellableItem {
     /** Percentage chance that the Merchant steals a random item from the seller after payment. */
     private static final int THEFT_CHANCE_PERCENT = 50;
 
+    /** The randomness used to roll the theft chance and pick the stolen item. */
+    private final RandomUtils randomUtils;
+
     /**
      * Creates a new Diamond. Initializes the portable Diamond item with display character 'd'.
+     *
+     * @param randomUtils the randomness used to roll the theft chance and pick the stolen item
      */
-    public Diamond() {
+    public Diamond(RandomUtils randomUtils) {
         super("Diamond", 'd', SELL_PRICE);
+        this.randomUtils = randomUtils;
     }
 
     /**
@@ -37,10 +43,10 @@ public class Diamond extends SellableItem {
     @Override
     protected String applySaleEffect(Actor seller, MerchantContext merchantContext) {
         List<Item> items = seller.getInventory().getItems();
-        if (items.isEmpty() || !RandomUtils.rollPercent(THEFT_CHANCE_PERCENT)) {
+        if (items.isEmpty() || !randomUtils.rollPercent(THEFT_CHANCE_PERCENT)) {
             return "";
         }
-        Item stolen = RandomUtils.pickRandom(items);
+        Item stolen = randomUtils.pickRandom(items);
         seller.getInventory().remove(stolen);
         return merchantContext.getMerchant() + " also steals " + stolen + ".";
     }

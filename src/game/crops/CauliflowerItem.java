@@ -15,11 +15,17 @@ public class CauliflowerItem extends ConsumableItem {
     /** Chance (out of 100) that eating a Cauliflower adds another Cauliflower to the inventory. */
     private static final int BONUS_CHANCE_PERCENT = 50;
 
+    /** The randomness used to roll the bonus chance, held to hand to the bonus copy as well. */
+    private final RandomUtils randomUtils;
+
     /**
      * Creates a new CauliflowerItem.
+     *
+     * @param randomUtils the randomness used to roll the bonus chance
      */
-    public CauliflowerItem() {
+    public CauliflowerItem(RandomUtils randomUtils) {
         super("Cauliflower", 'k');
+        this.randomUtils = randomUtils;
     }
 
     /**
@@ -34,8 +40,8 @@ public class CauliflowerItem extends ConsumableItem {
     public String consume(Actor actor) {
         String message = eatToHeal(actor, HEAL_AMOUNT);
 
-        if (RandomUtils.rollPercent(BONUS_CHANCE_PERCENT)) {
-            actor.getInventory().add(new CauliflowerItem());
+        if (randomUtils.rollPercent(BONUS_CHANCE_PERCENT)) {
+            actor.getInventory().add(new CauliflowerItem(randomUtils));
             message += " A bonus cauliflower appears in " + actor + "'s inventory.";
         }
 

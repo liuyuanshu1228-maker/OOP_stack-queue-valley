@@ -7,7 +7,7 @@ import game.actions.MerchantContext;
 import game.actions.Purchasable;
 import game.crops.Crop;
 import game.positions.Plantable;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.positions.area.PlantableTile;
 import game.statistics.FarmerStatistics;
 
@@ -23,15 +23,20 @@ public abstract class CropPurchase implements Purchasable {
     private final String productName;
     private final int price;
 
+    /** Builds the Area searched for a tile to plant the crop on. */
+    private final AreaFactory areaFactory;
+
     /**
      * Creates a new CropPurchase.
      *
      * @param productName the name of the crop being purchased
      * @param price the cost of the crop in coins
+     * @param areaFactory builds the Area searched for a tile to plant the crop on
      */
-    protected CropPurchase(String productName, int price) {
+    protected CropPurchase(String productName, int price, AreaFactory areaFactory) {
         this.productName = productName;
         this.price = price;
+        this.areaFactory = areaFactory;
     }
 
     /**
@@ -67,7 +72,7 @@ public abstract class CropPurchase implements Purchasable {
     public final String purchase(Actor buyer, MerchantContext merchantContext) {
         Actor merchant = merchantContext.getMerchant();
         Optional<Location> plantingSpot =
-                Area.adjacentTo(merchantContext.getLocation()).filter(new PlantableTile()).randomTile();
+                areaFactory.adjacentTo(merchantContext.getLocation()).filter(new PlantableTile()).randomTile();
 
         if (plantingSpot.isEmpty()) {
             return buyer + " tries to buy a " + productName

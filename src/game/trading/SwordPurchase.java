@@ -16,6 +16,18 @@ public class SwordPurchase implements Purchasable {
     /** Chance (out of 100) that the Merchant keeps the coins and hands over nothing. */
     private static final int FAIL_CHANCE_PERCENT = 50;
 
+    /** The randomness used to roll the fail chance. */
+    private final RandomUtils randomUtils;
+
+    /**
+     * Creates a new SwordPurchase.
+     *
+     * @param randomUtils the randomness used to roll the fail chance
+     */
+    public SwordPurchase(RandomUtils randomUtils) {
+        this.randomUtils = randomUtils;
+    }
+
     /**
      * Returns the display name of the Sword product.
      *
@@ -48,7 +60,7 @@ public class SwordPurchase implements Purchasable {
     public String purchase(Actor buyer, MerchantContext merchantContext) {
         Actor merchant = merchantContext.getMerchant();
         buyer.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.DECREASE, PRICE);
-        if (RandomUtils.rollPercent(FAIL_CHANCE_PERCENT)) {
+        if (randomUtils.rollPercent(FAIL_CHANCE_PERCENT)) {
             return buyer + " pays " + merchant + ", who pockets the coins and hands over nothing.";
         }
         buyer.getInventory().add(new Sword());
