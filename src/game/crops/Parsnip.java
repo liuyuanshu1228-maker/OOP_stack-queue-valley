@@ -4,12 +4,18 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Location;
+import edu.monash.fit2099.engine.statistics.StatisticOperations;
+import game.actions.MerchantContext;
+import game.actions.Purchasable;
 import game.plants.Produce;
+import game.positions.Waterable;
 import game.positions.area.AreaFactory;
 import game.positions.area.ItemDropper;
 import game.random.RandomUtils;
+import game.statistics.FarmerStatistics;
 import game.statistics.StatisticAdjuster;
-import game.positions.Waterable;
+
+import java.util.Optional;
 
 /**
  * A parsnip crop. It can be watered, which heals the farmer but risks
@@ -20,7 +26,7 @@ import game.positions.Waterable;
  * tile by itself. It is mature only and has no earlier stage, so when it is
  * regressed it dies, leaving Dirt.
  */
-public class Parsnip extends Crop implements Waterable {
+public class Parsnip extends Crop implements Waterable, Purchasable {
 
     /** Stamina consumed by a successful Parsnip harvest. */
     private static final int HARVEST_STAMINA_COST = 1;
@@ -39,6 +45,15 @@ public class Parsnip extends Crop implements Waterable {
 
     /** How many turns between parsnips dropped by the plant itself. */
     private static final int PRODUCE_INTERVAL = 15;
+
+    /** The name a Parsnip crop is sold under by the Merchant. */
+    private static final String PRODUCT_NAME = "Parsnip crop";
+
+    /** Coins charged for a Parsnip crop. */
+    private static final int PRICE = 250;
+
+    /** Number of Parsnips dropped next to a Parsnip crop when it is bought. */
+    private static final int PARSNIPS_GIVEN_ON_PURCHASE = 3;
 
     /** The randomness used by this crop's own chances. */
     private final RandomUtils randomUtils;
@@ -135,4 +150,46 @@ public class Parsnip extends Crop implements Waterable {
 
         return message;
     }
+
+    /**
+     * @return the name a Parsnip crop is sold under
+     */
+    @Override
+    public String getProductName() {
+        return PRODUCT_NAME;
+    }
+
+    /**
+     * @return the price of a Parsnip crop, in coins
+     */
+    @Override
+    public int getPrice() {
+        return PRICE;
+    }
+
+    /**
+     * Has the Merchant plant a new Parsnip next to them, charges the buyer, and
+     * drops three Parsnips around the new crop. Nothing is charged if there is
+     * nowhere to plant it.
+     *
+     * @param buyer the actor buying the crop
+     * @param merchantContext the Merchant selling it and where they stand
+     * @return a description of the purchase
+     */
+    @Override
+    public String purchase(Actor buyer, MerchantContext merchantContext) {
+        Actor merchant = merchantContext.getMerchant();
+        Optional<Location> planted = plantNextTo(new Parsnip(randomUtils, areaFactory),
+                merchantContext.getLocation(), areaFactory);
+        if (planted.isEmpty()) {
+            return noRoomToPlant(buyer, merchant, PRODUCT_NAME);
+        }
+        buyer.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.DECREASE, PRICE);
+        ItemDropper dropper = new ItemDropper(areaFactory.adjacentTo(planted.get()));
+        for (int i = 0; i < PARSNIPS_GIVEN_ON_PURCHASE; i++) {
+            dropper.dropOnRandomTile(new ParsnipItem());
+        }
+        return buyer + " buys a " + PRODUCT_NAME + " from " + merchant + ", planted at " + planted.get() + ".";
+    }
+
 }

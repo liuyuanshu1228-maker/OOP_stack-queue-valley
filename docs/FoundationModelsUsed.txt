@@ -59,6 +59,31 @@ I also used Claude to generate simulation scripts to check program behaviour.
 These scripts are not submitted as part of the assessment.
 I reviewed and tested the resulting code and take responsibility for the correctness and quality of my submitted work.
 
+Assignment 3 - REQ3 (Infestation and Pest Control)
+
+I used Claude (Anthropic) through the Claude Code desktop app (https://claude.ai/code).
+
+How it was used:
+- Planning: explained the A3 rules and rubric, proposed designs and listed
+  the pros and cons of alternatives (for example a pest trap as a ground or
+  as an actor, and where to put the temporary grounds to avoid package cycles).
+- Code: wrote the REQ3 classes in game.pests, game.pestcontrol,
+  SeekPlantBehaviour and TemporaryGround, the changes to StackQueueValleyWorld,
+  and the REQ3 unit tests, one step at a time from a design I approved.
+- Checking: ran the tests and short game runs, and reviewed the whole
+  codebase against the rubric and the A2 marker feedback.
+- Documents: drafted feature-proposal.md, the REQ3 design rationale and the
+  README section, and edited the REQ3 class diagram file.
+
+My own work and decisions:
+- Chose the feature and its three pests and three defences, and agreed the
+  idea with my TA, including the tutor's changes (the trap pulls pests in,
+  each pest moves in its own way, the salt rule).
+- Decided every design choice, for example keeping the UML the TA had
+  approved instead of redesigning the trap, and dropping the mole's Stone
+  to avoid a method reference.
+- Reviewed every change and wrote every commit myself.
+
 ----------------------------------------------------------------------------------------
 Yuanshu Liu - REQ2 (Mines travel & breakables) and REQ5 mobbling infrastructure
 

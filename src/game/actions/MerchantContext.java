@@ -10,8 +10,8 @@ import edu.monash.fit2099.engine.positions.Location;
  * or both), so the two are bundled into one immutable value instead of being
  * passed as two separate parameters that would otherwise have to travel
  * together, in the same order, through every signature in the trading/selling
- * chain (Sellable, Purchasable, SellableItem, CropPurchase, SellAction, BuyAction
- * and their subclasses).
+ * chain (Sellable, Purchasable, SellableItem, SellAction, BuyAction and the
+ * products that sell or are sold).
  */
 public class MerchantContext {
 

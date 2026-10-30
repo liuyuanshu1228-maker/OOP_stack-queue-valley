@@ -10,7 +10,12 @@ import game.plants.Plant;
 import game.plants.PlantAbility;
 import game.positions.FreelyWaterable;
 import game.positions.Waterable;
+import game.positions.Plantable;
+import game.positions.area.AreaFactory;
+import game.positions.area.PlantableTile;
 import game.positions.farm.Dirt;
+
+import java.util.Optional;
 
 /**
  * Abstract base class for all crops.
@@ -78,6 +83,38 @@ public abstract class Crop extends Plant implements Harvestable, FreelyWaterable
      */
     public void removeCrop(Location location) {
         location.setGround(new Dirt());
+    }
+
+    /**
+     * Plants a new crop on a random tile next to the given one, if a tile
+     * there accepts a crop. A crop that can be bought uses this to have the
+     * Merchant plant the copy that was paid for.
+     *
+     * @param crop the new crop to plant
+     * @param centre the tile to plant next to
+     * @param areaFactory builds the Area of tiles next to centre
+     * @return where the crop was planted, or empty if no tile next to centre accepts a crop
+     */
+    protected final Optional<Location> plantNextTo(Crop crop, Location centre, AreaFactory areaFactory) {
+        Optional<Location> spot = areaFactory.adjacentTo(centre).filter(new PlantableTile()).randomTile();
+        if (spot.isPresent()) {
+            spot.get().getGroundAs(Plantable.class).plant(crop, spot.get());
+        }
+        return spot;
+    }
+
+    /**
+     * Describes a purchase that could not go ahead because the Merchant had
+     * nowhere to plant the crop. Nothing is charged in that case.
+     *
+     * @param buyer the actor trying to buy this crop
+     * @param merchant the Merchant selling it
+     * @param productName the name this crop is sold under
+     * @return a description of the failed purchase
+     */
+    protected final String noRoomToPlant(Actor buyer, Actor merchant, String productName) {
+        return buyer + " tries to buy a " + productName
+                + ", but " + merchant + " has no room to plant it nearby.";
     }
 
     /**

@@ -25,6 +25,7 @@ import game.crow.Crow;
 import game.enchantments.BlazeEnchantment;
 import game.enchantments.BountyEnchantment;
 import game.enchantments.ShatterEnchantment;
+import game.items.Sword;
 import game.items.mine.Geode;
 import game.items.tools.Enchantment;
 import game.items.tools.Hoe;
@@ -46,9 +47,6 @@ import game.positions.farm.Soil;
 import game.positions.mine.CopperNode;
 import game.positions.mine.Rock;
 import game.random.RandomUtils;
-import game.trading.ParsnipPurchase;
-import game.trading.SwordPurchase;
-import game.trading.TomatoPurchase;
 import game.travel.AlienDevice;
 import game.travel.Ladder;
 import game.travel.TeleportationCircle;
@@ -198,9 +196,9 @@ public class StackQueueValleyWorld extends World {
         placeActor(inheritedFarmMap, occupiedLocations, new Cow("Cow", randomUtils, areaFactory), randomUtils);
         placeActor(inheritedFarmMap, occupiedLocations,
                 new Merchant(randomUtils,
-                        new ParsnipPurchase(randomUtils, areaFactory),
-                        new TomatoPurchase(randomUtils, areaFactory),
-                        new SwordPurchase(randomUtils)),
+                        new Parsnip(randomUtils, areaFactory),
+                        new Tomato(randomUtils, areaFactory),
+                        new Sword(randomUtils)),
                 randomUtils);
         placeActor(inheritedFarmMap, occupiedLocations, new Crow("Crow", randomUtils, areaFactory), randomUtils);
         placeActor(inheritedFarmMap, occupiedLocations, new SlimeSnail(randomUtils, areaFactory), randomUtils);
