@@ -93,13 +93,24 @@ public abstract class CapabilityToolAction<C, T extends HasStaminaCost> extends 
         if (usableTool.isEmpty()) {
             return at(actor + " " + noToolMessage);
         }
-        T tool = usableTool.get();
+        return useTool(actor, usableTool.get(), capability);
+    }
 
+    /**
+     * Uses the chosen tool: deducts its stamina cost, applies the
+     * subclass-specific effect, then gives the tool a chance to fire any
+     * Enchantment attached to it.
+     *
+     * @param actor the actor using the tool
+     * @param tool the tool able to act on the capability
+     * @param capability the Ground's capability the tool acts on
+     * @return a description of the outcome
+     */
+    private String useTool(Actor actor, T tool, C capability) {
         int cost = staminaCost(tool, capability);
         if (!new StatisticAdjuster(actor).trySpend(ActorStatistics.STAMINA, cost)) {
             return at(actor + " is too tired to do this.");
         }
-
         String effectReport = at(applyEffect(actor, location, capability));
         return effectReport + new EnchantmentTrigger().fire(actor, tool, location);
     }

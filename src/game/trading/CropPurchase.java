@@ -84,15 +84,25 @@ public abstract class CropPurchase implements Purchasable {
         Location plantedLocation = plantingSpot.get();
         plantedLocation.getGroundAs(Plantable.class).plant(createCrop(), plantedLocation);
 
-        boolean waived = rollPaymentWaiver();
-        if (!waived) {
-            buyer.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.DECREASE, price);
-        }
-
+        boolean waived = chargeUnlessWaived(buyer);
         String message = applyPlantingEffect(buyer, merchant, plantedLocation);
         return waived
                 ? message + " " + merchant + " plants it for free, out of generosity."
                 : message;
+    }
+
+    /**
+     * Takes the price from the buyer, unless this purchase is waived.
+     *
+     * @param buyer the Actor buying this crop
+     * @return true if the payment was waived and nothing was taken
+     */
+    private boolean chargeUnlessWaived(Actor buyer) {
+        boolean waived = rollPaymentWaiver();
+        if (!waived) {
+            buyer.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.DECREASE, price);
+        }
+        return waived;
     }
 
     /**
