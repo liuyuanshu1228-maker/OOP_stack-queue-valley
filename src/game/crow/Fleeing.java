@@ -47,7 +47,7 @@ public class Fleeing extends BaseCreatureState {
     @Override
     public String act(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        Optional<Location> threat = new CrowSensing(creature, here).nearestActor();
+        Optional<Location> threat = new CrowSensing(creature, here, areaFactoryOf(creature)).nearestActor();
         if (threat.isEmpty()) {
             Optional<Composure> composure = creature.asCapability(Composure.class);
             int safeTurns = composure.isPresent() ? composure.get().getSafeTurns() : 0;
@@ -76,7 +76,7 @@ public class Fleeing extends BaseCreatureState {
      */
     @Override
     public CreatureState nextState(Actor creature, GameMap map) {
-        CrowSensing sensing = new CrowSensing(creature, map.locationOf(creature));
+        CrowSensing sensing = new CrowSensing(creature, map.locationOf(creature), areaFactoryOf(creature));
         boolean safe = sensing.isSafe();
         int safeTurns = updateComposure(creature, safe);
 
@@ -169,16 +169,6 @@ public class Fleeing extends BaseCreatureState {
         return startled;
     }
 
-    /**
-     * @param creature the crow acting
-     * @return the AreaFactory this crow hands out through its AreaFactorySource capability
-     * @throws IllegalStateException if the crow has no AreaFactorySource capability
-     */
-    private AreaFactory areaFactoryOf(Actor creature) {
-        return creature.asCapability(AreaFactorySource.class)
-                .orElseThrow(() -> new IllegalStateException(creature + " has no AreaFactorySource to flee with"))
-                .areaFactory();
-    }
 
     /** @return the name of this state */
     @Override

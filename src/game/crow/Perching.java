@@ -9,7 +9,6 @@ import game.creaturestate.BaseCreatureState;
 import game.creaturestate.CreatureState;
 import game.positions.FreelyWaterable;
 import game.positions.area.AreaFactory;
-import game.random.RandomUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.List;
  * The crow's default, idle state: wanders aimlessly around the map, watching
  * for food or for actors to mob. Its ordinary turn builds a fresh
  * {@link WanderBehaviour} using the crow's own randomness, queried through
- * its {@link RandomnessSource} capability -- this state must stay
+ * its {@link game.creaturestate.RandomnessSource} capability -- this state must stay
  * constructible with no arguments (a new instance is created on every
  * transition), so it cannot hold a pre-built WanderBehaviour of its own.
  * <p>
@@ -74,7 +73,7 @@ public class Perching extends BaseCreatureState {
      */
     @Override
     public CreatureState nextState(Actor creature, GameMap map) {
-        CrowSensing sensing = new CrowSensing(creature, map.locationOf(creature));
+        CrowSensing sensing = new CrowSensing(creature, map.locationOf(creature), areaFactoryOf(creature));
 
         if (sensing.hasLoneTargetWithItems()) {
             return new Mobbing();
@@ -99,9 +98,7 @@ public class Perching extends BaseCreatureState {
     @Override
     public String onEnter(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        AreaFactory areaFactory = creature.asCapability(AreaFactorySource.class)
-                .orElseThrow(() -> new IllegalStateException(creature + " has no AreaFactorySource to water crops with"))
-                .areaFactory();
+        AreaFactory areaFactory = areaFactoryOf(creature);
         List<FreelyWaterable> watered = new ArrayList<>();
         for (Location location : areaFactory.centredOn(here).tiles()) {
             FreelyWaterable waterable = location.getGroundAs(FreelyWaterable.class);
@@ -120,16 +117,6 @@ public class Perching extends BaseCreatureState {
                 + watered + ".";
     }
 
-    /**
-     * @param creature the crow acting
-     * @return the randomness this crow hands out through its RandomnessSource capability
-     * @throws IllegalStateException if the crow has no RandomnessSource capability
-     */
-    private RandomUtils randomUtilsOf(Actor creature) {
-        return creature.asCapability(RandomnessSource.class)
-                .orElseThrow(() -> new IllegalStateException(creature + " has no RandomnessSource to wander with"))
-                .randomUtils();
-    }
 
     /** @return the name of this state */
     @Override

@@ -49,7 +49,7 @@ public class Foraging extends BaseCreatureState {
     @Override
     public String act(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        CrowSensing sensing = new CrowSensing(creature, here);
+        CrowSensing sensing = new CrowSensing(creature, here, areaFactoryOf(creature));
 
         if (sensing.isOnFood()) {
             return cache(creature, here);
@@ -79,7 +79,7 @@ public class Foraging extends BaseCreatureState {
      * @return a description of what happened
      */
     private String cache(Actor creature, Location here) {
-        Optional<Item> forageable = new CrowSensing(creature, here).forageableItemHere();
+        Optional<Item> forageable = new CrowSensing(creature, here, areaFactoryOf(creature)).forageableItemHere();
         if (forageable.isEmpty()) {
             throw new IllegalStateException("cache() called with nothing forageable at " + here);
         }
@@ -118,7 +118,7 @@ public class Foraging extends BaseCreatureState {
      */
     @Override
     public CreatureState nextState(Actor creature, GameMap map) {
-        CrowSensing sensing = new CrowSensing(creature, map.locationOf(creature));
+        CrowSensing sensing = new CrowSensing(creature, map.locationOf(creature), areaFactoryOf(creature));
         if (sensing.isCrowded()) {
             return new Fleeing();
         }
@@ -144,7 +144,7 @@ public class Foraging extends BaseCreatureState {
     @Override
     public String onEnter(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        Optional<Location> itemLocation = new CrowSensing(creature, here).nearestFood();
+        Optional<Location> itemLocation = new CrowSensing(creature, here, areaFactoryOf(creature)).nearestFood();
 
         if (itemLocation.isEmpty()) {
             return creature + " starts foraging the items at " + here
@@ -183,16 +183,6 @@ public class Foraging extends BaseCreatureState {
         return scattered;
     }
 
-    /**
-     * @param creature the crow acting
-     * @return the AreaFactory this crow hands out through its AreaFactorySource capability
-     * @throws IllegalStateException if the crow has no AreaFactorySource capability
-     */
-    private AreaFactory areaFactoryOf(Actor creature) {
-        return creature.asCapability(AreaFactorySource.class)
-                .orElseThrow(() -> new IllegalStateException(creature + " has no AreaFactorySource to forage with"))
-                .areaFactory();
-    }
 
     /** @return the name of this state */
     @Override

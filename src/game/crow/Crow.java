@@ -7,9 +7,11 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import game.actions.CreatureStateAction;
 import game.actors.ConsciousActor;
+import game.creaturestate.AreaFactorySource;
 import game.creaturestate.Composure;
 import game.creaturestate.CreatureState;
 import game.creaturestate.ItemCache;
+import game.creaturestate.RandomnessSource;
 import game.creaturestate.StatefulCreature;
 import game.positions.area.AreaFactory;
 import game.random.RandomUtils;
@@ -26,8 +28,8 @@ import java.util.Set;
  * The crow's states must stay constructible with no arguments (a new
  * instance is created on every transition), so they cannot hold their own
  * {@link RandomUtils} or {@link AreaFactory}. Instead the crow carries both
- * and exposes them through the {@link RandomnessSource} and
- * {@link AreaFactorySource} capabilities, which its states query at the
+ * and exposes them through the {@link game.creaturestate.RandomnessSource} and
+ * {@link game.creaturestate.AreaFactorySource} capabilities, which its states query at the
  * point of use.
  */
 public class Crow extends ConsciousActor

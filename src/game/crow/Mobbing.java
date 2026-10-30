@@ -9,7 +9,6 @@ import game.creaturestate.BaseCreatureState;
 import game.creaturestate.CreatureState;
 import game.positions.area.AreaFactory;
 import game.positions.area.ItemDropper;
-import game.random.RandomUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +51,7 @@ public class Mobbing extends BaseCreatureState {
     public String act(Actor creature, GameMap map) {
         AreaFactory areaFactory = areaFactoryOf(creature);
         Location here = map.locationOf(creature);
-        Optional<Location> targetLoc = new CrowSensing(creature, here).nearestActor();
+        Optional<Location> targetLoc = new CrowSensing(creature, here, areaFactoryOf(creature)).nearestActor();
 
         if (targetLoc.isEmpty()) {
             return creature + " mobs the area but finds no target.";
@@ -119,7 +118,7 @@ public class Mobbing extends BaseCreatureState {
      */
     @Override
     public CreatureState nextState(Actor creature, GameMap map) {
-        CrowSensing sensing = new CrowSensing(creature, map.locationOf(creature));
+        CrowSensing sensing = new CrowSensing(creature, map.locationOf(creature), areaFactoryOf(creature));
 
         if (sensing.isCrowded()) {
             return new Fleeing();
@@ -142,7 +141,7 @@ public class Mobbing extends BaseCreatureState {
     @Override
     public String onEnter(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        Optional<Location> targetLoc = new CrowSensing(creature, here).nearestActor();
+        Optional<Location> targetLoc = new CrowSensing(creature, here, areaFactoryOf(creature)).nearestActor();
 
         if (targetLoc.isEmpty()) {
             return creature + " swoops into an aggressive stance.";
@@ -161,27 +160,7 @@ public class Mobbing extends BaseCreatureState {
                 + targetLoc.get() + ": " + knockedLoose + "!";
     }
 
-    /**
-     * @param creature the crow acting
-     * @return the AreaFactory this crow hands out through its AreaFactorySource capability
-     * @throws IllegalStateException if the crow has no AreaFactorySource capability
-     */
-    private AreaFactory areaFactoryOf(Actor creature) {
-        return creature.asCapability(AreaFactorySource.class)
-                .orElseThrow(() -> new IllegalStateException(creature + " has no AreaFactorySource to mob with"))
-                .areaFactory();
-    }
 
-    /**
-     * @param creature the crow acting
-     * @return the randomness this crow hands out through its RandomnessSource capability
-     * @throws IllegalStateException if the crow has no RandomnessSource capability
-     */
-    private RandomUtils randomUtilsOf(Actor creature) {
-        return creature.asCapability(RandomnessSource.class)
-                .orElseThrow(() -> new IllegalStateException(creature + " has no RandomnessSource to steal with"))
-                .randomUtils();
-    }
 
     /** @return the name of this state */
     @Override

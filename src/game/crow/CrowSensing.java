@@ -17,11 +17,9 @@ import java.util.Optional;
  * <p>
  * One instance describes one creature at one Location; the states are shared
  * between crows, so they create a new one each time they need to sense. The
- * creature passed in is always the one doing the sensing (unlike
- * {@link CrowNavigation}, which can also navigate another actor), so this
- * class queries the creature's own {@link SensingRange} and
- * {@link AreaFactorySource} capabilities directly rather than having them
- * passed in.
+ * creature passed in is always the one doing the sensing, so this class asks
+ * the creature for its own {@link SensingRange}. The {@link AreaFactory} is
+ * passed in by the state, as it is for {@link CrowNavigation}.
  */
 public class CrowSensing {
 
@@ -49,23 +47,17 @@ public class CrowSensing {
      * rather than this class assuming the creature is a {@link Crow}, so these
      * senses could later be reused by another kind of stateful creature; a
      * creature without one is simply assumed to have no sensing range at all.
-     * The AreaFactory used to search for food and actors, however, has no
-     * such sensible default, so it is required through the creature's
-     * {@link AreaFactorySource} capability instead.
      *
      * @param creature the creature doing the sensing
      * @param here the Location the creature senses from
-     * @throws IllegalStateException if the creature has no AreaFactorySource capability
+     * @param areaFactory builds the Area of tiles within sensing range
      */
-    public CrowSensing(Actor creature, Location here) {
+    public CrowSensing(Actor creature, Location here, AreaFactory areaFactory) {
         this.creature = creature;
         this.here = here;
         Optional<SensingRange> range = creature.asCapability(SensingRange.class);
         this.sensingRadius = range.isPresent() ? range.get().sensingRadius() : DEFAULT_SENSING_RADIUS;
-        this.areaFactory = creature.asCapability(AreaFactorySource.class)
-                .orElseThrow(() -> new IllegalStateException(
-                        creature + " has no AreaFactorySource to sense its surroundings with"))
-                .areaFactory();
+        this.areaFactory = areaFactory;
     }
 
     /**
