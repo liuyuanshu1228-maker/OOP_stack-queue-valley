@@ -6,7 +6,9 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.StackQueueValleyWorld;
 import game.crops.Strawberry;
 import game.pests.SlimeSnail;
+import game.positions.area.AreaFactory;
 import game.positions.farm.Soil;
+import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,9 +23,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class SaltBarrierTest {
 
+    private final FixedRandom random = new FixedRandom();
+    private final AreaFactory areaFactory = new AreaFactory(random);
+
     private GameMap map;
     private Location centre;
-    private final SaltBarrier salt = new SaltBarrier();
+    private final SaltBarrier salt = new SaltBarrier(areaFactory);
 
     @BeforeEach
     void setUp() {
@@ -42,7 +47,7 @@ class SaltBarrierTest {
 
     @Test
     void doesNotSaltAPlant() {
-        map.at(1, 1).setGround(new Strawberry());
+        map.at(1, 1).setGround(new Strawberry(random, areaFactory));
 
         salt.deterAround(centre, map);
 
@@ -52,7 +57,7 @@ class SaltBarrierTest {
 
     @Test
     void hurtsAPestOnASaltedTileAndPushesItOut() throws Exception {
-        SlimeSnail snail = new SlimeSnail();
+        SlimeSnail snail = new SlimeSnail(random, areaFactory);
         map.at(1, 1).addActor(snail);
 
         String report = salt.deterAround(centre, map);

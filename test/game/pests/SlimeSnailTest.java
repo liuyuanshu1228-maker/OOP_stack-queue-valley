@@ -10,7 +10,7 @@ import game.positions.area.AreaFactory;
 import game.positions.area.PlantableTile;
 import game.positions.farm.Dirt;
 import game.positions.farm.Soil;
-import game.random.RandomUtils;
+import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,9 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class SlimeSnailTest {
 
-    private final RandomUtils randomUtils = new RandomUtils();
-    private final AreaFactory areaFactory = new AreaFactory(randomUtils);
-    private final SlimeSnail snail = new SlimeSnail(randomUtils, areaFactory);
+    private final FixedRandom random = new FixedRandom();
+    private final AreaFactory areaFactory = new AreaFactory(random);
+    private final SlimeSnail snail = new SlimeSnail(random, areaFactory);
 
     private GameMap map;
     private Location centre;
@@ -41,7 +41,7 @@ class SlimeSnailTest {
 
     @Test
     void setsThePlantBackOneStageAndSlimesTheBareGroundAround() {
-        centre.setGround(new Strawberry(randomUtils, areaFactory));
+        centre.setGround(new Strawberry(random, areaFactory));
 
         String report = snail.feedOn(centre);
 
@@ -52,7 +52,7 @@ class SlimeSnailTest {
 
     @Test
     void aPlantWithNoEarlierStageDiesAndLeavesDirt() {
-        centre.setGround(new StrawberrySeedling(randomUtils, areaFactory));
+        centre.setGround(new StrawberrySeedling(random, areaFactory));
 
         String report = snail.feedOn(centre);
 
@@ -73,8 +73,8 @@ class SlimeSnailTest {
 
     @Test
     void doesNotSlimeANeighbouringPlant() {
-        centre.setGround(new Strawberry(randomUtils, areaFactory));
-        map.at(0, 0).setGround(new StrawberrySeedling(randomUtils, areaFactory));
+        centre.setGround(new Strawberry(random, areaFactory));
+        map.at(0, 0).setGround(new StrawberrySeedling(random, areaFactory));
 
         snail.feedOn(centre);
 
@@ -84,7 +84,7 @@ class SlimeSnailTest {
 
     @Test
     void slimedSoilCannotBePlantedUntilTheSlimeDries() {
-        centre.setGround(new Strawberry(randomUtils, areaFactory));
+        centre.setGround(new Strawberry(random, areaFactory));
         snail.feedOn(centre);
         Location slimedSoil = map.at(0, 0);
         PlantableTile plantable = new PlantableTile();
@@ -101,9 +101,9 @@ class SlimeSnailTest {
 
     @Test
     void saysNothingAboutSlimeWhenThereIsNoBareGroundAround() {
-        centre.setGround(new Strawberry(randomUtils, areaFactory));
+        centre.setGround(new Strawberry(random, areaFactory));
         for (Location tile : areaFactory.adjacentTo(centre).tiles()) {
-            tile.setGround(new StrawberrySeedling(randomUtils, areaFactory));
+            tile.setGround(new StrawberrySeedling(random, areaFactory));
         }
 
         String report = snail.feedOn(centre);

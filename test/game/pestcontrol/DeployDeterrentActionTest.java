@@ -8,6 +8,8 @@ import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.GameMap;
 import game.StackQueueValleyWorld;
 import game.crops.Strawberry;
+import game.positions.area.AreaFactory;
+import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class DeployDeterrentActionTest {
 
+    private final FixedRandom random = new FixedRandom();
+    private final AreaFactory areaFactory = new AreaFactory(random);
+
     private GameMap map;
     private final Holder farmer = new Holder();
 
@@ -33,7 +38,7 @@ class DeployDeterrentActionTest {
 
     @Test
     void usingAnItemUsesItUp() {
-        SaltBarrier salt = new SaltBarrier();
+        SaltBarrier salt = new SaltBarrier(areaFactory);
         farmer.getInventory().add(salt);
 
         ActionList actions = salt.allowableActions(farmer, map);
@@ -46,15 +51,15 @@ class DeployDeterrentActionTest {
 
     @Test
     void aTrapIsNotOfferedOnAPlant() {
-        PestTrap trap = new PestTrap();
-        map.at(1, 1).setGround(new Strawberry());
+        PestTrap trap = new PestTrap(areaFactory);
+        map.at(1, 1).setGround(new Strawberry(random, areaFactory));
 
         assertEquals(0, trap.allowableActions(farmer, map).size());
     }
 
     @Test
     void aTrapIsSetWhereTheFarmerStands() {
-        PestTrap trap = new PestTrap();
+        PestTrap trap = new PestTrap(areaFactory);
         farmer.getInventory().add(trap);
 
         trap.allowableActions(farmer, map).get(0).execute(farmer, map);

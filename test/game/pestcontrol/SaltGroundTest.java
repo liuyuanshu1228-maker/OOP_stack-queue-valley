@@ -3,9 +3,11 @@ package game.pestcontrol;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.pests.SlimeSnail;
+import game.positions.area.AreaFactory;
 import game.positions.area.PlantableTile;
 import game.positions.farm.Dirt;
 import game.positions.farm.Soil;
+import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class SaltGroundTest {
 
+    private final FixedRandom random = new FixedRandom();
+    private final AreaFactory areaFactory = new AreaFactory(random);
+
     private GameMap map;
     private Location tile;
 
@@ -33,8 +38,8 @@ class SaltGroundTest {
     void keepsPestsOutButLetsOthersIn() {
         SaltGround salt = new SaltGround(new Soil());
 
-        assertFalse(salt.canActorEnter(new SlimeSnail()));
-        assertTrue(salt.canActorEnter(new Ladybug()));
+        assertFalse(salt.canActorEnter(new SlimeSnail(random, areaFactory)));
+        assertTrue(salt.canActorEnter(new Ladybug(random)));
     }
 
     @Test

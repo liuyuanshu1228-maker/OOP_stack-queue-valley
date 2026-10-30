@@ -4,8 +4,10 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.crops.Strawberry;
 import game.crops.StrawberrySprout;
+import game.positions.area.AreaFactory;
 import game.positions.farm.Dirt;
 import game.positions.farm.Soil;
+import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,9 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class BurrowingMoleTest {
 
+    private final FixedRandom random = new FixedRandom();
+    private final AreaFactory areaFactory = new AreaFactory(random);
+
     private GameMap map;
     private Location centre;
-    private final BurrowingMole mole = new BurrowingMole();
+    private final BurrowingMole mole = new BurrowingMole(random, areaFactory);
 
     @BeforeEach
     void setUp() {
@@ -32,7 +37,7 @@ class BurrowingMoleTest {
 
     @Test
     void setsThePlantBackAndCavesInTheFourStraightNeighbours() {
-        centre.setGround(new Strawberry());
+        centre.setGround(new Strawberry(random, areaFactory));
 
         String report = mole.feedOn(centre);
 
@@ -56,8 +61,8 @@ class BurrowingMoleTest {
 
     @Test
     void doesNotCaveInANeighbouringPlant() {
-        centre.setGround(new Strawberry());
-        map.at(1, 0).setGround(new Strawberry());
+        centre.setGround(new Strawberry(random, areaFactory));
+        map.at(1, 0).setGround(new Strawberry(random, areaFactory));
 
         mole.feedOn(centre);
 
@@ -69,7 +74,7 @@ class BurrowingMoleTest {
     void saysNothingAboutCavingInWhenThereIsNoSoilAround() {
         map = TestFarm.map("...", "...", "...");
         centre = map.at(1, 1);
-        centre.setGround(new Strawberry());
+        centre.setGround(new Strawberry(random, areaFactory));
 
         String report = mole.feedOn(centre);
 

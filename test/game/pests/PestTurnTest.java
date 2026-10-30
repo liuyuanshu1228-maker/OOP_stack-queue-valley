@@ -8,9 +8,9 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import game.StackQueueValleyWorld;
 import game.crops.Strawberry;
 import game.crops.StrawberrySprout;
+import game.positions.area.AreaFactory;
 import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,25 +23,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class PestTurnTest {
 
+    private final FixedRandom random = new FixedRandom();
+    private final AreaFactory areaFactory = new AreaFactory(random);
+
     private GameMap map;
     private final Display display = new Display();
-    private final SlimeSnail snail = new SlimeSnail();
+    private final SlimeSnail snail = new SlimeSnail(random, areaFactory);
 
     @BeforeEach
     void setUp() {
-        FixedRandom.install();
         map = TestFarm.map(".....", ".....", ".....");
         new StackQueueValleyWorld(display).addGameMap(map);
     }
 
-    @AfterEach
-    void tearDown() {
-        FixedRandom.uninstall();
-    }
 
     @Test
     void feedsWhenStandingOnAPlant() throws Exception {
-        map.at(1, 1).setGround(new Strawberry());
+        map.at(1, 1).setGround(new Strawberry(random, areaFactory));
         map.at(1, 1).addActor(snail);
 
         Action action = snail.playTurn(new ActionList(), null, map, display);
@@ -55,7 +53,7 @@ class PestTurnTest {
     @Test
     void movesTowardsAPlantWhenNotOnOne() throws Exception {
         map.at(1, 1).addActor(snail);
-        map.at(4, 1).setGround(new Strawberry());
+        map.at(4, 1).setGround(new Strawberry(random, areaFactory));
 
         Action action = snail.playTurn(new ActionList(), null, map, display);
         action.execute(snail, map);
@@ -66,9 +64,9 @@ class PestTurnTest {
 
     @Test
     void aSwarmFeedsOnAPlantNextToItWithoutMoving() throws Exception {
-        LocustSwarm swarm = new LocustSwarm();
+        LocustSwarm swarm = new LocustSwarm(random, areaFactory);
         map.at(1, 1).addActor(swarm);
-        map.at(2, 1).setGround(new Strawberry());
+        map.at(2, 1).setGround(new Strawberry(random, areaFactory));
 
         Action action = swarm.playTurn(new ActionList(), null, map, display);
         action.execute(swarm, map);
@@ -80,9 +78,9 @@ class PestTurnTest {
 
     @Test
     void aMoleCanReachAPlantOneTileAway() throws Exception {
-        BurrowingMole mole = new BurrowingMole();
+        BurrowingMole mole = new BurrowingMole(random, areaFactory);
         map.at(1, 1).addActor(mole);
-        map.at(2, 1).setGround(new Strawberry());
+        map.at(2, 1).setGround(new Strawberry(random, areaFactory));
 
         takeTurn(mole);
 
@@ -91,9 +89,9 @@ class PestTurnTest {
 
     @Test
     void aSwarmJumpsLikeAKnight() throws Exception {
-        LocustSwarm swarm = new LocustSwarm();
+        LocustSwarm swarm = new LocustSwarm(random, areaFactory);
         map.at(0, 0).addActor(swarm);
-        map.at(4, 2).setGround(new Strawberry());
+        map.at(4, 2).setGround(new Strawberry(random, areaFactory));
 
         takeTurn(swarm);
 

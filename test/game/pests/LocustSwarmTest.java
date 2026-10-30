@@ -7,11 +7,10 @@ import game.StackQueueValleyWorld;
 import game.crops.Strawberry;
 import game.crops.StrawberrySeedling;
 import game.crops.StrawberrySprout;
-import game.positions.area.Area;
+import game.positions.area.AreaFactory;
 import game.positions.farm.Dirt;
 import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,14 +24,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class LocustSwarmTest {
 
+    private final FixedRandom random = new FixedRandom();
+    private final AreaFactory areaFactory = new AreaFactory(random);
+
     private GameMap map;
     private Location centre;
-    private FixedRandom random;
-    private final LocustSwarm swarm = new LocustSwarm();
+    private final LocustSwarm swarm = new LocustSwarm(random, areaFactory);
 
     @BeforeEach
     void setUp() throws Exception {
-        random = FixedRandom.install();
         random.setRollsSucceed(false);
         map = TestFarm.map(",,,", ",,,", ",,,");
         new StackQueueValleyWorld(new Display()).addGameMap(map);
@@ -40,16 +40,12 @@ class LocustSwarmTest {
         centre.addActor(swarm);
     }
 
-    @AfterEach
-    void tearDown() {
-        FixedRandom.uninstall();
-    }
 
     @Test
     void setsEveryPlantOnAndAroundItBackOneStage() {
-        centre.setGround(new Strawberry());
-        map.at(0, 0).setGround(new Strawberry());
-        map.at(2, 2).setGround(new StrawberrySeedling());
+        centre.setGround(new Strawberry(random, areaFactory));
+        map.at(0, 0).setGround(new Strawberry(random, areaFactory));
+        map.at(2, 2).setGround(new StrawberrySeedling(random, areaFactory));
 
         String report = swarm.feedOn(centre);
 
@@ -61,7 +57,7 @@ class LocustSwarmTest {
 
     @Test
     void canFeedOnAPlantNextToItWithoutStandingOnOne() {
-        map.at(2, 1).setGround(new Strawberry());
+        map.at(2, 1).setGround(new Strawberry(random, areaFactory));
 
         assertTrue(swarm.canFeedAt(centre));
         swarm.feedOn(centre);
@@ -80,7 +76,7 @@ class LocustSwarmTest {
     void fliesAwayAfterItsLastMeal() {
         for (int meal = 1; meal <= 4; meal++) {
             assertTrue(centre.containsAnActor(), "still here before meal " + meal);
-            centre.setGround(new Strawberry());
+            centre.setGround(new Strawberry(random, areaFactory));
             swarm.feedOn(centre);
         }
 
@@ -90,7 +86,7 @@ class LocustSwarmTest {
     @Test
     void splitsIntoASmallerSwarmWhenTheChanceRolls() {
         random.setRollsSucceed(true);
-        centre.setGround(new Strawberry());
+        centre.setGround(new Strawberry(random, areaFactory));
 
         String report = swarm.feedOn(centre);
 
@@ -101,12 +97,12 @@ class LocustSwarmTest {
     @Test
     void theSmallerSwarmFliesAwayAfterOneMeal() {
         random.setRollsSucceed(true);
-        centre.setGround(new Strawberry());
+        centre.setGround(new Strawberry(random, areaFactory));
         swarm.feedOn(centre);
         random.setRollsSucceed(false);
         Location offshootTile = offshootTile();
 
-        offshootTile.setGround(new Strawberry());
+        offshootTile.setGround(new Strawberry(random, areaFactory));
         Infestation offshoot = offshootTile.getActor().asCapability(Infestation.class).orElseThrow();
         offshoot.feedOn(offshootTile);
 
@@ -116,10 +112,10 @@ class LocustSwarmTest {
     @Test
     void doesNotSplitWhenThereIsNoRoomAroundIt() throws Exception {
         random.setRollsSucceed(true);
-        for (Location tile : Area.adjacentTo(centre).tiles()) {
-            tile.addActor(new LocustSwarm());
+        for (Location tile : areaFactory.adjacentTo(centre).tiles()) {
+            tile.addActor(new LocustSwarm(random, areaFactory));
         }
-        centre.setGround(new Strawberry());
+        centre.setGround(new Strawberry(random, areaFactory));
 
         String report = swarm.feedOn(centre);
 
@@ -132,7 +128,7 @@ class LocustSwarmTest {
      */
     private int countSwarms() {
         int count = 0;
-        for (Location tile : Area.centredOn(centre).tiles()) {
+        for (Location tile : areaFactory.centredOn(centre).tiles()) {
             if (tile.containsAnActor()) {
                 count++;
             }
@@ -144,7 +140,7 @@ class LocustSwarmTest {
      * @return the tile next to the centre that holds the split-off swarm
      */
     private Location offshootTile() {
-        for (Location tile : Area.adjacentTo(centre).tiles()) {
+        for (Location tile : areaFactory.adjacentTo(centre).tiles()) {
             if (tile.containsAnActor()) {
                 return tile;
             }

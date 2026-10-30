@@ -11,9 +11,9 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.StackQueueValleyWorld;
 import game.crops.Strawberry;
 import game.pests.SlimeSnail;
+import game.positions.area.AreaFactory;
 import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 class SeekPlantBehaviourTest {
 
+    private final FixedRandom random = new FixedRandom();
+    private final AreaFactory areaFactory = new AreaFactory(random);
+
     private static final int[][] LEFT_OR_RIGHT = {{1, 0}, {-1, 0}};
 
     private GameMap map;
@@ -35,21 +38,16 @@ class SeekPlantBehaviourTest {
 
     @BeforeEach
     void setUp() {
-        FixedRandom.install();
         map = TestFarm.map(".......", ".......", ".......");
         new StackQueueValleyWorld(new Display()).addGameMap(map);
-        pest = new SlimeSnail();
+        pest = new SlimeSnail(random, areaFactory);
     }
 
-    @AfterEach
-    void tearDown() {
-        FixedRandom.uninstall();
-    }
 
     @Test
     void landsOnTheTileTowardsTheNearestPlant() throws Exception {
         map.at(1, 1).addActor(pest);
-        map.at(4, 1).setGround(new Strawberry());
+        map.at(4, 1).setGround(new Strawberry(random, areaFactory));
 
         landWith(LEFT_OR_RIGHT, map.at(1, 1));
 
@@ -89,7 +87,7 @@ class SeekPlantBehaviourTest {
         map.at(2, 1).setGround(new Wall());
         map.at(0, 1).setGround(new Wall());
 
-        Action chosen = new SeekPlantBehaviour(LEFT_OR_RIGHT, fallback).operate(pest, map.at(1, 1));
+        Action chosen = new SeekPlantBehaviour(LEFT_OR_RIGHT, fallback, areaFactory).operate(pest, map.at(1, 1));
 
         assertSame(fallbackAction, chosen);
     }
@@ -98,7 +96,7 @@ class SeekPlantBehaviourTest {
     void laterChangesToTheOffsetsHaveNoEffect() throws Exception {
         map.at(1, 1).addActor(pest);
         int[][] offsets = {{1, 0}};
-        SeekPlantBehaviour behaviour = new SeekPlantBehaviour(offsets, fallback);
+        SeekPlantBehaviour behaviour = new SeekPlantBehaviour(offsets, fallback, areaFactory);
         offsets[0][0] = -1;
 
         behaviour.operate(pest, map.at(1, 1)).execute(pest, map);
@@ -109,13 +107,13 @@ class SeekPlantBehaviourTest {
     @Test
     void rejectsMissingOrMalformedOffsets() {
         assertThrows(IllegalArgumentException.class,
-                () -> new SeekPlantBehaviour(new int[0][], fallback));
+                () -> new SeekPlantBehaviour(new int[0][], fallback, areaFactory));
         assertThrows(IllegalArgumentException.class,
-                () -> new SeekPlantBehaviour(new int[][] {{1}}, fallback));
+                () -> new SeekPlantBehaviour(new int[][] {{1}}, fallback, areaFactory));
     }
 
     private void landWith(int[][] offsets, Location from) {
-        new SeekPlantBehaviour(offsets, fallback).operate(pest, from).execute(pest, map);
+        new SeekPlantBehaviour(offsets, fallback, areaFactory).operate(pest, from).execute(pest, map);
     }
 
     /** A ground no actor can enter. */
