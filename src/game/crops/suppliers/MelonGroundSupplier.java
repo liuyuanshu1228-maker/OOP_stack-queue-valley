@@ -16,7 +16,10 @@ import java.util.function.Supplier;
  */
 public class MelonGroundSupplier implements Supplier<Ground> {
 
+    /** The randomness handed to every Melon this supplier builds. */
     private final RandomUtils randomUtils;
+
+    /** The AreaFactory handed to every Melon this supplier builds. */
     private final AreaFactory areaFactory;
 
     /**

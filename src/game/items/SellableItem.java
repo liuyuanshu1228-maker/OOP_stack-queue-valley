@@ -16,6 +16,7 @@ import game.statistics.FarmerStatistics;
  */
 public abstract class SellableItem extends Item implements Sellable {
 
+    /** The number of coins the Merchant pays for this item. */
     private final int sellPrice;
 
     /**

@@ -22,6 +22,7 @@ public class AlienDevice extends Item implements TravelMethod {
     /** Chance (out of 100) that a use malfunctions. */
     private static final int MALFUNCTION_CHANCE_PERCENT = 50;
 
+    /** The places this device can send its user to, by name. */
     private final DestinationList destinations = new DestinationList();
 
     /** The randomness used to roll the malfunction chance. */

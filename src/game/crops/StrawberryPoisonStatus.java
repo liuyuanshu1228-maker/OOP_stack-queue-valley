@@ -14,6 +14,7 @@ public class StrawberryPoisonStatus extends TimedStatus {
     /** Number of turns the poison lasts. */
     private static final int DURATION_TURNS = 3;
 
+    /** The actor this status poisons each turn. */
     private final Actor poisonedActor;
 
     /**

@@ -391,6 +391,7 @@ public class StackQueueValleyWorld extends World {
      * @param occupiedLocations locations that must not be used; updated with the newly used one
      * @param actor the Actor to place
      * @param randomUtils the randomness used to pick the tile
+     * @throws Exception if the engine cannot place the Actor on the chosen tile
      */
     private void placeActor(GameMap map, Set<Location> occupiedLocations, Actor actor, RandomUtils randomUtils)
             throws Exception {

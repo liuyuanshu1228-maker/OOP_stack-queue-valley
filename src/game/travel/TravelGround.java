@@ -14,6 +14,7 @@ import game.actions.TravelMethod;
  */
 public abstract class TravelGround extends Ground implements TravelMethod {
 
+    /** The places this ground leads to, by name. */
     private final DestinationList destinations = new DestinationList();
 
     /**

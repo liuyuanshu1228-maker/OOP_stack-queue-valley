@@ -14,6 +14,7 @@ public class StrawberryItem extends ConsumableItem {
     /** Chance (out of 100) that a newly created Strawberry is rotten. */
     private static final int ROTTEN_CHANCE_PERCENT = 50;
 
+    /** Whether this strawberry is rotten, which decides whether eating it heals or poisons. */
     private final boolean rotten;
 
     /**

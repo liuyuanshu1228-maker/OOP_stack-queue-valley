@@ -16,7 +16,10 @@ import java.util.function.Supplier;
  */
 public class ParsnipGroundSupplier implements Supplier<Ground> {
 
+    /** The randomness handed to every Parsnip this supplier builds. */
     private final RandomUtils randomUtils;
+
+    /** The AreaFactory handed to every Parsnip this supplier builds. */
     private final AreaFactory areaFactory;
 
     /**

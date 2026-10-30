@@ -20,7 +20,9 @@ import java.util.Optional;
  */
 public abstract class CropPurchase implements Purchasable {
 
+    /** The name of the crop on sale, shown in the Merchant's menu. */
     private final String productName;
+    /** The number of coins the crop costs. */
     private final int price;
 
     /** Builds the Area searched for a tile to plant the crop on. */

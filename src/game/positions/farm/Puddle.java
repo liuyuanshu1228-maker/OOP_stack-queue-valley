@@ -14,6 +14,7 @@ public class Puddle extends Ground implements Chargeable {
     /** Damage dealt each turn to the Actor standing on a charged puddle. */
     private static final int SHOCK_DAMAGE = 20;
 
+    /** Whether this puddle is charged and shocks whoever stands on it. */
     private final boolean charged;
 
     /**

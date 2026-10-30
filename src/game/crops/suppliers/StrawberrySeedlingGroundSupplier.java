@@ -16,7 +16,10 @@ import java.util.function.Supplier;
  */
 public class StrawberrySeedlingGroundSupplier implements Supplier<Ground> {
 
+    /** The randomness handed to every StrawberrySeedling this supplier builds. */
     private final RandomUtils randomUtils;
+
+    /** The AreaFactory handed to every StrawberrySeedling this supplier builds. */
     private final AreaFactory areaFactory;
 
     /**

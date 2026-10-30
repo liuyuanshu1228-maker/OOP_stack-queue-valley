@@ -14,6 +14,7 @@ public class StrawberryHealStatus extends TimedStatus {
     /** Number of turns the healing lasts. */
     private static final int DURATION_TURNS = 2;
 
+    /** The actor this status heals each turn. */
     private final Actor healedActor;
 
     /**

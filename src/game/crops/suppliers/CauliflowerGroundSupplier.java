@@ -16,7 +16,10 @@ import java.util.function.Supplier;
  */
 public class CauliflowerGroundSupplier implements Supplier<Ground> {
 
+    /** The randomness handed to every Cauliflower this supplier builds. */
     private final RandomUtils randomUtils;
+
+    /** The AreaFactory handed to every Cauliflower this supplier builds. */
     private final AreaFactory areaFactory;
 
     /**

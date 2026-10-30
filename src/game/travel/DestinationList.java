@@ -15,6 +15,7 @@ import java.util.Map;
  */
 public class DestinationList {
 
+    /** Each destination by its menu name, in the order it was added. */
     private final Map<String, Location> destinations = new LinkedHashMap<>();
 
     /**
