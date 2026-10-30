@@ -49,7 +49,8 @@ public class Foraging extends BaseCreatureState {
     @Override
     public String act(Actor creature, GameMap map) {
         Location here = map.locationOf(creature);
-        CrowSensing sensing = new CrowSensing(creature, here, areaFactoryOf(creature));
+        AreaFactory areaFactory = areaFactoryOf(creature);
+        CrowSensing sensing = new CrowSensing(creature, here, areaFactory);
 
         if (sensing.isOnFood()) {
             return cache(creature, here);
@@ -59,14 +60,27 @@ public class Foraging extends BaseCreatureState {
         if (itemLocation.isEmpty()) {
             return creature + " finds nothing worth foraging.";
         }
+        return hopToward(creature, here, itemLocation.get(), map, areaFactory);
+    }
 
-        Optional<Location> step = new CrowNavigation(creature, here, areaFactoryOf(creature)).stepToward(itemLocation.get());
+    /**
+     * Moves the crow one step closer to the item it wants.
+     *
+     * @param creature the crow foraging
+     * @param here the crow's current Location
+     * @param itemLocation the Location of the item
+     * @param map the map the crow is on
+     * @param areaFactory builds the Areas the crow navigates through
+     * @return a description of the move, or of why the crow could not move
+     */
+    private String hopToward(Actor creature, Location here, Location itemLocation, GameMap map,
+                             AreaFactory areaFactory) {
+        Optional<Location> step = new CrowNavigation(creature, here, areaFactory).stepToward(itemLocation);
         if (step.isEmpty()) {
             return creature + " can't find a way toward the food.";
         }
-
         map.moveActor(creature, step.get());
-        return creature + " hops toward the food at " + itemLocation.get()
+        return creature + " hops toward the food at " + itemLocation
                 + ", landing at " + step.get() + ".";
     }
 

@@ -51,7 +51,7 @@ public class Mobbing extends BaseCreatureState {
     public String act(Actor creature, GameMap map) {
         AreaFactory areaFactory = areaFactoryOf(creature);
         Location here = map.locationOf(creature);
-        Optional<Location> targetLoc = new CrowSensing(creature, here, areaFactoryOf(creature)).nearestActor();
+        Optional<Location> targetLoc = new CrowSensing(creature, here, areaFactory).nearestActor();
 
         if (targetLoc.isEmpty()) {
             return creature + " mobs the area but finds no target.";
@@ -62,7 +62,21 @@ public class Mobbing extends BaseCreatureState {
         if (areaFactory.adjacentTo(here).tiles().contains(target)) {
             return steal(creature, target.getActor());
         }
+        return swoopToward(creature, here, target, map, areaFactory);
+    }
 
+    /**
+     * Moves the crow one step closer to the actor it is mobbing.
+     *
+     * @param creature the crow doing the mobbing
+     * @param here the crow's current Location
+     * @param target the Location of the actor being mobbed
+     * @param map the map the crow is on
+     * @param areaFactory builds the Areas the crow navigates through
+     * @return a description of the move, or of why the crow could not move
+     */
+    private String swoopToward(Actor creature, Location here, Location target, GameMap map,
+                               AreaFactory areaFactory) {
         Optional<Location> step = new CrowNavigation(creature, here, areaFactory).stepToward(target);
         if (step.isEmpty()) {
             return creature + " cannot get closer to mob.";

@@ -109,7 +109,20 @@ public class Fleeing extends BaseCreatureState {
 
         List<Item> dropped = new ItemDropper(areaFactory.adjacentTo(here)).dropAllCarriedBy(creature);
         List<String> startled = startleNeighbours(here, map, areaFactory);
+        return describePanic(creature, here, dropped, startled);
+    }
 
+    /**
+     * Describes the panic: where the crow took flight, what it dropped and
+     * which actors it startled.
+     *
+     * @param creature the crow that panicked
+     * @param here the Location it took flight from
+     * @param dropped the items it dropped
+     * @param startled a description of each actor it pushed back
+     * @return the description of the effect
+     */
+    private String describePanic(Actor creature, Location here, List<Item> dropped, List<String> startled) {
         String droppedText = dropped.isEmpty()
                 ? "it carries nothing to drop"
                 : "dropping everything it carries onto the tiles around it: " + dropped;
