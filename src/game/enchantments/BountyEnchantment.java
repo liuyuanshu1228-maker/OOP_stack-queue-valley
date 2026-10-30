@@ -2,6 +2,7 @@ package game.enchantments;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
+import game.items.tools.Enchantment;
 import game.plants.Plant;
 import game.positions.area.TileListDescription;
 

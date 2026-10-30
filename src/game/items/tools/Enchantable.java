@@ -2,7 +2,6 @@ package game.items.tools;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.enchantments.Enchantment;
 
 /**
  * Capability interface for Items that can carry an {@link Enchantment} and

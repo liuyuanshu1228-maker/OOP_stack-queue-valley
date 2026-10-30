@@ -2,7 +2,6 @@ package game.items.tools;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
-import game.enchantments.Enchantment;
 import game.positions.Waterable;
 import game.positions.area.AreaFactory;
 import game.positions.area.WaterableTile;

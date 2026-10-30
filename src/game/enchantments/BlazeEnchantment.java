@@ -3,6 +3,7 @@ package game.enchantments;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.Fire;
+import game.items.tools.Enchantment;
 import game.positions.area.TileListDescription;
 
 import java.util.List;
