@@ -144,17 +144,12 @@ public class Area {
      * The distance between two Locations on the same map, measured as the
      * number of steps a king would need on a chessboard (the same measure
      * {@link Location#getNearbyLocations} uses for its square radius).
-     * <p>
-     * This is a pure, stateless geometric calculation with no behaviour to
-     * substitute or override, so it stays a private static helper rather
-     * than an instance method: there is nothing here for DIP or OCP to apply
-     * to, the same way {@code Math.max} does not need to be injectable.
      *
      * @param a the first Location
      * @param b the second Location
      * @return the number of king's steps between a and b
      */
-    private static int distanceBetween(Location a, Location b) {
+    private int distanceBetween(Location a, Location b) {
         return Math.max(Math.abs(a.x() - b.x()), Math.abs(a.y() - b.y()));
     }
 }
