@@ -117,9 +117,9 @@ Every 5 turns the Wanderer asks for the current weather where it stands and reac
 
 | Current weather | Reaction | What happens |
 |---|---|---|
-| Wind of 10 m/s or more | **StormShelterReaction** | It builds a shelter on the free tiles around it. The tiles are blocked for a number of turns that grows with the wind, then return to what they were. |
+| Wind of 10 m/s or more | **StormShelterReaction** | It builds a shelter on the free tiles around it (the ones with no actor standing on them). The tiles are blocked for a number of turns that grows with the wind, then return to what they were. |
 | Rain, Drizzle or Thunderstorm | **RainDanceReaction** | It dances for rain: the bare Dirt around it turns into Soil, and every crop around it gets a free watering. The area grows with the rainfall. |
-| 10°C or colder | **CampfireReaction** | It lights a campfire next to it. The colder it is, the more tiles around the fire catch alight. The fire burns any actor that walks into it. |
+| 10°C or colder | **CampfireReaction** | It lights a campfire. The colder it is, the more tiles around it catch alight. The fire burns any actor that walks into it. |
 | Anything else | none | It simply wanders. |
 
 **What tomorrow's weather brings**

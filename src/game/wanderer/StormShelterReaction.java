@@ -31,8 +31,8 @@ public class StormShelterReaction implements WeatherReaction {
     }
 
     /**
-     * Shelters every tile adjacent to {@code here} for a duration that grows
-     * with the wind speed.
+     * Shelters every free tile (one with no actor standing on it) adjacent
+     * to {@code here}, for a duration that grows with the wind speed.
      *
      * @param here the tile the Wanderer stands on
      * @return a description of the shelter built, including {@code here}
@@ -42,6 +42,9 @@ public class StormShelterReaction implements WeatherReaction {
         int durationTurns = BASE_DURATION_TURNS + (int) reading.getWindSpeedMetresPerSecond();
         int shelteredTiles = 0;
         for (Location tile : areaFactory.adjacentTo(here).tiles()) {
+            if (tile.containsAnActor()) {
+                continue;
+            }
             tile.setGround(new StormShelterGround(tile.getGround(), durationTurns));
             shelteredTiles++;
         }

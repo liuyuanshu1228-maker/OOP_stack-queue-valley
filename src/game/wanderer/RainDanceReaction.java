@@ -61,7 +61,8 @@ public class RainDanceReaction implements WeatherReaction {
                 wateredCrops++;
             }
         }
-        return "The Wanderer dances for rain around " + here + ": " + tilledTiles
+        return "The Wanderer dances for rain around " + here + " (" + reading.getCondition()
+                + ", " + reading.getRainMillimetres() + " mm/h): " + tilledTiles
                 + " bare tiles turn to Soil, and " + wateredCrops + " crops receive a free watering.";
     }
 }

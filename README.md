@@ -89,6 +89,13 @@ A pest that eats nothing, and a trap that pulls and captures nothing, print noth
 
 A Wanderer roams the farm, and what it does depends on the real weather at the place on Earth where it stands. The farm map is laid on the real world, so the Wanderer's own position decides which place the game asks the weather for. The full design, the request and the reply format are in `feature-proposal.md`.
 
+**Where to find it in the game:**
+
+| On the map | What it is |
+|---|---|
+| `W` | The Wanderer |
+| `H` | A storm shelter (temporary; blocks every actor until it lasts) |
+
 ### What it does
 
 - **Every 5 turns** the Wanderer asks for the current weather where it stands, and reacts:
@@ -146,7 +153,13 @@ An environment variable wins over the `.env` file when both are set.
 
 ### Without a key or without the network
 
-The game still runs. If there is no key, no network, or the request fails or takes more than 5 seconds, the Wanderer only wanders and no weather effect happens. The game never stops because of the API.
+The game still runs. If there is no key, no network, or the request fails or takes more than 5 seconds, the Wanderer only wanders, no weather effect happens, and its message tells the Farmer the sky is unreadable, for example:
+
+```
+The sky is unreadable, and the Wanderer only wanders. Wanderer (50/50) wanders to (4, 3) on Inherited Farm.
+```
+
+The game never stops because of the API.
 
 ### How the tests avoid the network
 

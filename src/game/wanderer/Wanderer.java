@@ -81,27 +81,18 @@ public class Wanderer extends WanderingActor {
         }
         turnsSinceLastReaction = 0;
 
-        Optional<WeatherReaction> reaction = currentReaction(map.locationOf(this));
+        Location here = map.locationOf(this);
+        Optional<WeatherReading> reading = weatherSource.currentWeatherAt(
+                mapGeography.latitudeOf(here), mapGeography.longitudeOf(here));
+        if (reading.isEmpty()) {
+            Action wandering = super.playConsciousTurn(actions, lastAction, map, display);
+            return new UnreadableSkyAction(wandering);
+        }
+
+        Optional<WeatherReaction> reaction = weatherInterpreter.reactionFor(reading.get());
         if (reaction.isEmpty()) {
             return super.playConsciousTurn(actions, lastAction, map, display);
         }
         return new ReactToWeatherAction(reaction.get());
-    }
-
-    /**
-     * Asks for the current weather at the given Location and, if a reading
-     * comes back, asks the WeatherInterpreter which reaction it triggers.
-     *
-     * @param here this actor's current Location
-     * @return the reaction that applies, or empty if there is no reading or
-     * no reaction applies to it
-     */
-    private Optional<WeatherReaction> currentReaction(Location here) {
-        Optional<WeatherReading> reading = weatherSource.currentWeatherAt(
-                mapGeography.latitudeOf(here), mapGeography.longitudeOf(here));
-        if (reading.isEmpty()) {
-            return Optional.empty();
-        }
-        return weatherInterpreter.reactionFor(reading.get());
     }
 }
