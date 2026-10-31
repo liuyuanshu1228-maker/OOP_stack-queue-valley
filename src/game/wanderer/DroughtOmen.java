@@ -8,7 +8,7 @@ import game.weather.WeatherReading;
  * The omen of a hot, dry forecast: drains the asking actor's stamina over the
  * following turns, via {@link DroughtWearinessStatus}.
  * <p>
- * Unlike {@link FrostOmen} and {@link BountyOmen}, this omen affects only the
+ * Unlike {@link FrostOmen} and {@link SowingOmen}, this omen affects only the
  * actor who asked, not an area, so it needs no {@code AreaFactory}.
  */
 public class DroughtOmen implements ForecastOmen {

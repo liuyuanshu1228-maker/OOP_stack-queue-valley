@@ -29,6 +29,12 @@ public class OpenWeatherParser {
     private static final double FORECAST_RAIN_HOURS = 3.0;
 
     /**
+     * Creates a new OpenWeatherParser.
+     */
+    public OpenWeatherParser() {
+    }
+
+    /**
      * Reads a reply from the current weather endpoint.
      *
      * @param json the reply body

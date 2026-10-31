@@ -51,6 +51,8 @@ public class WeatherReading {
     }
 
     /**
+     * Returns the kind of weather.
+     *
      * @return the kind of weather, for example "Rain"
      */
     public String getCondition() {
@@ -58,6 +60,8 @@ public class WeatherReading {
     }
 
     /**
+     * Returns the air temperature.
+     *
      * @return the air temperature, in degrees Celsius
      */
     public double getTemperatureCelsius() {
@@ -65,6 +69,8 @@ public class WeatherReading {
     }
 
     /**
+     * Returns the wind speed.
+     *
      * @return the wind speed, in metres per second
      */
     public double getWindSpeedMetresPerSecond() {
@@ -72,6 +78,8 @@ public class WeatherReading {
     }
 
     /**
+     * Returns the rainfall over the last hour.
+     *
      * @return the rainfall over the last hour, in millimetres
      */
     public double getRainMillimetres() {
