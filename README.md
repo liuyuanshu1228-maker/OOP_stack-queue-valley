@@ -53,7 +53,7 @@ The tests do not depend on luck. `game.testsupport.FixedRandom` extends the game
 | REQ1 Second Spring | `game.plants.PeriodicAbilityTest`, `GrowTest`, `SelfReplicateTest`, `ProduceTest`, `PlantStateTest` |
 | REQ3 Pests and pest control | `game.pests.SlimeSnailTest`, `LocustSwarmTest`, `BurrowingMoleTest`, `PestTurnTest`, `PestPresentTest`; `game.pestcontrol.LadybugTest`, `SaltBarrierTest`, `SaltGroundTest`, `TrapGroundTest`, `DeployDeterrentActionTest`; `game.behaviours.SeekPlantBehaviourTest`; `game.positions.TemporaryGroundTest` |
 | REQ4 Enchanted Tools | `game.enchantments.BlazeEnchantmentTest`, `BountyEnchantmentTest`, `ShatterEnchantmentTest`; `game.items.tools.EnchantmentSlotTest`, `PickaxeTest`, `WateringCanTest`; `game.actions.TillActionTest` |
-| REQ5 The Wanderer (API) | `game.weather.WeatherReadingTest`, `MapGeographyTest`, `ApiKeyLoaderTest`, `OpenWeatherParserTest`, `OpenWeatherClientTest`. None of them uses the network or a real API key. |
+| REQ5 The Wanderer (API) | `game.weather.WeatherReadingTest`, `MapGeographyTest`, `ApiKeyLoaderTest`, `OpenWeatherParserTest`, `OpenWeatherClientTest`; `game.wanderer.WandererTest`, `WeatherInterpreterTest`, `ReactToWeatherActionTest`, `UnreadableSkyActionTest`, `AskForecastActionTest`, `CampfireReactionTest`, `RainDanceReactionTest`, `StormShelterReactionTest`, `DroughtOmenTest`, `FrostOmenTest`, `SowingOmenTest`. None of them uses the network or a real API key: the `game.wanderer` tests use the fake `FixedWeatherSource`. `WandererStressHarness` is a manual tool with its own `main`, not part of `mvn test`. |
 
 ## A3 REQ3 — Infestation and Pest Control
 
