@@ -17,6 +17,12 @@ import game.positions.area.TileCondition;
 public class Unplanted implements TileCondition {
 
     /**
+     * Creates a new Unplanted condition.
+     */
+    public Unplanted() {
+    }
+
+    /**
      * Checks whether no plant, at any growth stage, is growing on the tile.
      *
      * @param tile the tile to test
