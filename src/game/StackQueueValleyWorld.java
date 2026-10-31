@@ -282,7 +282,7 @@ public class StackQueueValleyWorld extends World {
         WeatherSource weatherSource = new OpenWeatherClient(apiKeyLoader, new OpenWeatherParser());
         MapGeography mapGeography = new MapGeography(FARM_ORIGIN_LATITUDE, FARM_ORIGIN_LONGITUDE,
                 FARM_DEGREES_PER_TILE);
-        return new Wanderer(randomUtils, weatherSource, mapGeography, new WeatherInterpreter(areaFactory));
+        return new Wanderer(randomUtils, weatherSource, mapGeography, new WeatherInterpreter(areaFactory, randomUtils));
     }
 
     /**

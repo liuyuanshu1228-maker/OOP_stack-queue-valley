@@ -35,8 +35,8 @@ public class DroughtOmen implements ForecastOmen {
     @Override
     public String bringUpon(Actor asker, Location here) {
         asker.addStatus(new DroughtWearinessStatus(asker));
-        return "The Wanderer, standing at " + here + ", warns " + asker + " of a "
-                + forecast.getTemperatureCelsius() + "°C, " + forecast.getRainMillimetres()
-                + " mm/h drought tomorrow: " + asker + " already feels weary at the thought.";
+        return "The Wanderer, standing at " + here + ", warns " + asker + " of a clear, "
+                + forecast.getTemperatureCelsius() + "°C day tomorrow: " + asker
+                + " is already parched at the thought.";
     }
 }

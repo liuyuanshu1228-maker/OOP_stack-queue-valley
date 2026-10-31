@@ -19,7 +19,7 @@ import game.weather.WeatherReading;
 public class FrostOmen implements ForecastOmen {
 
     /** The temperature, in Celsius, at or below which this omen is triggered. */
-    private static final double FROST_THRESHOLD_CELSIUS = 5.0;
+    private static final double FROST_THRESHOLD_CELSIUS = 2.0;
     /** The minimum number of turns growth is paused for, however mild the frost. */
     private static final int BASE_PAUSE_TURNS = 2;
     /** How many tiles from the Wanderer this omen reaches. */

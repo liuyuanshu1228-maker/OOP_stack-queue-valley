@@ -1,6 +1,7 @@
 package game.wanderer;
 
 import game.positions.area.AreaFactory;
+import game.random.RandomUtils;
 import game.weather.WeatherReading;
 
 import java.util.Optional;
@@ -25,23 +26,29 @@ public class WeatherInterpreter {
     private static final String DRIZZLE_CONDITION = "Drizzle";
     /** A condition name that counts as rainy. */
     private static final String THUNDERSTORM_CONDITION = "Thunderstorm";
+    /** A condition name that, on its own, triggers a frost omen regardless of temperature. */
+    private static final String SNOW_CONDITION = "Snow";
     /** Forecast temperature, in Celsius, at or below which a frost omen is triggered. */
-    private static final double FROST_THRESHOLD_CELSIUS = 5.0;
+    private static final double FROST_THRESHOLD_CELSIUS = 2.0;
+    /** The condition name a drought omen requires, together with the heat threshold. */
+    private static final String CLEAR_CONDITION = "Clear";
     /** Forecast temperature, in Celsius, at or above which a drought omen is triggered. */
     private static final double DROUGHT_TEMPERATURE_THRESHOLD_CELSIUS = 25.0;
-    /** Forecast rainfall, in mm/h, at or below which a day counts as dry enough for drought. */
-    private static final double DROUGHT_RAIN_THRESHOLD_MM = 0.5;
 
-    /** Builds the Area each produced WeatherReaction affects. */
+    /** Builds the Area each produced WeatherReaction or ForecastOmen affects. */
     private final AreaFactory areaFactory;
+    /** The randomness handed to each Strawberry Seedling a SowingOmen sows. */
+    private final RandomUtils randomUtils;
 
     /**
      * Creates a weather interpreter.
      *
-     * @param areaFactory builds the Area each produced WeatherReaction affects
+     * @param areaFactory builds the Area each produced WeatherReaction or ForecastOmen affects
+     * @param randomUtils the randomness handed to each Strawberry Seedling a SowingOmen sows
      */
-    public WeatherInterpreter(AreaFactory areaFactory) {
+    public WeatherInterpreter(AreaFactory areaFactory, RandomUtils randomUtils) {
         this.areaFactory = areaFactory;
+        this.randomUtils = randomUtils;
     }
 
     /**
@@ -83,11 +90,11 @@ public class WeatherInterpreter {
      * @return the omen that applies, or empty if none does
      */
     public Optional<ForecastOmen> omenFor(WeatherReading forecast) {
-        if (forecast.getTemperatureCelsius() <= FROST_THRESHOLD_CELSIUS) {
+        if (isFrosty(forecast)) {
             return Optional.of(new FrostOmen(forecast, areaFactory));
         }
         if (isRainy(forecast)) {
-            return Optional.of(new BountyOmen(forecast, areaFactory));
+            return Optional.of(new SowingOmen(forecast, areaFactory, randomUtils));
         }
         if (isDrought(forecast)) {
             return Optional.of(new DroughtOmen(forecast));
@@ -96,14 +103,25 @@ public class WeatherInterpreter {
     }
 
     /**
-     * Decides whether a forecast counts as a drought: hot and effectively dry.
+     * Decides whether a forecast counts as frosty: snow, or cold enough on
+     * its own.
      *
      * @param forecast the forecast reading to check
-     * @return true if the temperature is at least the drought threshold and
-     * the rainfall is at most the dry threshold
+     * @return true if the condition is Snow or the temperature is at most the frost threshold
+     */
+    private boolean isFrosty(WeatherReading forecast) {
+        return SNOW_CONDITION.equals(forecast.getCondition())
+                || forecast.getTemperatureCelsius() <= FROST_THRESHOLD_CELSIUS;
+    }
+
+    /**
+     * Decides whether a forecast counts as a drought: clear and hot.
+     *
+     * @param forecast the forecast reading to check
+     * @return true if the condition is Clear and the temperature is at least the drought threshold
      */
     private boolean isDrought(WeatherReading forecast) {
-        return forecast.getTemperatureCelsius() >= DROUGHT_TEMPERATURE_THRESHOLD_CELSIUS
-                && forecast.getRainMillimetres() <= DROUGHT_RAIN_THRESHOLD_MM;
+        return CLEAR_CONDITION.equals(forecast.getCondition())
+                && forecast.getTemperatureCelsius() >= DROUGHT_TEMPERATURE_THRESHOLD_CELSIUS;
     }
 }
