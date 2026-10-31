@@ -1,13 +1,16 @@
 package game.wanderer;
 
+import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.StackQueueValleyWorld;
 import game.actors.Farmer;
 import game.positions.area.AreaFactory;
 import game.positions.farm.Dirt;
 import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
 import game.weather.WeatherReading;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,6 +24,14 @@ class StormShelterReactionTest {
 
     private final AreaFactory areaFactory = new AreaFactory(new FixedRandom());
     private final GameMap map = TestFarm.map("...", "...", "...");
+
+    @BeforeEach
+    void setUp() {
+        // containsAnActor (used by StormShelterReaction itself) and addActor
+        // both need the map registered with a World first, exactly as
+        // game.pests.PestTurnTest and game.wanderer.WandererTest do.
+        new StackQueueValleyWorld(new Display()).addGameMap(map);
+    }
 
     @Test
     void sheltersEveryFreeAdjacentTile() {

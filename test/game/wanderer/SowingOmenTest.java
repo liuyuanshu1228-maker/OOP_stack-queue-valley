@@ -57,7 +57,7 @@ class SowingOmenTest {
     @Test
     void leavesBareDirtAloneBecauseItIsNotPlantable() {
         GameMap map = TestFarm.map(
-                ".......", ".......", ".......", "...,...", ".......", ".......", ".......");
+                ".......", ".......", "...,...", ".......", ".......", ".......", ".......");
         Location here = map.at(3, 3);
         Location soilTile = map.at(3, 2);
         Location dirtTile = map.at(2, 3);
@@ -72,7 +72,7 @@ class SowingOmenTest {
     @Test
     void messageReportsCoordinatesConditionAndSeedlingCount() {
         GameMap map = TestFarm.map(
-                ".......", ".......", ".......", "...,...", ".......", ".......", ".......");
+                ".......", ".......", "...,...", ".......", ".......", ".......", ".......");
         Location here = map.at(3, 3);
 
         String report = new SowingOmen(new WeatherReading("Rain", 15.0, 2.0, 1.0), areaFactory, random)

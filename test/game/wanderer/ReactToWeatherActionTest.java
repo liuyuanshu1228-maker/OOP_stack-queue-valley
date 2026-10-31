@@ -1,7 +1,9 @@
 package game.wanderer;
 
+import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.StackQueueValleyWorld;
 import game.actors.Farmer;
 import game.testsupport.TestFarm;
 import org.junit.jupiter.api.Test;
@@ -24,6 +26,9 @@ class ReactToWeatherActionTest {
 
     @Test
     void executesTheGivenReactionAtTheActorsOwnLocation() throws Exception {
+        // addActor needs the map registered with a World first, exactly as
+        // game.pests.PestTurnTest and game.wanderer.WandererTest do.
+        new StackQueueValleyWorld(new Display()).addGameMap(map);
         map.at(0, 0).addActor(actor);
         RecordingReaction reaction = new RecordingReaction("the reaction's own report");
         ReactToWeatherAction action = new ReactToWeatherAction(reaction);
