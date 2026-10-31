@@ -2,6 +2,7 @@ package game.wanderer;
 
 import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actions.ActionList;
+import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
@@ -94,5 +95,22 @@ public class Wanderer extends WanderingActor {
             return super.playConsciousTurn(actions, lastAction, map, display);
         }
         return new ReactToWeatherAction(reaction.get());
+    }
+
+    /**
+     * Offers any adjacent actor the chance to ask this Wanderer about
+     * tomorrow's forecast. Depends only on {@link AskForecastAction}'s own
+     * needs, never naming a concrete {@link ForecastOmen}.
+     *
+     * @param otherActor the actor who might ask for the forecast
+     * @param direction the direction of this Wanderer from otherActor
+     * @param map the map containing this Wanderer
+     * @return an ActionList containing a single AskForecastAction
+     */
+    @Override
+    public ActionList allowableActions(Actor otherActor, String direction, GameMap map) {
+        ActionList actions = new ActionList();
+        actions.add(new AskForecastAction(this, weatherSource, mapGeography, weatherInterpreter));
+        return actions;
     }
 }

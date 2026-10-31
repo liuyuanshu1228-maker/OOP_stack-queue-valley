@@ -6,16 +6,12 @@ import game.weather.WeatherReading;
 import java.util.Optional;
 
 /**
- * Decides which {@link WeatherReaction}, if any, a current weather reading
- * triggers, so that no other class needs to name a concrete reaction.
- * Checks the agreed thresholds in a fixed order and stops at the first one
- * that matches: a strong wind first, then rain, then cold.
- * <p>
- * This class deliberately covers only the current-weather side of REQ5.
- * The forecast/omen side (choosing a {@link ForecastOmen} from a forecast
- * reading) belongs in this same class, since it is the one class that names
- * every concrete reaction and omen; it has not been added here so as not to
- * clash with that part of the feature while it is written separately.
+ * Decides which {@link WeatherReaction} a current weather reading triggers,
+ * and which {@link ForecastOmen} a forecast reading triggers, so that no
+ * other class needs to name a concrete reaction or omen. Both sides check
+ * their own agreed thresholds in a fixed order and stop at the first one
+ * that matches: {@link #reactionFor} tries a strong wind, then rain, then
+ * cold; {@link #omenFor} tries frost, then rain, then heat.
  */
 public class WeatherInterpreter {
 
@@ -29,6 +25,12 @@ public class WeatherInterpreter {
     private static final String DRIZZLE_CONDITION = "Drizzle";
     /** A condition name that counts as rainy. */
     private static final String THUNDERSTORM_CONDITION = "Thunderstorm";
+    /** Forecast temperature, in Celsius, at or below which a frost omen is triggered. */
+    private static final double FROST_THRESHOLD_CELSIUS = 5.0;
+    /** Forecast temperature, in Celsius, at or above which a drought omen is triggered. */
+    private static final double DROUGHT_TEMPERATURE_THRESHOLD_CELSIUS = 25.0;
+    /** Forecast rainfall, in mm/h, at or below which a day counts as dry enough for drought. */
+    private static final double DROUGHT_RAIN_THRESHOLD_MM = 0.5;
 
     /** Builds the Area each produced WeatherReaction affects. */
     private final AreaFactory areaFactory;
@@ -72,5 +74,36 @@ public class WeatherInterpreter {
         return RAIN_CONDITION.equals(condition)
                 || DRIZZLE_CONDITION.equals(condition)
                 || THUNDERSTORM_CONDITION.equals(condition);
+    }
+
+    /**
+     * Decides which omen, if any, the given forecast triggers.
+     *
+     * @param forecast the forecast reading to interpret
+     * @return the omen that applies, or empty if none does
+     */
+    public Optional<ForecastOmen> omenFor(WeatherReading forecast) {
+        if (forecast.getTemperatureCelsius() <= FROST_THRESHOLD_CELSIUS) {
+            return Optional.of(new FrostOmen(forecast, areaFactory));
+        }
+        if (isRainy(forecast)) {
+            return Optional.of(new BountyOmen(forecast, areaFactory));
+        }
+        if (isDrought(forecast)) {
+            return Optional.of(new DroughtOmen(forecast));
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Decides whether a forecast counts as a drought: hot and effectively dry.
+     *
+     * @param forecast the forecast reading to check
+     * @return true if the temperature is at least the drought threshold and
+     * the rainfall is at most the dry threshold
+     */
+    private boolean isDrought(WeatherReading forecast) {
+        return forecast.getTemperatureCelsius() >= DROUGHT_TEMPERATURE_THRESHOLD_CELSIUS
+                && forecast.getRainMillimetres() <= DROUGHT_RAIN_THRESHOLD_MM;
     }
 }
