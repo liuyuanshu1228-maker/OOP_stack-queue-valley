@@ -95,6 +95,83 @@ All six are entirely new classes. No Assignment 1 or 2 class is retrofitted.
 - The three pests move in three different ways (jump, crawl, burrow), so the same plant-seeking rule produces different paths.
 - The three defences work in three different ways: they pull pests in, hunt them, and push them out.
 
+## REQ4: Enchanted Tools
+
+### The Pitch
+
+The Farmer can imbue their Hoe, Watering Can or Pickaxe with magic. An enchanted tool does not just till, water or break — it also triggers a second, independent magical effect the next time it is used, then the magic is spent. Two complex effects fire from a single action: the tool's own amplified version of its job, and whichever Enchantment was attached to it.
+
+### The Mechanics
+
+**Enchanting a tool**
+
+- The Farmer can enchant any Hoe, Watering Can or Pickaxe they carry with a Blaze, Bounty or Shatter Enchantment, chosen from that tool's own menu.
+- A tool holds at most one Enchantment at a time; enchanting an already-enchanted tool replaces the one it carries.
+
+**What happens the next time an enchanted tool is used**
+
+Two effects fire together, in order:
+
+1. The tool's own effect — fixed per tool, fires every time it is used while enchanted, independent of which Enchantment is attached:
+   - **Hoe:** tilling also tills every tillable tile adjacent to the one tilled (up to the 8 surrounding tiles).
+   - **Watering Can:** watering also waters one other waterable tile adjacent to it, chosen at random.
+   - **Pickaxe:** breaking has a 40% chance of also breaking one random breakable tile adjacent to it.
+2. The attached Enchantment's effect, fired against every tile the tool's own effect touched, then the Enchantment is spent:
+   - **Blaze Enchantment:** ignites a Fire on every affected tile.
+   - **Bounty Enchantment:** forces an extra growth attempt on any plant occupying an affected tile.
+   - **Shatter Enchantment:** stuns any actor standing on an affected tile.
+
+**In the game**
+
+- An unenchanted tool behaves exactly as it always has; nothing about ordinary tilling, watering or breaking changes.
+- Every outcome — the base action, the tool's own spread, and the Enchantment's effect — names the coordinates of every tile it touched.
+- At the start of the game, the Farmer's Hoe, Watering Can and Pickaxe can each be enchanted with any of the three Enchantments.
+
+### The Architecture
+
+**The two new abstractions (both are interfaces):**
+
+1. `Enchantable`: what a tool does to carry and fire an attached Enchantment (`enchant(Enchantment)`, `triggerEnchantment(Actor, Location)`).
+2. `Enchantment`: the magical effect a tool fires once, against the tiles its own effect touched (`applyTo(List<Location>, Actor, Location)`).
+
+**The six concrete classes:**
+
+| Abstraction | Concrete class | New or retrofitted |
+|---|---|---|
+| `Enchantable` | `Hoe` | Retrofitted (A1) |
+| `Enchantable` | `WateringCan` | Retrofitted (A1) |
+| `Enchantable` | `Pickaxe` | Retrofitted (A1) |
+| `Enchantment` | `BlazeEnchantment` | New |
+| `Enchantment` | `BountyEnchantment` | New |
+| `Enchantment` | `ShatterEnchantment` | New |
+
+Three retrofitted, three entirely new, matching the "at least three new, up to three retrofitted" rule.
+
+**Supporting classes (not counted among the six):**
+
+- `AbstractEnchantableTool` (abstract, implements `Enchantable`): the base class `Hoe`, `WateringCan` and `Pickaxe` now extend. Owns the generic store/fire/consume logic (through `EnchantmentSlot`) and offers one `EnchantAction` per Enchantment a tool can be enchanted with, so this shared behaviour is written once instead of being repeated in all three tools.
+- `EnchantmentSlot`: composition helper that stores at most one Enchantment, fires it against a list of tiles, then clears itself.
+- `EnchantAction` (an `Action`): lets the Farmer attach one chosen Enchantment to one chosen Enchantable tool.
+- `EnchantmentTrigger`: composition helper used by `CapabilityToolAction` (tilling/watering) and `BreakAction` (breaking) to find the specific tool instance just used among the Actor's items and fire its Enchantment, by reference equality against the matching `Enchantable` view — not `instanceof`, since `Inventory.getItemsAs` already returns a capability-narrowed view that cannot be asked for a second capability.
+
+**Existing classes that REQ4 uses but does not change:** `AreaFactory`, `RandomUtils`, `Fire`, `StunnedStatus`, `Plant` (through `attemptGrowth`). All are passed in through constructors.
+
+**Existing classes that REQ4 changes:** `CapabilityToolAction` and `BreakAction` each gained one line giving the tool just used a chance to fire its Enchantment (through `EnchantmentTrigger`), after their own effect has already run; `StackQueueValleyWorld` builds the three Enchantments once and offers all three to the Farmer's Hoe, Watering Can and Pickaxe.
+
+### How it meets the complexity rules
+
+- **Cross-component interaction:** an `Item` (the tool) offers an `Action` (`EnchantAction`) that changes the tool's own state; using the tool then fires an `Enchantment` that changes `Ground` (a Fire item), a `Plant`'s growth stage, or an `Actor`'s `Status`.
+- **Spawning:** the Blaze Enchantment spawns a Fire item on every affected tile.
+- **Area of effect:** every tool's own effect and every Enchantment acts on a list of affected tiles, never a single fixed one.
+- **Status effect:** the Shatter Enchantment applies `StunnedStatus`.
+- **Terrain modification:** the Hoe's own effect tills adjacent Dirt into Soil.
+
+### Why it is different from the earlier requirements
+
+- REQ3's pests act on their own turn, independently of the Farmer; REQ4's Enchantments only ever fire as a direct consequence of the Farmer's own tool use, never on their own.
+- REQ3 is about defending the farm against something attacking it; REQ4 is about amplifying the Farmer's own ordinary actions.
+- Where REQ1/REQ2's tools each do one fixed thing, REQ4 lets the same three tools carry one of three independent, swappable effects chosen by the player rather than fixed in the tool's own code — the Enchantment a tool carries can change from one use to the next.
+
 ## REQ5: The Wanderer (A.P.I)
 
 <!-- Team note: the thresholds below are the agreed contract for the concrete classes.
