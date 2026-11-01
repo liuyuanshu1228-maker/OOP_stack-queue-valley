@@ -1,5 +1,6 @@
 package game;
 
+import edu.monash.fit2099.engine.GameEngineException;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.items.Item;
@@ -175,7 +176,7 @@ public class StackQueueValleyWorld extends World {
         GameMap minesMap = maps.mines();
 
         Location farmerStart = locate(inheritedFarmMap, FARMER_START);
-        placeFarmerWithEquipment(inheritedFarmMap, farmerStart, randomUtils, areaFactory);
+        placeFarmerWithEquipment(farmerStart, randomUtils, areaFactory);
 
         Set<Location> occupiedLocations = new HashSet<>();
         occupiedLocations.add(farmerStart);
@@ -195,8 +196,9 @@ public class StackQueueValleyWorld extends World {
      * @param randomUtils the randomness handed to every plant
      * @param areaFactory the AreaFactory handed to every plant
      * @return the two created maps, farm first
+     * @throws GameEngineException if the engine cannot build either map
      */
-    private Maps createMaps(RandomUtils randomUtils, AreaFactory areaFactory) {
+    private Maps createMaps(RandomUtils randomUtils, AreaFactory areaFactory) throws GameEngineException {
         DefaultGroundCreator groundCreator = new DefaultGroundCreator();
         groundCreator.registerGround('.', Dirt::new);
         groundCreator.registerGround(',', Soil::new);
@@ -227,13 +229,12 @@ public class StackQueueValleyWorld extends World {
      * equips their starting inventory: the three farm tools (each offering every
      * enchantment in the game) and the three pest-control items.
      *
-     * @param farm the farm map to place the Farmer on
      * @param farmerStart where on the farm the Farmer starts
      * @param randomUtils the randomness handed to the Pickaxe and LadybugJar
      * @param areaFactory the AreaFactory handed to every tool and pest-control item
      * @throws Exception if the engine cannot place the Farmer on {@code farmerStart}
      */
-    private void placeFarmerWithEquipment(GameMap farm, Location farmerStart, RandomUtils randomUtils,
+    private void placeFarmerWithEquipment(Location farmerStart, RandomUtils randomUtils,
                                           AreaFactory areaFactory) throws Exception {
         Farmer farmer = new Farmer("Bob");
         this.addPlayer(farmer, farmerStart);
@@ -286,6 +287,22 @@ public class StackQueueValleyWorld extends World {
         scatterGround(farmMap, occupiedLocations, List.of(new DryingRack()), randomUtils);
         scatterGround(farmMap, occupiedLocations, List.of(new PreservesJar()), randomUtils);
 
+        placeFarmAnimalsAndMerchant(farmMap, occupiedLocations, randomUtils, areaFactory);
+        placeFarmPestsAndWanderer(farmMap, occupiedLocations, randomUtils, areaFactory);
+    }
+
+    /**
+     * Places the farm's animals and the Merchant: the Chicken, the Cow, the
+     * Merchant (stocked with a Parsnip, a Tomato, and a Sword), and the Crow.
+     *
+     * @param farmMap the farm map to place them on
+     * @param occupiedLocations farm locations that must not be used; updated with the newly used ones
+     * @param randomUtils the randomness used to pick each tile and to build each Actor
+     * @param areaFactory the AreaFactory handed to every Actor built
+     * @throws Exception if the engine cannot place an Actor on its chosen tile
+     */
+    private void placeFarmAnimalsAndMerchant(GameMap farmMap, Set<Location> occupiedLocations,
+                                             RandomUtils randomUtils, AreaFactory areaFactory) throws Exception {
         placeActor(farmMap, occupiedLocations, new Chicken("Chicken", randomUtils, areaFactory), randomUtils);
         placeActor(farmMap, occupiedLocations, new Cow("Cow", randomUtils, areaFactory), randomUtils);
         placeActor(farmMap, occupiedLocations,
@@ -295,6 +312,20 @@ public class StackQueueValleyWorld extends World {
                         new Sword(randomUtils)),
                 randomUtils);
         placeActor(farmMap, occupiedLocations, new Crow("Crow", randomUtils, areaFactory), randomUtils);
+    }
+
+    /**
+     * Places the farm's three pests (the Slime Snail, the Locust Swarm, and
+     * the Burrowing Mole) and the Wanderer.
+     *
+     * @param farmMap the farm map to place them on
+     * @param occupiedLocations farm locations that must not be used; updated with the newly used ones
+     * @param randomUtils the randomness used to pick each tile and to build each Actor
+     * @param areaFactory the AreaFactory handed to every Actor built
+     * @throws Exception if the engine cannot place an Actor on its chosen tile
+     */
+    private void placeFarmPestsAndWanderer(GameMap farmMap, Set<Location> occupiedLocations,
+                                           RandomUtils randomUtils, AreaFactory areaFactory) throws Exception {
         placeActor(farmMap, occupiedLocations, new SlimeSnail(randomUtils, areaFactory), randomUtils);
         placeActor(farmMap, occupiedLocations, new LocustSwarm(randomUtils, areaFactory), randomUtils);
         placeActor(farmMap, occupiedLocations, new BurrowingMole(randomUtils, areaFactory), randomUtils);
