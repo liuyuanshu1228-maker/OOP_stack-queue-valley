@@ -57,7 +57,7 @@ The tests do not depend on luck. `game.testsupport.FixedRandom` extends the game
 
 ## A3 REQ3 — Infestation and Pest Control
 
-Pests move towards the Farmer's plants and eat them. The Farmer fights back with three defences. The full design is in `feature-proposal.md`, `docs/A3_REQ3_Design_Rationale.md` and `docs/UML/A3_REQ3_Infestation_UML.drawio`.
+Pests move towards the Farmer's plants and eat them. The Farmer fights back with three defences. The full design is in `feature-proposal.md`, `docs/A3_REQ3_Design_Rationale.md` and `docs/A3 UML/A3_REQ3_Infestation_UML.drawio`.
 
 **Where to find it in the game:** Run `game.Application`. The world places one pest of each kind on a free tile of the farm. The Farmer starts with one of each defence in their inventory.
 
