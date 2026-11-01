@@ -58,6 +58,7 @@ public class WanderBehaviour implements Behaviour<Actor, Action> {
         }
 
         Exit chosen = randomUtils.pickRandom(enterableExits);
-        return new MoveActorAction(chosen.getDestination(), chosen.getName(), chosen.getHotKey());
+        return new MoveActorAction(chosen.getDestination(),
+                chosen.getName() + " to " + chosen.getDestination(), chosen.getHotKey());
     }
 }

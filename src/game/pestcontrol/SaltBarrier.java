@@ -88,6 +88,6 @@ public class SaltBarrier extends DeterrentItem {
                 return pest + " is burnt by the salt and pushed out to " + destination + ".";
             }
         }
-        return pest + " is burnt by the salt but has nowhere to go.";
+        return pest + " is burnt by the salt at " + tile + " but has nowhere to go.";
     }
 }
