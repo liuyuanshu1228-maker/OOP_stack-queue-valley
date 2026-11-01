@@ -32,10 +32,10 @@ import java.util.List;
 public abstract class Plant extends Ground implements Regressible {
 
     /**
-     * Ground has no Display passed to its tick, so plants share this one to
-     * report what they do.
+     * Ground has no Display passed to its tick, so each plant keeps its own
+     * to report what it does.
      */
-    private static final Display DISPLAY = new Display();
+    private final Display display = new Display();
 
     /**
      * The number of turns this plant has been on the map.
@@ -83,7 +83,7 @@ public abstract class Plant extends Ground implements Regressible {
         }
         String report = attemptGrowth(location);
         if (!report.isEmpty()) {
-            DISPLAY.println(report);
+            display.println(report);
         }
     }
 
