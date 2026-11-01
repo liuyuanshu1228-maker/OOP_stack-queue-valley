@@ -1,8 +1,10 @@
 package game.crops;
 
 import game.plants.Grow;
+import game.plants.Growing;
 import game.plants.Plant;
 import game.plants.SelfReplicate;
+import game.plants.Spreading;
 import game.positions.area.AreaFactory;
 import game.random.RandomUtils;
 
@@ -22,7 +24,7 @@ import game.random.RandomUtils;
  * harvested, and the Farmer can walk onto it. It has no earlier stage, so
  * when it is regressed it dies, leaving Dirt.
  */
-public class MelonSprout extends Plant {
+public class MelonSprout extends Plant implements Growing, Spreading {
 
     /** How many turns between attempts to grow. */
     private static final int GROW_INTERVAL = 15;
@@ -61,7 +63,7 @@ public class MelonSprout extends Plant {
      * @return a new Melon
      */
     @Override
-    protected Plant nextStage() {
+    public Plant nextStage() {
         return new Melon(randomUtils, areaFactory);
     }
 
@@ -71,7 +73,7 @@ public class MelonSprout extends Plant {
      * @return a new MelonSprout
      */
     @Override
-    protected Plant offspring() {
+    public Plant offspring() {
         return new MelonSprout(randomUtils, areaFactory);
     }
 }

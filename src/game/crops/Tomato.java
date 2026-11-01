@@ -9,7 +9,9 @@ import game.actions.MerchantContext;
 import game.actions.Purchasable;
 import game.plants.Plant;
 import game.plants.Produce;
+import game.plants.Producing;
 import game.plants.SelfReplicate;
+import game.plants.Spreading;
 import game.positions.area.AreaFactory;
 import game.random.RandomUtils;
 import game.statistics.FarmerStatistics;
@@ -32,7 +34,7 @@ import java.util.Optional;
  * It is mature only and has no earlier stage, so when it is regressed it dies
  * and leaves Dirt.
  */
-public class Tomato extends Crop implements Purchasable {
+public class Tomato extends Crop implements Purchasable, Producing, Spreading {
 
     /** Stamina consumed by a successful Tomato harvest. */
     private static final int HARVEST_STAMINA_COST = 2;
@@ -89,7 +91,7 @@ public class Tomato extends Crop implements Purchasable {
      * @return a new TomatoItem
      */
     @Override
-    protected Item produce() {
+    public Item produce() {
         return new TomatoItem();
     }
 
@@ -99,7 +101,7 @@ public class Tomato extends Crop implements Purchasable {
      * @return a new Tomato
      */
     @Override
-    protected Plant offspring() {
+    public Plant offspring() {
         return new Tomato(randomUtils, areaFactory);
     }
 

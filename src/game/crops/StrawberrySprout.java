@@ -2,8 +2,10 @@ package game.crops;
 
 import edu.monash.fit2099.engine.positions.Ground;
 import game.plants.Grow;
+import game.plants.Growing;
 import game.plants.Plant;
 import game.plants.SelfReplicate;
+import game.plants.Spreading;
 import game.positions.area.AreaFactory;
 import game.random.RandomUtils;
 
@@ -23,7 +25,7 @@ import game.random.RandomUtils;
  * harvested, and the Farmer can walk onto it. When it is regressed it goes
  * back to being a {@link StrawberrySeedling}.
  */
-public class StrawberrySprout extends Plant {
+public class StrawberrySprout extends Plant implements Growing, Spreading {
 
     /** How many turns between attempts to grow. */
     private static final int GROW_INTERVAL = 10;
@@ -62,7 +64,7 @@ public class StrawberrySprout extends Plant {
      * @return a new Strawberry
      */
     @Override
-    protected Plant nextStage() {
+    public Plant nextStage() {
         return new Strawberry(randomUtils, areaFactory);
     }
 
@@ -72,7 +74,7 @@ public class StrawberrySprout extends Plant {
      * @return a new StrawberrySeedling
      */
     @Override
-    protected Plant offspring() {
+    public Plant offspring() {
         return new StrawberrySeedling(randomUtils, areaFactory);
     }
 

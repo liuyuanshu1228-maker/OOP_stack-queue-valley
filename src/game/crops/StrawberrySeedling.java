@@ -1,6 +1,7 @@
 package game.crops;
 
 import game.plants.Grow;
+import game.plants.Growing;
 import game.plants.Plant;
 import game.positions.area.AreaFactory;
 import game.random.RandomUtils;
@@ -15,7 +16,7 @@ import game.random.RandomUtils;
  * harvested, and the Farmer can walk onto it. It has no earlier stage, so
  * when it is regressed it dies, leaving Dirt.
  */
-public class StrawberrySeedling extends Plant {
+public class StrawberrySeedling extends Plant implements Growing {
 
     /** How many turns between attempts to grow. */
     private static final int GROW_INTERVAL = 5;
@@ -53,7 +54,7 @@ public class StrawberrySeedling extends Plant {
      * @return a new StrawberrySprout
      */
     @Override
-    protected Plant nextStage() {
+    public Plant nextStage() {
         return new StrawberrySprout(randomUtils, areaFactory);
     }
 }

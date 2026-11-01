@@ -5,6 +5,7 @@ import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.plants.Produce;
+import game.plants.Producing;
 import game.positions.Waterable;
 import game.positions.area.AreaFactory;
 import game.positions.area.ItemDropper;
@@ -19,7 +20,7 @@ import game.random.RandomUtils;
  * tile by itself, which may be rotten. When it is regressed it goes back to
  * being a {@link StrawberrySprout}.
  */
-public class Strawberry extends Crop implements Waterable {
+public class Strawberry extends Crop implements Waterable, Producing {
 
     /** Stamina consumed by a successful Strawberry harvest. */
     private static final int HARVEST_STAMINA_COST = 1;
@@ -68,7 +69,7 @@ public class Strawberry extends Crop implements Waterable {
      * @return a new StrawberryItem
      */
     @Override
-    protected Item produce() {
+    public Item produce() {
         return new StrawberryItem(randomUtils);
     }
 

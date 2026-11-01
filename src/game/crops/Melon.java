@@ -6,6 +6,7 @@ import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.plants.Plant;
 import game.plants.SelfReplicate;
+import game.plants.Spreading;
 import game.positions.area.AreaFactory;
 import game.positions.area.Explosion;
 import game.random.RandomUtils;
@@ -21,7 +22,7 @@ import game.positions.Waterable;
  * adjacent tile by itself. When it is regressed it goes back to being a
  * MelonSprout.
  */
-public class Melon extends Crop implements Waterable {
+public class Melon extends Crop implements Waterable, Spreading {
 
     /** Stamina consumed by a successful Melon harvest. */
     private static final int HARVEST_STAMINA_COST = 5;
@@ -79,7 +80,7 @@ public class Melon extends Crop implements Waterable {
      * @return a new MelonSprout
      */
     @Override
-    protected Plant offspring() {
+    public Plant offspring() {
         return new MelonSprout(randomUtils, areaFactory);
     }
 

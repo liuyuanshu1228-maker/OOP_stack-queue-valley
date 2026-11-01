@@ -1,7 +1,6 @@
 package game.plants;
 
 import edu.monash.fit2099.engine.displays.Display;
-import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.positions.farm.Dirt;
@@ -118,43 +117,6 @@ public abstract class Plant extends Ground implements Regressible {
      */
     protected Ground previousStage() {
         return new Dirt();
-    }
-
-    /**
-     * The plant this one grows into. Called by a {@link Grow} ability; every
-     * plant that is given one overrides this to return its own next stage.
-     * The default throws, because a plant with no next stage is never given
-     * a Grow ability in the first place and so never has this called.
-     *
-     * @return a new instance of the next growth stage
-     */
-    protected Plant nextStage() {
-        throw new UnsupportedOperationException(this + " has no next growth stage.");
-    }
-
-    /**
-     * The plant to be planted on an adjacent tile. Called by a
-     * {@link SelfReplicate} ability; every plant that is given one overrides
-     * this to return the plant it spreads. The default throws, because a
-     * plant that cannot spread is never given a SelfReplicate ability and so
-     * never has this called.
-     *
-     * @return a new instance of the plant to plant nearby
-     */
-    protected Plant offspring() {
-        throw new UnsupportedOperationException(this + " cannot self-replicate.");
-    }
-
-    /**
-     * The item this plant drops. Called by a {@link Produce} ability; every
-     * plant that is given one overrides this to return what it produces. The
-     * default throws, because a plant that produces nothing is never given a
-     * Produce ability and so never has this called.
-     *
-     * @return a new instance of the item produced
-     */
-    protected Item produce() {
-        throw new UnsupportedOperationException(this + " does not produce anything.");
     }
 
     /**

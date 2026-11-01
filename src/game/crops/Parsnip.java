@@ -8,6 +8,7 @@ import edu.monash.fit2099.engine.statistics.StatisticOperations;
 import game.actions.MerchantContext;
 import game.actions.Purchasable;
 import game.plants.Produce;
+import game.plants.Producing;
 import game.positions.Waterable;
 import game.positions.area.AreaFactory;
 import game.positions.area.ItemDropper;
@@ -26,7 +27,7 @@ import java.util.Optional;
  * tile by itself. It is mature only and has no earlier stage, so when it is
  * regressed it dies, leaving Dirt.
  */
-public class Parsnip extends Crop implements Waterable, Purchasable {
+public class Parsnip extends Crop implements Waterable, Purchasable, Producing {
 
     /** Stamina consumed by a successful Parsnip harvest. */
     private static final int HARVEST_STAMINA_COST = 1;
@@ -79,7 +80,7 @@ public class Parsnip extends Crop implements Waterable, Purchasable {
      * @return a new ParsnipItem
      */
     @Override
-    protected Item produce() {
+    public Item produce() {
         return new ParsnipItem();
     }
 

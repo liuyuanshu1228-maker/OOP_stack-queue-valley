@@ -6,10 +6,11 @@ import game.random.RandomUtils;
 /**
  * A plant ability that replaces the plant with its next growth stage.
  * <p>
- * The next stage is created by the plant itself, via {@link Plant#nextStage()},
+ * The next stage is created by the plant itself, via {@link Growing#nextStage()},
  * so a new instance is created every time and each plant decides what its own
  * next stage is, e.g. a {@code StrawberrySprout}'s {@code nextStage()}
- * returns a new {@code Strawberry}.
+ * returns a new {@code Strawberry}. A plant that is not {@link Growing} is
+ * left as it is.
  */
 public class Grow extends PeriodicAbility {
 
@@ -25,15 +26,21 @@ public class Grow extends PeriodicAbility {
     }
 
     /**
-     * Replaces the plant with a new instance of its next stage.
+     * Replaces the plant with a new instance of its next stage, if it is
+     * {@link Growing}.
      *
      * @param plant the plant that grows
      * @param location the location of the plant
-     * @return a description of the growth, to be displayed to the player
+     * @return a description of the growth, or an empty string if the plant
+     * cannot grow
      */
     @Override
     protected String perform(Plant plant, Location location) {
-        Plant next = plant.nextStage();
+        Growing growing = location.getGroundAs(Growing.class);
+        if (growing == null) {
+            return "";
+        }
+        Plant next = growing.nextStage();
         location.setGround(next);
         return plant + " at " + location + " grows into a " + next + ".";
     }
