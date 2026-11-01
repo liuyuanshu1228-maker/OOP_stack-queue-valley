@@ -73,6 +73,11 @@ class LadybugTest {
 
         assertEquals(3, countActors(here));
         assertTrue(report.contains("3 ladybugs"), report);
+        for (Location tile : areaFactory.adjacentTo(here).tiles()) {
+            if (tile.containsAnActor()) {
+                assertTrue(report.contains(tile.toString()), "names every tile a ladybug lands on: " + report);
+            }
+        }
     }
 
     @Test

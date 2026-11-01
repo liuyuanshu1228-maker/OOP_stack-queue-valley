@@ -81,5 +81,7 @@ class FrostOmenTest {
         assertTrue(report.contains("(3, 3)"), report);
         assertTrue(report.contains("-1.0"), report);
         assertTrue(report.contains("2 plants"), report);
+        assertTrue(report.contains(map.at(3, 2).toString()), "names every paused plant: " + report);
+        assertTrue(report.contains(map.at(2, 3).toString()), "names every paused plant: " + report);
     }
 }

@@ -4,8 +4,12 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.plants.Plant;
 import game.positions.area.AreaFactory;
+import game.positions.area.TileListDescription;
 import game.status.GrowthPausedStatus;
 import game.weather.WeatherReading;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The omen of a cold forecast: pauses the growth of every {@link Plant}
@@ -62,16 +66,17 @@ public class FrostOmen implements ForecastOmen {
     public String bringUpon(Actor asker, Location here) {
         int pauseDurationTurns = BASE_PAUSE_TURNS
                 + (int) Math.max(0, frostThresholdCelsius - forecast.getTemperatureCelsius());
-        int pausedPlants = 0;
+        List<Location> pausedPlants = new ArrayList<>();
         for (Location tile : areaFactory.within(here, RADIUS_TILES).tiles()) {
             Plant plant = tile.getGroundAs(Plant.class);
             if (plant != null) {
                 plant.addStatus(new GrowthPausedStatus(pauseDurationTurns));
-                pausedPlants++;
+                pausedPlants.add(tile);
             }
         }
         return "The Wanderer warns " + asker + " of a " + forecast.getTemperatureCelsius()
-                + "°C frost tomorrow: " + pausedPlants + " plants around " + here
-                + " stop growing for " + pauseDurationTurns + " turns.";
+                + "°C frost tomorrow: " + pausedPlants.size() + " plants around " + here
+                + " stop growing for " + pauseDurationTurns + " turns, at "
+                + new TileListDescription().of(pausedPlants) + ".";
     }
 }

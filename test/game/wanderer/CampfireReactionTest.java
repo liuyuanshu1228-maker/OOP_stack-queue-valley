@@ -55,5 +55,10 @@ class CampfireReactionTest {
 
         assertTrue(report.contains("(1, 1)"), report);
         assertTrue(report.contains("4.0"), report);
+        for (Location tile : areaFactory.adjacentTo(here).tiles()) {
+            if (!tile.getItems().isEmpty()) {
+                assertTrue(report.contains(tile.toString()), "names every tile set alight: " + report);
+            }
+        }
     }
 }

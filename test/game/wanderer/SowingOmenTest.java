@@ -81,5 +81,6 @@ class SowingOmenTest {
         assertTrue(report.contains("(3, 3)"), report);
         assertTrue(report.contains("Rain"), report);
         assertTrue(report.contains("1 Strawberry Seedlings"), report);
+        assertTrue(report.contains(map.at(3, 2).toString()), "names every sown tile: " + report);
     }
 }

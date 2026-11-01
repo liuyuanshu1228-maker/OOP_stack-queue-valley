@@ -77,5 +77,7 @@ class StormShelterReactionTest {
         assertTrue(report.contains("(1, 1)"), report);
         assertTrue(report.contains("2.0 m/s"), report);
         assertTrue(report.contains("8 tiles"), report);
+        assertTrue(report.contains(map.at(0, 0).toString()), "names every sheltered tile: " + report);
+        assertTrue(report.contains(map.at(2, 2).toString()), "names every sheltered tile: " + report);
     }
 }

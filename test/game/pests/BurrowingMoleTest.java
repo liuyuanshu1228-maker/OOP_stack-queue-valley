@@ -48,6 +48,8 @@ class BurrowingMoleTest {
         assertInstanceOf(Dirt.class, map.at(1, 2).getGround());
         assertEquals(4, TestFarm.countGround(map, Soil.class), "the corners stay Soil");
         assertTrue(report.contains("Burrowing Mole"), report);
+        assertTrue(report.contains(map.at(1, 0).toString()), "names every caved-in tile: " + report);
+        assertTrue(report.contains(map.at(1, 2).toString()), "names every caved-in tile: " + report);
     }
 
     @Test

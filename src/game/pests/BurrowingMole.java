@@ -4,8 +4,12 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.plants.Regressible;
 import game.positions.Plantable;
 import game.positions.area.AreaFactory;
+import game.positions.area.TileListDescription;
 import game.positions.farm.Dirt;
 import game.random.RandomUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A pest that burrows one or two tiles in a straight line, up, down, left or
@@ -59,17 +63,18 @@ public class BurrowingMole extends Pest {
             return "";
         }
         String report = plant.regress(here);
-        int cavedIn = 0;
+        List<Location> cavedIn = new ArrayList<>();
         for (Location tile : areaFactory.adjacentTo(here).tiles()) {
             if (isStraightNeighbour(here, tile) && tile.getGroundAs(Plantable.class) != null) {
                 tile.setGround(new Dirt());
-                cavedIn++;
+                cavedIn.add(tile);
             }
         }
-        if (cavedIn == 0) {
+        if (cavedIn.isEmpty()) {
             return report;
         }
-        return report + " " + this + " caves in the Soil around it, which turns back into Dirt.";
+        return report + " " + this + " caves in the Soil at " + new TileListDescription().of(cavedIn)
+                + ", which turns back into Dirt.";
     }
 
     /**

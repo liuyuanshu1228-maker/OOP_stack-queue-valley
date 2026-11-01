@@ -74,5 +74,8 @@ class SaltBarrierTest {
 
         assertEquals(3, TestFarm.countGround(map, SaltGround.class));
         assertTrue(report.contains("3 tiles"), report);
+        assertTrue(report.contains(map.at(1, 0).toString()), "names every salted tile: " + report);
+        assertTrue(report.contains(map.at(0, 1).toString()), "names every salted tile: " + report);
+        assertTrue(report.contains(map.at(1, 1).toString()), "names every salted tile: " + report);
     }
 }

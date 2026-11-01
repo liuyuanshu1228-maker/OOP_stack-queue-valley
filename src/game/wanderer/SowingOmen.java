@@ -5,8 +5,12 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.crops.StrawberrySeedling;
 import game.positions.Plantable;
 import game.positions.area.AreaFactory;
+import game.positions.area.TileListDescription;
 import game.random.RandomUtils;
 import game.weather.WeatherReading;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The omen of a rainy forecast: a new {@link StrawberrySeedling} takes root
@@ -53,16 +57,16 @@ public class SowingOmen implements ForecastOmen {
      */
     @Override
     public String bringUpon(Actor asker, Location here) {
-        int seedlingsSown = 0;
+        List<Location> seedlingsSown = new ArrayList<>();
         for (Location tile : areaFactory.within(here, RADIUS_TILES).tiles()) {
             Plantable plantable = tile.getGroundAs(Plantable.class);
             if (plantable != null) {
                 plantable.plant(new StrawberrySeedling(randomUtils, areaFactory), tile);
-                seedlingsSown++;
+                seedlingsSown.add(tile);
             }
         }
         return "The Wanderer promises " + asker + " a " + forecast.getCondition()
-                + " day tomorrow: " + seedlingsSown + " Strawberry Seedlings take root on the bare Soil around "
-                + here + ".";
+                + " day tomorrow: " + seedlingsSown.size() + " Strawberry Seedlings take root on the bare Soil around "
+                + here + ", at " + new TileListDescription().of(seedlingsSown) + ".";
     }
 }

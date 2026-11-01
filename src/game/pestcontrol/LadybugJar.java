@@ -4,7 +4,11 @@ import edu.monash.fit2099.engine.GameEngineException;
 import edu.monash.fit2099.engine.positions.Exit;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.positions.area.TileListDescription;
 import game.random.RandomUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A jar of ladybugs. Using it releases a few ladybugs on the free tiles
@@ -44,9 +48,9 @@ public class LadybugJar extends DeterrentItem {
      */
     @Override
     public String deterAround(Location here, GameMap map) {
-        int released = 0;
+        List<Location> released = new ArrayList<>();
         for (Exit exit : here.getExits()) {
-            if (released == LADYBUGS) {
+            if (released.size() == LADYBUGS) {
                 break;
             }
             Location tile = exit.getDestination();
@@ -54,12 +58,13 @@ public class LadybugJar extends DeterrentItem {
             if (tile.canActorEnter(ladybug)) {
                 try {
                     tile.addActor(ladybug);
-                    released++;
+                    released.add(tile);
                 } catch (GameEngineException e) {
                     // The tile was taken; try the next one.
                 }
             }
         }
-        return "The jar opens and " + released + " ladybugs fly out around " + here + ".";
+        return "The jar opens at " + here + " and " + released.size() + " ladybugs fly out to "
+                + new TileListDescription().of(released) + ".";
     }
 }

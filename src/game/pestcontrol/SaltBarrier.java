@@ -9,6 +9,7 @@ import game.pests.PestPresent;
 import game.positions.Plantable;
 import game.positions.Tillable;
 import game.positions.area.AreaFactory;
+import game.positions.area.TileListDescription;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +62,8 @@ public class SaltBarrier extends DeterrentItem {
                 salted.add(tile);
             }
         }
-        StringBuilder report = new StringBuilder("Salt covers " + salted.size() + " tiles around " + here + ".");
+        StringBuilder report = new StringBuilder("Salt covers " + salted.size() + " tiles around " + here + ": "
+                + new TileListDescription().of(salted) + ".");
         for (Location tile : salted) {
             if (pestFinder.isMetBy(tile)) {
                 report.append(" ").append(hurtAndPushOut(tile.getActor(), tile, map));

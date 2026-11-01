@@ -48,6 +48,8 @@ class SlimeSnailTest {
         assertInstanceOf(StrawberrySprout.class, centre.getGround());
         assertEquals(8, TestFarm.countGround(map, SlimeGround.class));
         assertTrue(report.contains("Slime Snail"), report);
+        assertTrue(report.contains(map.at(0, 0).toString()), "names every slimed tile: " + report);
+        assertTrue(report.contains(map.at(2, 2).toString()), "names every slimed tile: " + report);
     }
 
     @Test

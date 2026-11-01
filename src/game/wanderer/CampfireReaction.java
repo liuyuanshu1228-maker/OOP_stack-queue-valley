@@ -3,7 +3,11 @@ package game.wanderer;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.Fire;
 import game.positions.area.AreaFactory;
+import game.positions.area.TileListDescription;
 import game.weather.WeatherReading;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The reaction to cold weather: lights a {@link Fire} on tiles adjacent to
@@ -61,15 +65,16 @@ public class CampfireReaction implements WeatherReaction {
     public String reactAround(Location here) {
         int tilesToLight = Math.min(MAX_TILES_ALIGHT,
                 Math.max(MIN_TILES_ALIGHT, (int) (coldThresholdCelsius - reading.getTemperatureCelsius())));
-        int tilesLit = 0;
+        List<Location> tilesLit = new ArrayList<>();
         for (Location tile : areaFactory.adjacentTo(here).tiles()) {
-            if (tilesLit >= tilesToLight) {
+            if (tilesLit.size() >= tilesToLight) {
                 break;
             }
             tile.addItem(new Fire(FIRE_LIFETIME_TURNS, BURN_DAMAGE_PER_TURN, BURN_DURATION_TURNS));
-            tilesLit++;
+            tilesLit.add(tile);
         }
         return "The Wanderer lights a campfire against the " + reading.getTemperatureCelsius()
-                + "°C cold around " + here + ": " + tilesLit + " tiles catch alight.";
+                + "°C cold around " + here + ": " + tilesLit.size() + " tiles catch alight at "
+                + new TileListDescription().of(tilesLit) + ".";
     }
 }

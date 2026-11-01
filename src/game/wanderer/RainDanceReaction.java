@@ -4,7 +4,11 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.positions.FreelyWaterable;
 import game.positions.Tillable;
 import game.positions.area.AreaFactory;
+import game.positions.area.TileListDescription;
 import game.weather.WeatherReading;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The reaction to rain: over an area around the given Location that grows
@@ -47,22 +51,37 @@ public class RainDanceReaction implements WeatherReaction {
     @Override
     public String reactAround(Location here) {
         int radius = Math.max(MIN_RADIUS_TILES, (int) Math.ceil(reading.getRainMillimetres()));
-        int tilledTiles = 0;
-        int wateredCrops = 0;
+        List<Location> tilledTiles = new ArrayList<>();
+        List<Location> wateredCrops = new ArrayList<>();
         for (Location tile : areaFactory.within(here, radius).tiles()) {
             Tillable tillable = tile.getGroundAs(Tillable.class);
             if (tillable != null) {
                 tile.setGround(tillable.getTillResult());
-                tilledTiles++;
+                tilledTiles.add(tile);
             }
             FreelyWaterable waterable = tile.getGroundAs(FreelyWaterable.class);
             if (waterable != null) {
                 waterable.receiveFreeWatering();
-                wateredCrops++;
+                wateredCrops.add(tile);
             }
         }
+        return describe(here, tilledTiles, wateredCrops);
+    }
+
+    /**
+     * Describes what the dance changed, naming every tile it tilled and
+     * every crop it watered.
+     *
+     * @param here the tile the Wanderer danced on
+     * @param tilledTiles the bare tiles that turned to Soil
+     * @param wateredCrops the tiles whose crop received a free watering
+     * @return a description of the dance and its effects
+     */
+    private String describe(Location here, List<Location> tilledTiles, List<Location> wateredCrops) {
+        TileListDescription tiles = new TileListDescription();
         return "The Wanderer dances for rain around " + here + " (" + reading.getCondition()
-                + ", " + reading.getRainMillimetres() + " mm/h): " + tilledTiles
-                + " bare tiles turn to Soil, and " + wateredCrops + " crops receive a free watering.";
+                + ", " + reading.getRainMillimetres() + " mm/h): " + tilledTiles.size()
+                + " bare tiles turn to Soil (" + tiles.of(tilledTiles) + "), and " + wateredCrops.size()
+                + " crops receive a free watering (" + tiles.of(wateredCrops) + ").";
     }
 }

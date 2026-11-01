@@ -61,5 +61,7 @@ class RainDanceReactionTest {
 
         assertTrue(report.contains("(2, 2)"), report);
         assertTrue(report.contains("8 bare tiles turn to Soil"), report);
+        assertTrue(report.contains(map.at(1, 1).toString()), "names every tilled tile: " + report);
+        assertTrue(report.contains(map.at(3, 3).toString()), "names every tilled tile: " + report);
     }
 }

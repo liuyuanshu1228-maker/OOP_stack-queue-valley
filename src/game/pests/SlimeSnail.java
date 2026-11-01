@@ -6,7 +6,11 @@ import game.plants.Regressible;
 import game.positions.Plantable;
 import game.positions.Tillable;
 import game.positions.area.AreaFactory;
+import game.positions.area.TileListDescription;
 import game.random.RandomUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A slow pest that crawls one tile at a time. When it feeds, the plant goes
@@ -61,17 +65,18 @@ public class SlimeSnail extends Pest {
             return "";
         }
         String report = plant.regress(here);
-        int slimed = 0;
+        List<Location> slimed = new ArrayList<>();
         for (Location tile : areaFactory.adjacentTo(here).filter(new Unplanted()).tiles()) {
             if (isBareFarmGround(tile)) {
                 tile.setGround(new SlimeGround(tile.getGround()));
-                slimed++;
+                slimed.add(tile);
             }
         }
-        if (slimed == 0) {
+        if (slimed.isEmpty()) {
             return report;
         }
-        return report + " " + this + " leaves slime on the bare ground around it.";
+        return report + " " + this + " leaves slime on the bare ground at "
+                + new TileListDescription().of(slimed) + ".";
     }
 
     /**

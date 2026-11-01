@@ -2,7 +2,11 @@ package game.wanderer;
 
 import edu.monash.fit2099.engine.positions.Location;
 import game.positions.area.AreaFactory;
+import game.positions.area.TileListDescription;
 import game.weather.WeatherReading;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The reaction to a strong wind: builds a {@link StormShelterGround} on every
@@ -40,16 +44,17 @@ public class StormShelterReaction implements WeatherReaction {
     @Override
     public String reactAround(Location here) {
         int durationTurns = BASE_DURATION_TURNS + (int) reading.getWindSpeedMetresPerSecond();
-        int shelteredTiles = 0;
+        List<Location> shelteredTiles = new ArrayList<>();
         for (Location tile : areaFactory.adjacentTo(here).tiles()) {
             if (tile.containsAnActor()) {
                 continue;
             }
             tile.setGround(new StormShelterGround(tile.getGround(), durationTurns));
-            shelteredTiles++;
+            shelteredTiles.add(tile);
         }
         return "The Wanderer builds a shelter around " + here + " against a "
                 + reading.getWindSpeedMetresPerSecond() + " m/s wind, blocking "
-                + shelteredTiles + " tiles for " + durationTurns + " turns.";
+                + shelteredTiles.size() + " tiles for " + durationTurns + " turns: "
+                + new TileListDescription().of(shelteredTiles) + ".";
     }
 }
