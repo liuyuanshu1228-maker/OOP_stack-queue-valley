@@ -28,7 +28,7 @@ import java.util.Optional;
 public class SeekPlantBehaviour implements Behaviour<Actor, Action> {
 
     /** How far away, in tiles, a pest can sense a plant. */
-    private final int sensingRadius = 4;
+    private static final int SENSING_RADIUS = 4;
 
     /** Each landing tile as {dx, dy} from the pest's tile. */
     private final int[][] landingOffsets;
@@ -106,7 +106,7 @@ public class SeekPlantBehaviour implements Behaviour<Actor, Action> {
      */
     private Optional<Location> nearestPlant(Location from) {
         List<Location> plants = new ArrayList<>();
-        for (Location tile : areaFactory.within(from, sensingRadius).tiles()) {
+        for (Location tile : areaFactory.within(from, SENSING_RADIUS).tiles()) {
             if (tile.getGroundAs(Regressible.class) != null) {
                 plants.add(tile);
             }

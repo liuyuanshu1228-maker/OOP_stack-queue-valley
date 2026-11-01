@@ -15,12 +15,27 @@ import game.random.RandomUtils;
  */
 public class SlimeSnail extends Pest {
 
+    /** The name of this pest. */
+    private static final String NAME = "Slime Snail";
+
+    /** The character shown on the map. */
+    private static final char DISPLAY_CHAR = 'q';
+
+    /** The snail's starting hit points. */
+    private static final int HIT_POINTS = 5;
+
+    /** A crawl: any of the eight neighbouring tiles. */
+    private static final int[][] CRAWL_OFFSETS = {
+            {-1, -1}, {0, -1}, {1, -1},
+            {-1, 0}, {1, 0},
+            {-1, 1}, {0, 1}, {1, 1}
+    };
+
     /** Builds the Area of tiles around this snail that may get slimed. */
     private final AreaFactory areaFactory;
 
     /**
-     * Creates a slime snail, shown as 'q', with 5 hit points. It crawls to
-     * any of the eight neighbouring tiles.
+     * Creates a slime snail.
      *
      * @param randomUtils the randomness forwarded to this snail's fallback
      *                    wandering behaviour; this snail's own feeding has no
@@ -28,11 +43,7 @@ public class SlimeSnail extends Pest {
      * @param areaFactory builds the Area of tiles around this snail that may get slimed
      */
     public SlimeSnail(RandomUtils randomUtils, AreaFactory areaFactory) {
-        super("Slime Snail", 'q', 5, new int[][] {
-                {-1, -1}, {0, -1}, {1, -1},
-                {-1, 0}, {1, 0},
-                {-1, 1}, {0, 1}, {1, 1}
-        }, randomUtils, areaFactory);
+        super(NAME, DISPLAY_CHAR, HIT_POINTS, CRAWL_OFFSETS, randomUtils, areaFactory);
         this.areaFactory = areaFactory;
     }
 

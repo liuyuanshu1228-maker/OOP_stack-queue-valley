@@ -16,12 +16,21 @@ import game.positions.TemporaryGround;
  */
 public class SlimeGround extends TemporaryGround {
 
+    /** The character shown on the map. */
+    private static final char DISPLAY_CHAR = ':';
+
+    /** The name of this ground. */
+    private static final String NAME = "Slime";
+
+    /** How many turns the slime lasts. */
+    private static final int DURATION_TURNS = 5;
+
     /**
-     * Creates slime over the given ground, shown as ':'. It dries after 5 turns.
+     * Creates slime over the given ground.
      *
      * @param originalGround the ground the slime covers, put back when it dries
      */
     public SlimeGround(Ground originalGround) {
-        super(':', "Slime", originalGround, 5);
+        super(DISPLAY_CHAR, NAME, originalGround, DURATION_TURNS);
     }
 }

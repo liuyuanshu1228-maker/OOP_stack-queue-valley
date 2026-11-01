@@ -12,13 +12,22 @@ import game.positions.TemporaryGround;
  */
 public class SaltGround extends TemporaryGround {
 
+    /** The character shown on the map. */
+    private static final char DISPLAY_CHAR = '+';
+
+    /** The name of this ground. */
+    private static final String NAME = "Salt";
+
+    /** How many turns the salt lasts. */
+    private static final int DURATION_TURNS = 8;
+
     /**
-     * Covers a ground with salt, shown as '+'. It lasts 8 turns.
+     * Covers a ground with salt.
      *
      * @param originalGround the ground to restore when the salt is gone
      */
     public SaltGround(Ground originalGround) {
-        super('+', "Salt", originalGround, 8);
+        super(DISPLAY_CHAR, NAME, originalGround, DURATION_TURNS);
     }
 
     /**
