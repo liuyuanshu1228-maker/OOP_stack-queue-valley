@@ -11,22 +11,16 @@ import game.positions.area.AreaFactory;
  */
 public class PestTrap extends DeterrentItem {
 
-    /** The name of this item. */
-    private static final String NAME = "Pest Trap";
-
-    /** The character shown on the map. */
-    private static final char DISPLAY_CHAR = '[';
-
     /** Builds the Areas the set TrapGround searches for pests to pull and capture. */
     private final AreaFactory areaFactory;
 
     /**
-     * Creates a pest trap.
+     * Creates a pest trap, shown as '['.
      *
      * @param areaFactory builds the Areas the set TrapGround searches for pests to pull and capture
      */
     public PestTrap(AreaFactory areaFactory) {
-        super(NAME, DISPLAY_CHAR);
+        super("Pest Trap", '[');
         this.areaFactory = areaFactory;
     }
 

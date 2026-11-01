@@ -22,20 +22,8 @@ import game.positions.area.AreaFactory;
  */
 public class TrapGround extends TemporaryGround {
 
-    /** The character shown on the map. */
-    private static final char DISPLAY_CHAR = 'X';
-
-    /** The name of this ground. */
-    private static final String NAME = "Pest Trap";
-
-    /** How many turns the trap lasts. */
-    private static final int DURATION_TURNS = 10;
-
-    /** How many pests the trap can capture before it is used up. */
-    private static final int MAX_CAPTURES = 2;
-
     /** How far away the trap pulls pests from. */
-    private static final int PULL_RADIUS = 2;
+    private final int pullRadius = 2;
 
     /** Finds the pests around the trap. */
     private final PestPresent pestFinder = new PestPresent();
@@ -43,17 +31,17 @@ public class TrapGround extends TemporaryGround {
     /** Builds the Areas the trap searches for pests to pull and capture. */
     private final AreaFactory areaFactory;
 
-    /** How many more pests the trap can capture. */
-    private int capturesLeft = MAX_CAPTURES;
+    /** How many more pests the trap can capture; a new trap can capture 2. */
+    private int capturesLeft = 2;
 
     /**
-     * Sets a trap on a ground.
+     * Sets a trap on a ground, shown as 'X'. It lasts 10 turns.
      *
      * @param originalGround the ground to restore when the trap is used up
      * @param areaFactory builds the Areas the trap searches for pests to pull and capture
      */
     public TrapGround(Ground originalGround, AreaFactory areaFactory) {
-        super(DISPLAY_CHAR, NAME, originalGround, DURATION_TURNS);
+        super('X', "Pest Trap", originalGround, 10);
         this.areaFactory = areaFactory;
     }
 
@@ -68,7 +56,7 @@ public class TrapGround extends TemporaryGround {
     protected void tickEffect(Location location) {
         String report = pullPests(location) + capturePests(location);
         if (!report.isEmpty()) {
-            new Display().println(NAME + " at " + location + ":" + report);
+            new Display().println(this + " at " + location + ":" + report);
         }
         if (capturesLeft == 0) {
             revertAt(location);
@@ -105,7 +93,7 @@ public class TrapGround extends TemporaryGround {
     private String pullPests(Location location) {
         GameMap map = location.map();
         StringBuilder report = new StringBuilder();
-        for (Location tile : areaFactory.within(location, PULL_RADIUS).filter(pestFinder).tiles()) {
+        for (Location tile : areaFactory.within(location, pullRadius).filter(pestFinder).tiles()) {
             if (isNextTo(tile, location)) {
                 continue;
             }

@@ -18,29 +18,11 @@ import java.util.Optional;
  */
 public class LocustSwarm extends Pest {
 
-    /** The name of this pest. */
-    private static final String NAME = "Locust Swarm";
-
-    /** The character shown on the map. */
-    private static final char DISPLAY_CHAR = 'z';
-
-    /** The swarm's starting hit points. */
-    private static final int HIT_POINTS = 3;
-
-    /** How many meals a new swarm can eat before it flies away. */
-    private static final int STARTING_MEALS = 4;
-
     /** The fewest meals a swarm must have left to split. */
-    private static final int MEALS_NEEDED_TO_SPLIT = 2;
+    private final int mealsNeededToSplit = 2;
 
     /** Chance (out of 100) that a swarm splits after a meal. */
-    private static final int SPLIT_CHANCE_PERCENT = 30;
-
-    /** A knight's jump: two tiles one way and one tile sideways. */
-    private static final int[][] JUMP_OFFSETS = {
-            {1, -2}, {2, -1}, {2, 1}, {1, 2},
-            {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2}
-    };
+    private final int splitChancePercent = 30;
 
     /** How many more meals this swarm can eat before it flies away. */
     private int mealsLeft;
@@ -52,7 +34,8 @@ public class LocustSwarm extends Pest {
     private final AreaFactory areaFactory;
 
     /**
-     * Creates a full-sized locust swarm.
+     * Creates a full-sized locust swarm, which can eat 4 meals before it
+     * flies away.
      *
      * @param randomUtils the randomness used to roll the split chance, and
      *                    handed to a split-off swarm
@@ -60,12 +43,13 @@ public class LocustSwarm extends Pest {
      *                    tile, and handed to a split-off swarm
      */
     public LocustSwarm(RandomUtils randomUtils, AreaFactory areaFactory) {
-        this(STARTING_MEALS, randomUtils, areaFactory);
+        this(4, randomUtils, areaFactory);
     }
 
     /**
      * Creates a locust swarm that can eat the given number of meals. Used
-     * when a swarm splits.
+     * when a swarm splits. A swarm is shown as 'z', has 3 hit points and
+     * jumps like a chess knight: two tiles one way and one tile sideways.
      *
      * @param meals how many meals the swarm can eat
      * @param randomUtils the randomness used to roll the split chance, and
@@ -75,7 +59,10 @@ public class LocustSwarm extends Pest {
      * @throws IllegalArgumentException if meals is less than 1
      */
     private LocustSwarm(int meals, RandomUtils randomUtils, AreaFactory areaFactory) {
-        super(NAME, DISPLAY_CHAR, HIT_POINTS, JUMP_OFFSETS, randomUtils, areaFactory);
+        super("Locust Swarm", 'z', 3, new int[][] {
+                {1, -2}, {2, -1}, {2, 1}, {1, 2},
+                {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2}
+        }, randomUtils, areaFactory);
         if (meals < 1) {
             throw new IllegalArgumentException("A swarm needs at least one meal, got " + meals);
         }
@@ -128,7 +115,7 @@ public class LocustSwarm extends Pest {
      * @return what happened, or an empty string if the swarm did not split
      */
     private String splitAt(Location here) {
-        if (mealsLeft < MEALS_NEEDED_TO_SPLIT || !randomUtils.rollPercent(SPLIT_CHANCE_PERCENT)) {
+        if (mealsLeft < mealsNeededToSplit || !randomUtils.rollPercent(splitChancePercent)) {
             return "";
         }
         LocustSwarm offshoot = new LocustSwarm(mealsLeft / 2, randomUtils, areaFactory);

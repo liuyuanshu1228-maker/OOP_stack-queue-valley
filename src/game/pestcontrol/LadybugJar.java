@@ -12,25 +12,19 @@ import game.random.RandomUtils;
  */
 public class LadybugJar extends DeterrentItem {
 
-    /** The name of this item. */
-    private static final String NAME = "Jar of Ladybugs";
-
-    /** The character shown on the map. */
-    private static final char DISPLAY_CHAR = 'j';
-
     /** How many ladybugs the jar holds. */
-    private static final int LADYBUGS = 3;
+    private final int ladybugs = 3;
 
     /** The randomness handed to every Ladybug this jar releases. */
     private final RandomUtils randomUtils;
 
     /**
-     * Creates a jar of ladybugs.
+     * Creates a jar of ladybugs, shown as 'j'.
      *
      * @param randomUtils the randomness handed to every Ladybug this jar releases
      */
     public LadybugJar(RandomUtils randomUtils) {
-        super(NAME, DISPLAY_CHAR);
+        super("Jar of Ladybugs", 'j');
         this.randomUtils = randomUtils;
     }
 
@@ -46,7 +40,7 @@ public class LadybugJar extends DeterrentItem {
     public String deterAround(Location here, GameMap map) {
         int released = 0;
         for (Exit exit : here.getExits()) {
-            if (released == LADYBUGS) {
+            if (released == ladybugs) {
                 break;
             }
             Location tile = exit.getDestination();

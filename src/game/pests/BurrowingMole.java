@@ -14,26 +14,12 @@ import game.random.RandomUtils;
  */
 public class BurrowingMole extends Pest {
 
-    /** The name of this pest. */
-    private static final String NAME = "Burrowing Mole";
-
-    /** The character shown on the map. */
-    private static final char DISPLAY_CHAR = 'r';
-
-    /** The mole's starting hit points. */
-    private static final int HIT_POINTS = 8;
-
-    /** A burrow: one or two tiles up, down, left or right. */
-    private static final int[][] BURROW_OFFSETS = {
-            {0, -1}, {1, 0}, {0, 1}, {-1, 0},
-            {0, -2}, {2, 0}, {0, 2}, {-2, 0}
-    };
-
     /** Builds the Area of tiles around this mole that may cave in. */
     private final AreaFactory areaFactory;
 
     /**
-     * Creates a burrowing mole.
+     * Creates a burrowing mole, shown as 'r', with 8 hit points. It burrows
+     * one or two tiles up, down, left or right.
      *
      * @param randomUtils the randomness forwarded to this mole's fallback
      *                    wandering behaviour; this mole's own feeding has no
@@ -41,7 +27,10 @@ public class BurrowingMole extends Pest {
      * @param areaFactory builds the Area of tiles around this mole that may cave in
      */
     public BurrowingMole(RandomUtils randomUtils, AreaFactory areaFactory) {
-        super(NAME, DISPLAY_CHAR, HIT_POINTS, BURROW_OFFSETS, randomUtils, areaFactory);
+        super("Burrowing Mole", 'r', 8, new int[][] {
+                {0, -1}, {1, 0}, {0, 1}, {-1, 0},
+                {0, -2}, {2, 0}, {0, 2}, {-2, 0}
+        }, randomUtils, areaFactory);
         this.areaFactory = areaFactory;
     }
 

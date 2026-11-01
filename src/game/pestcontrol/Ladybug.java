@@ -18,28 +18,20 @@ import game.random.RandomUtils;
  */
 public class Ladybug extends WanderingActor {
 
-    /** The name of this actor. */
-    private static final String NAME = "Ladybug";
-
-    /** The character shown on the map. */
-    private static final char DISPLAY_CHAR = 'e';
-
-    /** Starting hit points, which is also how many turns it lives. */
-    private static final int LIFESPAN_TURNS = 5;
-
     /** Hit points lost each turn. */
-    private static final int AGEING_DAMAGE = 1;
+    private final int ageingDamage = 1;
 
     /** Finds the pests next to the ladybug. */
     private final PestPresent pestFinder = new PestPresent();
 
     /**
-     * Creates a ladybug.
+     * Creates a ladybug, shown as 'e'. It starts with 5 hit points and
+     * loses one each turn, so it lives for 5 turns.
      *
      * @param randomUtils the randomness used to build this ladybug's wandering behaviour
      */
     public Ladybug(RandomUtils randomUtils) {
-        super(NAME, DISPLAY_CHAR, LIFESPAN_TURNS, new WanderBehaviour(randomUtils));
+        super("Ladybug", 'e', 5, new WanderBehaviour(randomUtils));
     }
 
     /**
@@ -54,7 +46,7 @@ public class Ladybug extends WanderingActor {
     @Override
     protected Action playConsciousTurn(ActionList actions, Action lastAction,
                                        GameMap map, Display display) {
-        hurt(AGEING_DAMAGE);
+        hurt(ageingDamage);
         for (Exit exit : map.locationOf(this).getExits()) {
             Location tile = exit.getDestination();
             if (pestFinder.isMetBy(tile)) {

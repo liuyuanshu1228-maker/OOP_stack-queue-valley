@@ -19,14 +19,8 @@ import java.util.List;
  */
 public class SaltBarrier extends DeterrentItem {
 
-    /** The name of this item. */
-    private static final String NAME = "Bag of Salt";
-
-    /** The character shown on the map. */
-    private static final char DISPLAY_CHAR = 'f';
-
     /** Damage dealt to a pest caught on a tile when it is salted. */
-    private static final int SALT_DAMAGE = 2;
+    private final int saltDamage = 2;
 
     /** Finds the pests on the salted tiles. */
     private final PestPresent pestFinder = new PestPresent();
@@ -35,12 +29,12 @@ public class SaltBarrier extends DeterrentItem {
     private final AreaFactory areaFactory;
 
     /**
-     * Creates a bag of salt.
+     * Creates a bag of salt, shown as 'f'.
      *
      * @param areaFactory builds the Area of tiles around the user that get salted
      */
     public SaltBarrier(AreaFactory areaFactory) {
-        super(NAME, DISPLAY_CHAR);
+        super("Bag of Salt", 'f');
         this.areaFactory = areaFactory;
     }
 
@@ -80,7 +74,7 @@ public class SaltBarrier extends DeterrentItem {
      * @return what happened to the pest
      */
     private String hurtAndPushOut(Actor pest, Location tile, GameMap map) {
-        pest.hurt(SALT_DAMAGE);
+        pest.hurt(saltDamage);
         for (Exit exit : tile.getExits()) {
             Location destination = exit.getDestination();
             if (destination.canActorEnter(pest)) {
