@@ -140,7 +140,7 @@ Two effects fire together, in order:
 |---|---|---|
 | `Enchantable` | `Hoe` | Retrofitted (A1) |
 | `Enchantable` | `WateringCan` | Retrofitted (A1) |
-| `Enchantable` | `Pickaxe` | Retrofitted (A1) |
+| `Enchantable` | `Pickaxe` | Retrofitted (A2) |
 | `Enchantment` | `BlazeEnchantment` | New |
 | `Enchantment` | `BountyEnchantment` | New |
 | `Enchantment` | `ShatterEnchantment` | New |
