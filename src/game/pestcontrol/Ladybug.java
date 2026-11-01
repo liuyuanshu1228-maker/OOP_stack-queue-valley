@@ -16,7 +16,7 @@ import game.random.RandomUtils;
  * wanders if there is none. It weakens by one hit point each turn, so it
  * lives only a few turns.
  */
-public class Ladybug extends WanderingActor {
+class Ladybug extends WanderingActor {
 
     /** The name of this actor. */
     private static final String NAME = "Ladybug";
@@ -38,7 +38,7 @@ public class Ladybug extends WanderingActor {
      *
      * @param randomUtils the randomness used to build this ladybug's wandering behaviour
      */
-    public Ladybug(RandomUtils randomUtils) {
+    Ladybug(RandomUtils randomUtils) {
         super(NAME, DISPLAY_CHAR, LIFESPAN_TURNS, new WanderBehaviour(randomUtils));
     }
 

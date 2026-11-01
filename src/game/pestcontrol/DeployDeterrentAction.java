@@ -13,7 +13,7 @@ import edu.monash.fit2099.engine.positions.GameMap;
  * change here. The item is kept separately because the actor's inventory
  * holds items, not deterrents.
  */
-public class DeployDeterrentAction extends Action {
+class DeployDeterrentAction extends Action {
 
     /** The item that is used up. */
     private final Item source;
@@ -27,7 +27,7 @@ public class DeployDeterrentAction extends Action {
      * @param source the item to remove from the actor's inventory
      * @param deterrent the defence to use
      */
-    public DeployDeterrentAction(Item source, PestDeterrent deterrent) {
+    DeployDeterrentAction(Item source, PestDeterrent deterrent) {
         this.source = source;
         this.deterrent = deterrent;
     }

@@ -22,7 +22,7 @@ import game.random.RandomUtils;
  * feeding does). It may also override {@link #canFeedAt} if it feeds on more
  * than the plant under it.
  */
-public abstract class Pest extends WanderingActor implements Infestation {
+abstract class Pest extends WanderingActor implements Infestation {
 
     /**
      * Creates a pest.

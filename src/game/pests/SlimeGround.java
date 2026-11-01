@@ -14,7 +14,7 @@ import game.positions.TemporaryGround;
  * It lives in the pests package, next to the snail that makes it, so the
  * positions package does not depend on pests.
  */
-public class SlimeGround extends TemporaryGround {
+class SlimeGround extends TemporaryGround {
 
     /** The character shown on the map. */
     private static final char DISPLAY_CHAR = ':';
@@ -30,7 +30,7 @@ public class SlimeGround extends TemporaryGround {
      *
      * @param originalGround the ground the slime covers, put back when it dries
      */
-    public SlimeGround(Ground originalGround) {
+    SlimeGround(Ground originalGround) {
         super(DISPLAY_CHAR, NAME, originalGround, DURATION_TURNS);
     }
 }

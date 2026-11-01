@@ -20,7 +20,7 @@ import game.positions.area.AreaFactory;
  * <p>
  * A ground's tick returns nothing, so the trap prints its own report.
  */
-public class TrapGround extends TemporaryGround {
+class TrapGround extends TemporaryGround {
 
     /** The character shown on the map. */
     private static final char DISPLAY_CHAR = 'X';
@@ -52,7 +52,7 @@ public class TrapGround extends TemporaryGround {
      * @param originalGround the ground to restore when the trap is used up
      * @param areaFactory builds the Areas the trap searches for pests to pull and capture
      */
-    public TrapGround(Ground originalGround, AreaFactory areaFactory) {
+    TrapGround(Ground originalGround, AreaFactory areaFactory) {
         super(DISPLAY_CHAR, NAME, originalGround, DURATION_TURNS);
         this.areaFactory = areaFactory;
     }
