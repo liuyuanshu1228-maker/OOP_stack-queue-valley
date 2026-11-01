@@ -10,7 +10,7 @@ import game.positions.TemporaryGround;
  * while the salt lasts. It turns back into the ground it covered after a few
  * turns.
  */
-class SaltGround extends TemporaryGround {
+public class SaltGround extends TemporaryGround {
 
     /** The character shown on the map. */
     private static final char DISPLAY_CHAR = '+';
@@ -26,7 +26,7 @@ class SaltGround extends TemporaryGround {
      *
      * @param originalGround the ground to restore when the salt is gone
      */
-    SaltGround(Ground originalGround) {
+    public SaltGround(Ground originalGround) {
         super(DISPLAY_CHAR, NAME, originalGround, DURATION_TURNS);
     }
 

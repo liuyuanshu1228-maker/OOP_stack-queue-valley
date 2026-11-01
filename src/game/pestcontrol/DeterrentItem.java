@@ -13,7 +13,7 @@ import edu.monash.fit2099.engine.positions.Location;
  * says what using it does ({@link #deterAround}) and, if it needs to, where
  * it can be used ({@link #canDeployAt}).
  */
-abstract class DeterrentItem extends Item implements PestDeterrent {
+public abstract class DeterrentItem extends Item implements PestDeterrent {
 
     /**
      * Creates a deterrent item.

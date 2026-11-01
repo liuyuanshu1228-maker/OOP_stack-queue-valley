@@ -2,13 +2,16 @@ package game.items.tools;
 
 import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actions.ActionList;
+import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.StackQueueValleyWorld;
 import game.actors.Farmer;
 import game.positions.area.AreaFactory;
 import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,6 +37,14 @@ class AbstractEnchantableToolTest {
     private final GameMap map = TestFarm.map("...", "...", "...");
     private final Farmer farmer = new Farmer("Test");
     private final Location here = map.at(1, 1);
+
+    @BeforeEach
+    void placeTheFarmer() throws Exception {
+        // EnchantAction names the actor's Location, so the map must be
+        // registered with a World and the Farmer must stand on it.
+        new StackQueueValleyWorld(new Display()).addGameMap(map);
+        here.addActor(farmer);
+    }
 
     @Test
     void offersOneEnchantActionPerOfferedEnchantment() {

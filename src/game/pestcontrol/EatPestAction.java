@@ -7,7 +7,7 @@ import edu.monash.fit2099.engine.positions.GameMap;
 /**
  * An actor eats a pest next to it, which removes the pest from the map.
  */
-class EatPestAction extends Action {
+public class EatPestAction extends Action {
 
     /** The pest to eat. */
     private final Actor pest;
@@ -17,7 +17,7 @@ class EatPestAction extends Action {
      *
      * @param pest the pest to eat
      */
-    EatPestAction(Actor pest) {
+    public EatPestAction(Actor pest) {
         this.pest = pest;
     }
 

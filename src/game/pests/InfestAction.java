@@ -14,7 +14,7 @@ import edu.monash.fit2099.engine.positions.GameMap;
  * It lives in the pests package, not in game.actions, because {@link Pest}
  * creates it; keeping both here avoids a package cycle.
  */
-class InfestAction extends Action {
+public class InfestAction extends Action {
 
     /** The pest that feeds. */
     private final Infestation infestation;
@@ -24,7 +24,7 @@ class InfestAction extends Action {
      *
      * @param infestation the pest that feeds
      */
-    InfestAction(Infestation infestation) {
+    public InfestAction(Infestation infestation) {
         this.infestation = infestation;
     }
 

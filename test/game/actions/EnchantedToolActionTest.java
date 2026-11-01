@@ -55,7 +55,7 @@ class EnchantedToolActionTest {
     }
 
     @Test
-    void tillingWithAnEnchantedHoeFiresBothTheSpreadAndTheEnchantment() {
+    void tillingWithAnEnchantedHoeFiresBothTheSpreadAndTheEnchantment() throws Exception {
         // (1, 1) is the primary tilled tile, (2, 1) its one tillable
         // neighbour, surrounded by Soil so the spread is deterministic.
         GameMap map = TestFarm.map(",,,", ",..", ",,,");
@@ -76,7 +76,7 @@ class EnchantedToolActionTest {
     }
 
     @Test
-    void tillingWithAnUnenchantedHoeFiresOnlyTheTillingEffect() {
+    void tillingWithAnUnenchantedHoeFiresOnlyTheTillingEffect() throws Exception {
         GameMap map = TestFarm.map(",,,", ",..", ",,,");
         register(map);
         Hoe hoe = new Hoe(List.of(), areaFactory);
@@ -91,7 +91,7 @@ class EnchantedToolActionTest {
     }
 
     @Test
-    void wateringWithAnEnchantedWateringCanFiresBothTheSpreadAndTheEnchantment() {
+    void wateringWithAnEnchantedWateringCanFiresBothTheSpreadAndTheEnchantment() throws Exception {
         // (1, 1) is the primary watered tile, (2, 1) its one waterable
         // neighbour, surrounded by Soil so the spread is deterministic.
         GameMap map = TestFarm.map(",,,", ",..", ",,,");

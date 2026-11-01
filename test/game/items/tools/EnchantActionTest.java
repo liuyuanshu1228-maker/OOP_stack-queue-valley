@@ -35,7 +35,7 @@ class EnchantActionTest {
     }
 
     @Test
-    void attachesTheEnchantmentToTheTool() {
+    void attachesTheEnchantmentToTheTool() throws Exception {
         Hoe hoe = new Hoe(List.of(), areaFactory);
         RecordingEnchantment enchantment = new RecordingEnchantment();
         Location here = map.at(1, 1);
@@ -48,7 +48,7 @@ class EnchantActionTest {
     }
 
     @Test
-    void executeMessageNamesTheActorToolEnchantmentAndLocation() {
+    void executeMessageNamesTheActorToolEnchantmentAndLocation() throws Exception {
         Hoe hoe = new Hoe(List.of(), areaFactory);
         RecordingEnchantment enchantment = new RecordingEnchantment();
         Location here = map.at(1, 1);
