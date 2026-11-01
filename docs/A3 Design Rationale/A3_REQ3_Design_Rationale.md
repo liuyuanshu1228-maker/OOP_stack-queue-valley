@@ -2,7 +2,7 @@
 
 ## Jingyu Zhang 37033956 – REQ 3: Infestation and Pest Control
 
-Class diagram: `docs/UML/A3_REQ3_Infestation_UML.drawio`. Feature proposal: `feature-proposal.md`.
+Class diagram: `../A3_UML/A3_REQ3_Infestation_UML.drawio`. Feature proposal: `feature-proposal.md`.
 
 Pests move towards plants and eat them. The Farmer fights back with three defences: one pulls pests in, one hunts them, and one pushes them out. Every effect changes the map or an actor, never only prints text.
 
