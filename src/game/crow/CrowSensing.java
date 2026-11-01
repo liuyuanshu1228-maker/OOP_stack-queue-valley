@@ -150,6 +150,8 @@ public class CrowSensing {
     }
 
     /**
+     * Returns the tiles the crow can sense around itself.
+     *
      * @return the tiles within the crow's sensing range, not including its own
      */
     private Area withinRange() {
