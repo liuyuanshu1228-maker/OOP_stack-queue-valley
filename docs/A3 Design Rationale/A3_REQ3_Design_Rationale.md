@@ -41,7 +41,7 @@ Each decision compares rejected and chosen designs, with pros, cons and a future
 |---|---|
 | OCP: a new pest is one new class. `Pest`, `InfestAction` and the defences do not change. | A reader must open two classes to see one pest's full turn. |
 | LSP: the turn never asks which pest it is. The hook replaces `if (this instanceof LocustSwarm)`, which would make the parent know its children. | A subclass could override `canFeedAt` badly, for example return true where `feedOn` finds nothing. `feedOn` then returns an empty report, so the game does not break. |
-| DRY: "feed or move" exists once, and the A2 unconscious check in `WanderingActor` is reused. | |
+| DRY: "feed or move" exists once. `Pest` extends the existing `WanderingActor`, so the unconscious check from A2 is reused, not copied. | |
 
 **Why `feedOn` is not a template.** We considered a template on `Pest` where each pest gives only a per-tile step. But the three effects touch different tiles (the area around the swarm, the mole's four straight neighbours, the bare ground around the snail), do different things to them, and only the swarm changes itself (meals, splitting). A template would wrap three different effects without removing repeated code (KISS).
 
@@ -55,9 +55,9 @@ Each decision compares rejected and chosen designs, with pros, cons and a future
 | Three classes (`KnightMove`, `CrawlMove`, `BurrowMove`) | Each move has a name. | Three classes that differ only in a table of numbers. The A2 marker called one class per variant "architectural bloat". |
 | **One `SeekPlantBehaviour` with offsets (chosen)** | DRY: one copy of the search. OCP: a new movement is one new array. KISS: no new type per pest. | The offsets are a raw `int[][]`, a mild "primitive obsession" smell. |
 
-We accept the smell because the array never leaves its pest class, and the behaviour validates and copies it in its constructor. So a pest cannot pass `{1}` or change the table later. The fallback is typed as the engine's `Behaviour`, not `WanderBehaviour` (DIP).
+We accept the smell because the array never leaves its pest class, and the behaviour validates and copies it in its constructor. So a pest cannot pass `{1}` or change the table later. The fallback is typed as the engine's `Behaviour`, not `WanderBehaviour` (DIP). The pest lands on a tile and does not walk through the tiles between, so a jumping pest can pass a wall or a salted tile.
 
-Running the game led to two tested fixes: the mole moves one or two tiles, so it can reach a plant next to it, and the swarm also feeds from the tiles next to it.
+Two rules came from running the game. A mole that only moved two tiles could never reach a plant one tile away, so it now moves one or two. A knight jump rarely lands on a plant, so the swarm feeds from the tiles next to it. Unit tests cover both.
 
 **Foresight:** a grasshopper that leaps three tiles in a straight line is one new offset table; `SeekPlantBehaviour` stays the same.
 
@@ -93,11 +93,11 @@ Rejected fixes for the two fields: a cast breaks type safety; a generic `<T exte
 
 ## E. Finding pests without `instanceof`
 
-The trap, the salt and the ladybug must tell a pest from any other actor. `PestPresent`, a `TileCondition`, checks `actor.asCapability(Infestation.class)`, which only pests have.
+The trap, the salt and the ladybug all need to tell a pest from the Farmer, a cow or another ladybug. `PestPresent` is a `TileCondition` (the area filter from A2). It checks `actor.asCapability(Infestation.class)`, which only pests have.
 
 | Option | Pros | Cons |
 |---|---|---|
-| `instanceof Pest` in each defence | Short. | Each defence names the pest class. |
+| `instanceof Pest` in each defence | Short. | A type check is a code smell, and each defence names the pest class. A pest that is not a `Pest` subclass would be missed. |
 | A list of pest classes | Explicit. | Every new pest edits the list (OCP). |
 | **`PestPresent` (chosen)** | DRY: one check, used in three places. OCP: a new pest is found by every defence at once. | One more small class. |
 
@@ -119,22 +119,23 @@ Slime, salt and the trap replace a tile's ground for a while and then put the ol
 | The order "effect, check, count down" is fixed in one place (Connascence of Execution kept local). | `final` stops a subclass from changing the countdown itself, for example a ground that never expires. Such a ground would extend `Ground` directly. |
 | KISS: `SlimeGround` and `SaltGround` are only constants. | |
 
-**Package placement.** `TemporaryGround` sits in `game.positions`; each concrete ground sits beside the feature that creates it (`game.pests` or `game.pestcontrol`). Otherwise `game.positions` would import `game.pests`, which imports `game.positions`: a cycle (Acyclic Dependencies Principle).
+**Package placement.** `TemporaryGround` sits in `game.positions`. `SlimeGround` sits in `game.pests`, and `SaltGround` and `TrapGround` in `game.pestcontrol`. If all three were in `game.positions`, that package would import `game.pests`, which already imports `game.positions`: a cycle. Each ground sits beside the feature that creates it (Acyclic Dependencies Principle).
 
 ## G. The three defences
 
 **PestTrap and TrapGround (pull in).** Each turn the trap pulls every pest within two tiles one step closer, then captures pests on or next to it, up to two. Grounds tick before actors move. In our first version the trap captured first; a pulled mole then walked away on its own turn, and the trap never caught it. Pulling first fixed this (Connascence of Timing, explained in the class comment and locked in by a test).
 
-A ground's `tick` returns nothing, so the trap cannot hand its report to the engine.
+A ground's `tick` returns nothing, so the trap cannot hand its report to the engine as an action does.
 
 | Option | Pros | Cons |
 |---|---|---|
+| A `static` `Display` | One shared object. | A static field; the A2 marker penalised statics. |
 | A `private final Display` field, as `Plant` does | Matches REQ1. | Every trap holds a `Display` it rarely uses, and the diagram gains an association with no state. |
 | A `Display` passed into the constructor | Testable. | The `Display` would travel through the item and the action, which have nothing to print. |
 | Make the trap an actor | Uses the engine's normal message path. | A trap is not a creature; it changes the TA-approved design. |
 | **A local `Display` when there is news (chosen)** | No static state; a dependency, not an association. | Tests check the map, not the printed text. |
 
-**LadybugJar and Ladybug (hunt).** A ladybug eats a pest next to it, or wanders. It loses one hit point a turn, so it lives five turns, and the existing `ConsciousActor` removes it at zero (DRY). The cost: lifespan and health are one number, so healing would extend its life. Nothing in the game heals it.
+**LadybugJar and Ladybug (hunt).** The jar releases up to three ladybugs around the Farmer. A ladybug eats a pest next to it, or wanders. It loses one hit point a turn, so it lives five turns, and the existing `ConsciousActor` removes it at zero (DRY). The cost: lifespan and health are one number. If something healed a ladybug, it would live longer. Nothing in the game does.
 
 **SaltBarrier and SaltGround (push out).** The bag salts bare Soil and Dirt around the Farmer, burns any pest on those tiles and pushes it out. All of this happens once, inside `deterAround`. After that, `SaltGround` only refuses pests in `canActorEnter` (KISS).
 
@@ -146,14 +147,14 @@ A2 feedback said package-private helpers (`CrowSensing`, `CrowNavigation`) can b
 
 | Choice | Where | Why | Cost and when we would change it |
 |---|---|---|---|
-| Every class is `public` | All 20 REQ3 types, including the small `PestPresent`, `InfestAction` and `EatPestAction` | A3 is the last assignment, so package-private would be safe. We still chose `public` so a feature in another package, for example a frog in `game.actors`, can reuse `PestPresent` and `EatPestAction`. | A wider public API. `InfestAction` could be package-private (only `Pest` uses it), but one rule for the whole feature is easier to check. |
+| Every class is `public` | All 20 REQ3 types, including the small `PestPresent`, `InfestAction` and `EatPestAction` | A3 is the last assignment, so package-private would be safe today. We still chose `public`, because extensibility is a design goal and other features already live in other packages. A defence in another package, for example a frog in `game.actors`, should reuse `PestPresent` and `EatPestAction` without moving them. | A wider public API. We considered package-private for `InfestAction` (only `Pest` uses it) but chose one rule for the whole feature, so a reader never wonders whether a hidden class was forgotten. |
 | Every field is `private` | All classes | Implementation details stay inside (A2 feedback). Subclasses use hooks, not fields. | `SlimeSnail`, `BurrowingMole` and `LocustSwarm` each keep their own `AreaFactory`, although `Pest` also receives it. A `protected` getter on `Pest` would remove three fields but expose a tool that `Pest` itself does not use. |
-| Constants are `private static final` | e.g. `LocustSwarm.SPLIT_CHANCE_PERCENT`, `SlimeSnail.HIT_POINTS` | A fixed rule belongs to the class, not to one object, and a name explains the number (no magic numbers). Java does not allow instance fields in `super(...)`, so names, characters and hit points must be static to be named. | A test cannot read them, so tests repeat the number. |
-| No static methods, no `public` constants and no mutable static fields | — | The A2 marker penalised static methods ("function thinking") and `public` constants (they leak details). A `private static final` constant cannot change and is not seen outside the class. | — |
+| Constants are `private static final` | e.g. `LocustSwarm.SPLIT_CHANCE_PERCENT`, `SlimeSnail.HIT_POINTS` | A fixed rule belongs to the class, not to one object. A name such as `SPLIT_CHANCE_PERCENT` explains the number, so there are no magic numbers. Java does not allow instance fields in `super(...)`, so names, characters and hit points must be static to be named. | A test cannot read them, so tests repeat the number. |
+| No static methods, no `public` constants and no mutable static fields | — | This is what the A2 marker penalised: static methods are "function thinking", and `public` constants leak details. A `private static final` constant does neither: it cannot change and is not seen outside the class. | — |
 | `protected` constructors | `Pest`, `DeterrentItem`, `TemporaryGround` | They are abstract; only subclasses construct them. | — |
 | `protected` hooks | `canFeedAt`, `canDeployAt`, `tickEffect` | Subclasses must override them; callers must not skip the template. | Classes in the same package can also call them. No class does. |
 | `protected final` | `TemporaryGround.revertAt` | A subclass may end its ground early (the trap after two captures) but cannot change how it ends. | — |
-| `final` method | `TemporaryGround.tick` | Fixes the order of the countdown. | See Section F. |
+| `final` method | `TemporaryGround.tick` | Fixes the order of the countdown (Section F). | See Section F. |
 | Classes are not `final` | e.g. `LadybugJar`, `SaltGround` | Open for extension (OCP), e.g. a larger jar. | A subclass could break a rule. Private fields and the final `tick` limit the damage. |
 | `private` constructor | `LocustSwarm(int meals, ...)` | Only a split may create a smaller swarm. The public constructor always gives four meals, so a half-empty swarm cannot be built by mistake. | A future "hungry swarm" difficulty would need a new public constructor. |
 | `private` helpers | e.g. `pullPests`, `splitAt`, `copyOf` | They are steps, not contracts. Making them `protected` would freeze their signatures for every subclass. | A subclass that wants a different pull must override `tickEffect`. |
@@ -161,14 +162,16 @@ A2 feedback said package-private helpers (`CrowSensing`, `CrowNavigation`) can b
 
 ## I. Changes to the earlier design
 
-**Statics replaced by injection.** In A2, REQ3 called `Area.within` and `RandomUtils.rollPercent` as static methods. Following A2 feedback, the team now creates one `RandomUtils` and one `AreaFactory` in `StackQueueValleyWorld.initialise` and passes them in through constructors.
+REQ3 is new in A3. The only earlier class it changes is `StackQueueValleyWorld`, which places the pests and gives the Farmer the defences.
+
+**Statics replaced by injection.** REQ3's first version called the A2 static helpers `Area.within`, `Area.adjacentTo` and `RandomUtils.rollPercent`. The A2 marker called static helpers "function thinking". Following that feedback, the team now creates one `RandomUtils` and one `AreaFactory` in `StackQueueValleyWorld.initialise`, and every REQ3 class that needs them receives them through its constructor.
 
 | Pros | Cons |
 |---|---|
 | DIP: a pest depends on the objects it is given, not on global classes. Tests pass `FixedRandom` directly. | Every pest and defence constructor gained one or two parameters, and `Pest` must pass them on (a "tramp data" smell). |
-| No hidden global state, so two tests cannot affect each other. | Connascence of Position in constructors, with at most two such parameters. |
+| No hidden global state, so two tests cannot affect each other. | Connascence of Position in the constructors. Each has at most two such parameters, so the order is easy to check. |
 
-**Other changes.** Only `StackQueueValleyWorld` changed: it places the pests and gives the Farmer the defences. `SaltBarrier` moved from `k` to `f`, because earlier display characters are fixed.
+**Display character.** `SaltBarrier` first used `k`, which clashed with the A2 `CauliflowerItem`. Earlier characters are fixed, so the new class changed to `f`.
 
 ## J. Known minor violations and why we accept them
 
@@ -177,18 +180,18 @@ A2 feedback said package-private helpers (`CrowSensing`, `CrowNavigation`) can b
 | `SlimeSnail` and `SaltBarrier` both ask "is this tile bare Soil or Dirt?" (two lines each). DRY is not fully met. | Rule of three: two short copies are cheaper to read than a new class. A third use would be the signal to extract a `BareFarmGround` condition. |
 | `LadybugJar` catches `GameEngineException` and moves on. An empty catch is a smell. | The tile is checked with `canActorEnter` first; the catch only covers a tile taken in between. A comment says so. |
 | `Ladybug`, `LadybugJar` and `SaltBarrier` use `getExits()`, while other classes use `AreaFactory`. | `getExits()` is the engine's own list of neighbours and needs no extra dependency. `AreaFactory` is used where we filter or search an area. |
-| `TrapGround` moves actors, which is more than most grounds do. | Acting on nearby pests each turn is the trap's job, and the logic stays in one class. |
+| `TrapGround` moves actors, which is more than most grounds do. | Acting on the pests around it is the trap's whole job. Only the trap does this each turn, and the logic stays in one class. |
 | Pests (except the swarm) never leave on their own. | On purpose: the defences are the counter to the pests. A meal limit could be added in `feedOn` only. |
 
 ## Summary
 
 | Principle | Where it shows | Change it absorbs | Where it is only partly met, and why |
 |---|---|---|---|
-| SRP | Moving, the pest turn, finding pests, using an item and timing ground each have one class. | A new landing or countdown rule edits one class. | `TrapGround` pulls, captures and prints. `LocustSwarm` feeds, splits and leaves. Each is one rule from the brief, and splitting them would add classes used once. |
+| SRP | Moving (`SeekPlantBehaviour`), the turn (`Pest`), finding pests (`PestPresent`), using an item (`DeployDeterrentAction`) and timing ground (`TemporaryGround`) each have one class. | A new landing rule edits `SeekPlantBehaviour` only; a new countdown rule edits `TemporaryGround` only. | `TrapGround` pulls, captures and prints. `LocustSwarm` feeds, splits and leaves. Each is one rule from the brief, and splitting them would add classes used once. |
 | OCP | A new pest, defence or temporary ground is one new class. | An Aphid, a Scarecrow or a Frost ground: no existing class changes. | The new class must still be placed in `StackQueueValleyWorld`. That is the composition root, so this is expected. |
-| LSP | Every pest works wherever `Pest` or `Infestation` is expected; every defence wherever `PestDeterrent` is. Hooks replace type checks. | A new pest is fed, found and trapped with no new branch. | `canFeedAt` and `feedOn` must agree; if not, `feedOn` returns an empty report. `final tick` protects the countdown. |
+| LSP | Every pest works wherever `Pest` or `Infestation` is expected; every defence wherever `PestDeterrent` is. Hooks replace type checks. | A new pest is fed, found and trapped with no new branch. | `canFeedAt` and `feedOn` must agree. If they do not, `feedOn` returns an empty report, so the game stays correct. `final tick` stops a ground from breaking the countdown. |
 | ISP | `Infestation`, `PestDeterrent` and `Regressible` each have one method. Defences never see a pest's movement or health. | A pest that moves differently does not touch any defence. | `PestPresent` uses `Infestation` only to recognise a pest and never calls `feedOn`. This is not a marker interface: `InfestAction` calls `feedOn`. |
-| DIP | `DeployDeterrentAction` depends on `PestDeterrent`, pests on `Regressible`, `SeekPlantBehaviour` on `Behaviour`; `RandomUtils` and `AreaFactory` are injected. | A new crop, defence or fallback needs no change to its users. | `Pest` creates `SeekPlantBehaviour` and `WanderBehaviour`; `SlimeSnail` creates `SlimeGround`; `LadybugJar` creates `Ladybug`. Each has one outcome, so an injected factory would be a parameter nobody varies (YAGNI). |
+| DIP | `DeployDeterrentAction` depends on `PestDeterrent`, pests on `Regressible`, `SeekPlantBehaviour` on `Behaviour`; `RandomUtils` and `AreaFactory` are injected. | A new crop, defence or fallback behaviour needs no change to the classes that use it. | `Pest` creates `SeekPlantBehaviour` and `WanderBehaviour`; `SlimeSnail` creates `SlimeGround`; `LadybugJar` creates `Ladybug`. Each has one outcome, so an injected factory would be a parameter nobody varies (YAGNI). |
 
 **DRY and KISS.** Each rule exists once: the pest turn, the landing search, finding a pest and the countdown. We added no layer that only one class uses. **Connascence.** Between packages it is only of Name and Type. Stronger forms (Timing, Identity, Execution) stay inside one class each, with a comment and a test.
 
