@@ -52,7 +52,7 @@ The tests do not depend on luck. `game.testsupport.FixedRandom` extends the game
 |---|---|
 | REQ1 Second Spring | `game.plants.PeriodicAbilityTest`, `GrowTest`, `SelfReplicateTest`, `ProduceTest`, `PlantStateTest`, `PlantCapabilityTest` |
 | REQ3 Pests and pest control | `game.pests.SlimeSnailTest`, `LocustSwarmTest`, `BurrowingMoleTest`, `PestTurnTest`, `PestPresentTest`; `game.pestcontrol.LadybugTest`, `SaltBarrierTest`, `SaltGroundTest`, `TrapGroundTest`, `DeployDeterrentActionTest`; `game.behaviours.SeekPlantBehaviourTest`; `game.positions.TemporaryGroundTest` |
-| REQ4 Enchanted Tools | `game.enchantments.BlazeEnchantmentTest`, `BountyEnchantmentTest`, `ShatterEnchantmentTest`; `game.items.tools.HoeTest`, `WateringCanTest`, `PickaxeTest`, `EnchantmentSlotTest` |
+| REQ4 Enchanted Tools | `game.enchantments.BlazeEnchantmentTest`, `BountyEnchantmentTest`, `ShatterEnchantmentTest`; `game.items.tools.HoeTest`, `WateringCanTest`, `PickaxeTest`, `EnchantmentSlotTest`, `EnchantmentTriggerTest`, `EnchantActionTest`, `AbstractEnchantableToolTest`; `game.actions.EnchantedToolActionTest` (end-to-end: tilling/watering/breaking with and without an Enchantment attached) |
 | Earlier features changed in A3 | `game.actions.TillActionTest` (every tilling message names its location), `game.crops.BuyingCropsTest` and `game.items.SwordTest` (products that sell themselves), `game.random.RandomUtilsTest` (the one source of randomness, checked with seeded and fixed draws), `game.behaviours.WanderBehaviourTest` (the random step shared by the Wanderer, the pests, the ladybugs and the animals) |
 | REQ5 The Wanderer (API) | `game.weather.WeatherReadingTest`, `MapGeographyTest`, `ApiKeyLoaderTest`, `OpenWeatherParserTest`, `OpenWeatherClientTest`; `game.wanderer.WandererTest`, `WeatherInterpreterTest`, `ReactToWeatherActionTest`, `UnreadableSkyActionTest`, `AskForecastActionTest`, `CampfireReactionTest`, `RainDanceReactionTest`, `StormShelterReactionTest`, `DroughtOmenTest`, `FrostOmenTest`, `SowingOmenTest`. None of them uses the network or a real API key: the `game.wanderer` tests use the fake `FixedWeatherSource`. `WandererStressHarness` is a manual tool with its own `main`, not part of `mvn test`. |
 
@@ -85,6 +85,38 @@ Pest Trap at (5, 3) on Inherited Farm: Pulled Burrowing Mole (8/8) to (4, 4) on 
 ```
 
 A pest that eats nothing, and a trap that pulls and captures nothing, print nothing that turn.
+
+## A3 REQ4 — Enchanted Tools
+
+The Hoe, Watering Can and Pickaxe can each be enchanted with a magical effect. An Enchantment attaches to one specific tool instance, sits there until that tool is next used for its ordinary purpose, then fires once and is spent. The full design is in `feature-proposal.md` and `docs/A3 Design Rationale/A3_Design_Rationale.pdf`.
+
+**Where to find it in the game:** Run `game.Application`. The Farmer starts carrying a Hoe, a Watering Can and a Pickaxe. Each one offers an "enchant" action for every Enchantment the game knows about, alongside its ordinary actions.
+
+| Enchantment | What it does once it fires |
+|---|---|
+| Blaze Enchantment | Ignites a Fire on every tile the tool's own effect touched |
+| Bounty Enchantment | Forces an extra growth attempt on any Plant standing on one of those tiles |
+| Shatter Enchantment | Stuns whichever Actor is standing on one of those tiles for 2 turns |
+
+**How to use it:** Pick "enchant [tool] with a [Enchantment]" from the tool's menu. This attaches that Enchantment to that tool, replacing any Enchantment already attached. The next time that same tool instance is used for its own purpose, the tool's own effect happens first, and the Enchantment then fires only against whichever tiles that effect actually touched:
+
+- **Hoe:** while enchanted, tilling a tile also tills every tillable tile adjacent to it; the Enchantment fires against that spread.
+- **Watering Can:** while enchanted, watering a tile also waters one random waterable tile adjacent to it; the Enchantment fires against that one tile.
+- **Pickaxe:** while enchanted, breaking something has a 40% chance of the break chaining to one random breakable tile adjacent to it; the Enchantment fires against whatever the chain touched.
+
+Two tools of the same kind are enchanted independently (enchanting one Hoe does nothing to a second Hoe in the same inventory), and an unenchanted tool behaves exactly as it did before REQ4 — no spread, no chain, no Enchantment message.
+
+**How to read the messages:** The Enchantment's message is appended straight after the tool's own effect, on the same line:
+
+```
+At (3, 3): Farmer Bob tills the ground. The enchantment spreads the tilling to (2, 3), (4, 3). Flames erupt at (2, 3), (4, 3).
+```
+
+Even when the tool's own effect touches nothing that turn (no adjacent tile to spread to, the chain roll fails, nothing to chain to), the Enchantment still fires, against an empty tile list, and reports that rather than printing nothing:
+
+```
+At (3, 3): Farmer Bob breaks the Rock. The Shatter Enchantment finds no one to stun near (3, 3).
+```
 
 ## A3 REQ5 — The Wanderer (API, HD)
 
