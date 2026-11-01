@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests the countdown and restoring shared by every TemporaryGround.
@@ -67,8 +67,12 @@ class TemporaryGroundTest {
 
     @Test
     void rejectsADurationBelowOneTurn() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new CountingGround(new Dirt(), 0, false));
+        try {
+            new CountingGround(new Dirt(), 0, false);
+            fail("Expected a duration of 0 turns to be rejected");
+        } catch (IllegalArgumentException expected) {
+            // The duration was rejected, as it should be.
+        }
     }
 
     /** A temporary ground that counts its effects and can end itself early. */

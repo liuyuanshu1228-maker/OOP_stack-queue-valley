@@ -18,7 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests where SeekPlantBehaviour lands a pest. Each test uses its own small
@@ -106,10 +106,17 @@ class SeekPlantBehaviourTest {
 
     @Test
     void rejectsMissingOrMalformedOffsets() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new SeekPlantBehaviour(new int[0][], fallback, areaFactory));
-        assertThrows(IllegalArgumentException.class,
-                () -> new SeekPlantBehaviour(new int[][] {{1}}, fallback, areaFactory));
+        assertRejected(new int[0][]);
+        assertRejected(new int[][] {{1}});
+    }
+
+    private void assertRejected(int[][] offsets) {
+        try {
+            new SeekPlantBehaviour(offsets, fallback, areaFactory);
+            fail("Expected the offsets to be rejected");
+        } catch (IllegalArgumentException expected) {
+            // The offsets were rejected, as they should be.
+        }
     }
 
     private void landWith(int[][] offsets, Location from) {

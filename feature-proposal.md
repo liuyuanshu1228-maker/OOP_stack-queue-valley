@@ -174,9 +174,6 @@ Three retrofitted, three entirely new, matching the "at least three new, up to t
 
 ## REQ5: The Wanderer (A.P.I)
 
-<!-- Team note: the thresholds below are the agreed contract for the concrete classes.
-     If the code changes a number, change it here too. Confirm the idea with the TA. -->
-
 ### The Pitch
 
 A Wanderer roams the farm, and what it does depends on the real weather at the place on Earth where it stands. Its map position is turned into a real latitude and longitude, so every step it takes changes the weather it lives in. The feature is a new actor driven by weather data, not a weather system that changes the map by itself.

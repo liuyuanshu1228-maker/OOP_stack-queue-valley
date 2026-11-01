@@ -51,6 +51,38 @@ class WeatherInterpreterTest {
     }
 
     @Test
+    void windOfExactlyTenMetresPerSecondTriggersTheStormShelter() {
+        WeatherReading atTheLimit = new WeatherReading("Clear", 20.0, 10.0, 0);
+
+        Optional<WeatherReaction> reaction = interpreter.reactionFor(atTheLimit);
+
+        assertEquals(StormShelterReaction.class, reaction.orElseThrow().getClass());
+    }
+
+    @Test
+    void windJustBelowTenMetresPerSecondDoesNotTriggerTheStormShelter() {
+        WeatherReading justBelow = new WeatherReading("Clear", 20.0, 9.9, 0);
+
+        assertTrue(interpreter.reactionFor(justBelow).isEmpty());
+    }
+
+    @Test
+    void exactlyTenDegreesTriggersTheCampfire() {
+        WeatherReading atTheLimit = new WeatherReading("Clear", 10.0, 2.0, 0);
+
+        Optional<WeatherReaction> reaction = interpreter.reactionFor(atTheLimit);
+
+        assertEquals(CampfireReaction.class, reaction.orElseThrow().getClass());
+    }
+
+    @Test
+    void justAboveTenDegreesDoesNotTriggerTheCampfire() {
+        WeatherReading justAbove = new WeatherReading("Clear", 10.1, 2.0, 0);
+
+        assertTrue(interpreter.reactionFor(justAbove).isEmpty());
+    }
+
+    @Test
     void mildCalmDryWeatherTriggersNoReaction() {
         WeatherReading mild = new WeatherReading("Clear", 20.0, 2.0, 0);
 
