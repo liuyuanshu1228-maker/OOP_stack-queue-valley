@@ -70,6 +70,18 @@ class FrostOmenTest {
     }
 
     @Test
+    void anExtremelyColdForecastPausesForAtMostTheCappedNumberOfTurns() {
+        Location here = map.at(3, 3);
+        map.at(3, 2).setGround(new StrawberrySeedling(random, areaFactory));
+
+        String report = new FrostOmen(new WeatherReading("Snow", -1e12, 0, 0), areaFactory, 2.0)
+                .bringUpon(asker, here);
+
+        // base 2 turns + at most 100 extra turns, instead of an int overflow
+        assertTrue(report.contains("for 102 turns"), report);
+    }
+
+    @Test
     void messageReportsCoordinatesTemperatureAndPausedPlantCount() {
         Location here = map.at(3, 3);
         map.at(3, 2).setGround(new StrawberrySeedling(random, areaFactory));

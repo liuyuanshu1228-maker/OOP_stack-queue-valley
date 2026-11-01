@@ -2,7 +2,9 @@ package game.wanderer;
 
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.actors.ActorStatistics;
+import edu.monash.fit2099.engine.positions.Location;
 import game.statistics.StatisticAdjuster;
+import game.statistics.StatisticChange;
 import game.status.TimedStatus;
 
 /**
@@ -24,6 +26,8 @@ public class DroughtWearinessStatus extends TimedStatus {
 
     /** The actor this status drains each turn. */
     private final Actor wearyActor;
+    /** How the actor's stamina changed on the turn just applied. */
+    private StatisticChange lastDrain;
 
     /**
      * Creates a new DroughtWearinessStatus.
@@ -36,13 +40,25 @@ public class DroughtWearinessStatus extends TimedStatus {
     }
 
     /**
-     * Drains one turn's worth of stamina. Does nothing once the actor is
-     * already out of stamina, exactly as {@code StatisticAdjuster.trySpend}
-     * leaves an actor unchanged when it has too little to spend.
+     * Drains one turn's worth of stamina. An actor with less than that left
+     * loses what it has, so its stamina stops at zero.
      */
     @Override
     protected void applyEffect() {
-        new StatisticAdjuster(wearyActor).trySpend(ActorStatistics.STAMINA, STAMINA_DRAINED_PER_TURN);
+        lastDrain = new StatisticAdjuster(wearyActor).decrease(ActorStatistics.STAMINA, STAMINA_DRAINED_PER_TURN);
+    }
+
+    /**
+     * Reports how much stamina the drought drained this turn, and where.
+     *
+     * @param location the location of the weary actor
+     * @return a description of this turn's drain, for example
+     *         "Farmer is weary from the drought at (3, 4) on Farm: -2 stamina (10 -> 8)."
+     */
+    @Override
+    protected String describeTurn(Location location) {
+        return wearyActor + " is weary from the drought at " + location + ": "
+                + lastDrain.describe("stamina") + ".";
     }
 
     /**

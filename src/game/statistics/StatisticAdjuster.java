@@ -81,6 +81,20 @@ public class StatisticAdjuster {
     }
 
     /**
+     * Decreases the current value of the given statistic, stopping at zero.
+     *
+     * @param statistic the statistic to decrease, e.g. ActorStatistics.STAMINA
+     * @param amount the requested decrease
+     * @return the actual change in the statistic's current value, which is
+     *         negative, or zero when the value was already zero
+     */
+    public StatisticChange decrease(Enum<?> statistic, int amount) {
+        int before = actor.getStatistic(statistic);
+        actor.modifyStatistic(statistic, StatisticOperations.DECREASE, amount);
+        return new StatisticChange(before, actor.getStatistic(statistic));
+    }
+
+    /**
      * Increases the maximum value of the given statistic, which also restores
      * the current value to the new maximum.
      *

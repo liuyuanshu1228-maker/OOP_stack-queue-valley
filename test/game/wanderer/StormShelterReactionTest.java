@@ -68,6 +68,17 @@ class StormShelterReactionTest {
     }
 
     @Test
+    void anExtremeWindSheltersForAtMostTheCappedNumberOfTurns() {
+        Location here = map.at(1, 1);
+
+        String report = new StormShelterReaction(new WeatherReading("Clear", 20.0, 1e12, 0), areaFactory)
+                .reactAround(here);
+
+        // base 3 turns + at most 100 extra turns, instead of an int overflow
+        assertTrue(report.contains("for 103 turns"), report);
+    }
+
+    @Test
     void messageReportsCoordinatesWindSpeedAndTilesSheltered() {
         Location here = map.at(1, 1);
 

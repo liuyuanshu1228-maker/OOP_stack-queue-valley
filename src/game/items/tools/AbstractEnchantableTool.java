@@ -22,7 +22,7 @@ import java.util.List;
  */
 public abstract class AbstractEnchantableTool extends Item implements Enchantable {
 
-    /** The Enchantments this tool can be enchanted with, injected at construction. */
+    /** The Enchantments this tool can be enchanted with: a copy of the list given at construction. */
     private final List<Enchantment> offeredEnchantments;
 
     /** Stores the Enchantment currently attached to this tool, if any. */
@@ -33,11 +33,12 @@ public abstract class AbstractEnchantableTool extends Item implements Enchantabl
      *
      * @param name the tool's display name
      * @param displayChar the character used to display the tool
-     * @param offeredEnchantments the Enchantments this tool can be enchanted with
+     * @param offeredEnchantments the Enchantments this tool can be enchanted with; the tool keeps
+     *                            its own copy, so later changes to this list do not affect it
      */
     protected AbstractEnchantableTool(String name, char displayChar, List<Enchantment> offeredEnchantments) {
         super(name, displayChar);
-        this.offeredEnchantments = offeredEnchantments;
+        this.offeredEnchantments = List.copyOf(offeredEnchantments);
     }
 
     /**

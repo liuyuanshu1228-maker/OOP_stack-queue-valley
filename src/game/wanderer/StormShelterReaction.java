@@ -17,6 +17,11 @@ public class StormShelterReaction implements WeatherReaction {
 
     /** The minimum number of turns the shelter lasts, regardless of wind speed. */
     private static final int BASE_DURATION_TURNS = 3;
+    /**
+     * The most turns the wind can add. No real wind comes near it; it stops
+     * a bad reading from overflowing the duration.
+     */
+    private static final int MAX_EXTRA_TURNS = 100;
 
     /** The weather reading that triggered this reaction. */
     private final WeatherReading reading;
@@ -36,14 +41,16 @@ public class StormShelterReaction implements WeatherReaction {
 
     /**
      * Shelters every free tile (one with no actor standing on it) adjacent
-     * to {@code here}, for a duration that grows with the wind speed.
+     * to {@code here}, for a duration that grows with the wind speed, up to
+     * {@code MAX_EXTRA_TURNS} turns more than the base duration.
      *
      * @param here the tile the Wanderer stands on
      * @return a description of the shelter built, including {@code here}
      */
     @Override
     public String reactAround(Location here) {
-        int durationTurns = BASE_DURATION_TURNS + (int) reading.getWindSpeedMetresPerSecond();
+        int durationTurns = BASE_DURATION_TURNS
+                + (int) Math.min(MAX_EXTRA_TURNS, reading.getWindSpeedMetresPerSecond());
         List<Location> shelteredTiles = new ArrayList<>();
         for (Location tile : areaFactory.adjacentTo(here).tiles()) {
             if (tile.containsAnActor()) {

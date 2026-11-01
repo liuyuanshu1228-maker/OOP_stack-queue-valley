@@ -4,7 +4,9 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.crops.StrawberrySeedling;
 import game.crops.StrawberrySprout;
+import game.plants.Plant;
 import game.positions.area.AreaFactory;
+import game.status.GrowthPausedStatus;
 import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
 import java.util.List;
@@ -53,6 +55,18 @@ class BountyEnchantmentTest {
         new BountyEnchantment().applyTo(List.of(location), null, map.at(0, 0));
 
         assertInstanceOf(StrawberrySprout.class, location.getGround());
+    }
+
+    @Test
+    void aPlantWhoseGrowthIsPausedDoesNotGrow() {
+        Location location = seedlingThatJustFailedToGrow();
+        location.getGroundAs(Plant.class).addStatus(new GrowthPausedStatus(3));
+        random.setRollsSucceed(true);
+
+        String message = new BountyEnchantment().applyTo(List.of(location), null, map.at(0, 0));
+
+        assertInstanceOf(StrawberrySeedling.class, location.getGround(), "a frost pause also stops magical growth");
+        assertTrue(message.contains("finds no plant ready to grow"), message);
     }
 
     @Test

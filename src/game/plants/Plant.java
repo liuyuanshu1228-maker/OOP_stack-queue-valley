@@ -68,18 +68,14 @@ public abstract class Plant extends Ground implements Regressible {
     }
 
     /**
-     * Ages this plant by one turn, then, unless its growth is paused, tries
-     * this plant's abilities via {@link #attemptGrowth} and displays the
-     * result.
+     * Ages this plant by one turn, then tries this plant's abilities via
+     * {@link #attemptGrowth} and displays the result.
      *
      * @param location the location of this plant
      */
     @Override
     public void tick(Location location) {
         age++;
-        if (hasStatus(GrowthPausedStatus.class)) {
-            return;
-        }
         String report = attemptGrowth(location);
         if (!report.isEmpty()) {
             display.println(report);
@@ -88,7 +84,9 @@ public abstract class Plant extends Ground implements Regressible {
 
     /**
      * Tries this plant's abilities, from the highest priority down, and
-     * stops at the first one that does something. Does not age the plant and
+     * stops at the first one that does something. While the plant's growth is
+     * paused, no ability is tried, so every caller (the plant's own turn or a
+     * magical effect) obeys the pause. Does not age the plant and
      * does not display the result, so a caller forcing an extra growth
      * attempt (e.g. a magical effect) gets the description back to use
      * however it needs to, instead of this plant ageing an extra turn or the
@@ -98,6 +96,9 @@ public abstract class Plant extends Ground implements Regressible {
      * @return a description of what happened, or "" if no ability did anything
      */
     public String attemptGrowth(Location location) {
+        if (hasStatus(GrowthPausedStatus.class)) {
+            return "";
+        }
         for (PlantAbility ability : abilities) {
             String report = ability.tryPerform(this, location);
             if (!report.isEmpty()) {

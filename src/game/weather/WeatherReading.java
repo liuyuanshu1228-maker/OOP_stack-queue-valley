@@ -32,18 +32,18 @@ public class WeatherReading {
      * @param windSpeedMetresPerSecond the wind speed, in metres per second
      * @param rainMillimetres the rainfall over the last hour, in millimetres
      * @throws IllegalArgumentException if the condition is blank, a value is not
-     *                                  a number, or the wind or rain is negative
+     *                                  a finite number, or the wind or rain is negative
      */
     public WeatherReading(String condition, double temperatureCelsius,
                           double windSpeedMetresPerSecond, double rainMillimetres) {
         if (condition == null || condition.isBlank()) {
             throw new IllegalArgumentException("A weather reading needs a condition");
         }
-        if (Double.isNaN(temperatureCelsius)) {
-            throw new IllegalArgumentException("The temperature must be a number");
+        if (!Double.isFinite(temperatureCelsius)) {
+            throw new IllegalArgumentException("The temperature must be a finite number");
         }
-        requireNotNegative("wind speed", windSpeedMetresPerSecond);
-        requireNotNegative("rainfall", rainMillimetres);
+        requireFiniteAndNotNegative("wind speed", windSpeedMetresPerSecond);
+        requireFiniteAndNotNegative("rainfall", rainMillimetres);
         this.condition = condition;
         this.temperatureCelsius = temperatureCelsius;
         this.windSpeedMetresPerSecond = windSpeedMetresPerSecond;
@@ -98,15 +98,15 @@ public class WeatherReading {
     }
 
     /**
-     * Rejects a measurement that cannot be negative but is, or is not a number.
+     * Rejects a measurement that is negative, infinite or not a number.
      *
      * @param name what the value measures, used in the error message
      * @param value the value to check
-     * @throws IllegalArgumentException if the value is negative or not a number
+     * @throws IllegalArgumentException if the value is negative, infinite or not a number
      */
-    private void requireNotNegative(String name, double value) {
-        if (Double.isNaN(value) || value < 0) {
-            throw new IllegalArgumentException("The " + name + " cannot be negative, but was " + value);
+    private void requireFiniteAndNotNegative(String name, double value) {
+        if (!Double.isFinite(value) || value < 0) {
+            throw new IllegalArgumentException("The " + name + " must be finite and not negative, but was " + value);
         }
     }
 }

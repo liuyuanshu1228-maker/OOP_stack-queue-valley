@@ -62,6 +62,21 @@ class WeatherReadingTest {
         assertRejected("Clear", 10, 1, Double.NaN);
     }
 
+    @Test
+    void rejectsInfiniteValues() {
+        assertRejected("Clear", Double.POSITIVE_INFINITY, 1, 0);
+        assertRejected("Snow", Double.NEGATIVE_INFINITY, 1, 0);
+        assertRejected("Clear", 10, Double.POSITIVE_INFINITY, 0);
+        assertRejected("Rain", 10, 1, Double.POSITIVE_INFINITY);
+    }
+
+    @Test
+    void acceptsVeryLargeFiniteValues() {
+        WeatherReading reading = new WeatherReading("Clear", -1e12, 1e12, 1e12);
+
+        assertEquals(1e12, reading.getWindSpeedMetresPerSecond());
+    }
+
     /**
      * Checks that a reading with these values cannot be made.
      *

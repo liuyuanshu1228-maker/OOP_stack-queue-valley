@@ -24,6 +24,11 @@ public class FrostOmen implements ForecastOmen {
 
     /** The minimum number of turns growth is paused for, however mild the frost. */
     private static final int BASE_PAUSE_TURNS = 2;
+    /**
+     * The most turns the cold can add. No real frost comes near it; it stops
+     * a bad reading from overflowing the duration.
+     */
+    private static final int MAX_EXTRA_TURNS = 100;
     /** How many tiles from the Wanderer this omen reaches. */
     private static final int RADIUS_TILES = 2;
 
@@ -56,7 +61,8 @@ public class FrostOmen implements ForecastOmen {
 
     /**
      * Pauses the growth of every Plant within range of {@code here}, for a
-     * duration that grows the colder tomorrow's forecast is.
+     * duration that grows the colder tomorrow's forecast is, up to
+     * {@code MAX_EXTRA_TURNS} turns more than the base duration.
      *
      * @param asker the actor who asked for the forecast
      * @param here the tile the Wanderer stands on
@@ -65,7 +71,8 @@ public class FrostOmen implements ForecastOmen {
     @Override
     public String bringUpon(Actor asker, Location here) {
         int pauseDurationTurns = BASE_PAUSE_TURNS
-                + (int) Math.max(0, frostThresholdCelsius - forecast.getTemperatureCelsius());
+                + (int) Math.min(MAX_EXTRA_TURNS,
+                        Math.max(0, frostThresholdCelsius - forecast.getTemperatureCelsius()));
         List<Location> pausedPlants = new ArrayList<>();
         for (Location tile : areaFactory.within(here, RADIUS_TILES).tiles()) {
             Plant plant = tile.getGroundAs(Plant.class);

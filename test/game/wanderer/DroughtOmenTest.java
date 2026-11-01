@@ -9,6 +9,9 @@ import game.testsupport.TestFarm;
 import game.weather.WeatherReading;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -48,14 +51,41 @@ class DroughtOmenTest {
     }
 
     @Test
-    void neverDrainsStaminaBelowZero() {
+    void withLessThanTwoStaminaLeftDrainsWhatIsLeft() {
         new StatisticAdjuster(asker).trySpend(ActorStatistics.STAMINA, 99);
         assertEquals(1, asker.getStatistic(ActorStatistics.STAMINA));
 
         new DroughtOmen(new WeatherReading("Clear", 30.0, 0, 0)).bringUpon(asker, here);
         asker.tickStatuses(here);
 
-        assertEquals(1, asker.getStatistic(ActorStatistics.STAMINA), "too little stamina to drain, so left unchanged");
+        assertEquals(0, asker.getStatistic(ActorStatistics.STAMINA), "loses the 1 stamina it had");
+    }
+
+    @Test
+    void neverDrainsStaminaBelowZero() {
+        new StatisticAdjuster(asker).trySpend(ActorStatistics.STAMINA, 100);
+
+        new DroughtOmen(new WeatherReading("Clear", 30.0, 0, 0)).bringUpon(asker, here);
+        asker.tickStatuses(here);
+
+        assertEquals(0, asker.getStatistic(ActorStatistics.STAMINA));
+    }
+
+    @Test
+    void eachTurnReportsTheStaminaDrainedAndWhere() {
+        new DroughtOmen(new WeatherReading("Clear", 30.0, 0, 0)).bringUpon(asker, here);
+        PrintStream original = System.out;
+        ByteArrayOutputStream captured = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(captured));
+        try {
+            asker.tickStatuses(here);
+        } finally {
+            System.setOut(original);
+        }
+
+        String printed = captured.toString();
+        assertTrue(printed.contains(asker + " is weary from the drought at " + here), printed);
+        assertTrue(printed.contains("-2 stamina (100 -> 98)"), printed);
     }
 
     @Test

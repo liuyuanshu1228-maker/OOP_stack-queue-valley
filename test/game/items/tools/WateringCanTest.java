@@ -1,7 +1,10 @@
 package game.items.tools;
 
 import edu.monash.fit2099.engine.positions.GameMap;
+import edu.monash.fit2099.engine.positions.Location;
 import game.actors.Farmer;
+import game.crops.Strawberry;
+import game.enchantments.BountyEnchantment;
 import game.positions.area.AreaFactory;
 import game.positions.farm.Puddle;
 import game.testsupport.FixedRandom;
@@ -74,5 +77,19 @@ class WateringCanTest {
         String secondResult = wateringCan.triggerEnchantment(farmer, map.at(1, 1));
 
         assertEquals("", secondResult);
+    }
+
+    @Test
+    void aBountyWateringCanMakesTheWateredStrawberryProduceAgain() {
+        Location strawberryTile = map.at(2, 1);
+        strawberryTile.setGround(new Strawberry(random, areaFactory));
+        TestFarm.tick(strawberryTile, 5);
+        WateringCan wateringCan = new WateringCan(List.of(), areaFactory);
+        wateringCan.enchant(new BountyEnchantment());
+
+        String message = wateringCan.triggerEnchantment(farmer, map.at(1, 1));
+
+        assertTrue(message.contains("makes the plants grow further"), message);
+        assertTrue(message.contains("Strawberry at " + strawberryTile + " drops a"), message);
     }
 }

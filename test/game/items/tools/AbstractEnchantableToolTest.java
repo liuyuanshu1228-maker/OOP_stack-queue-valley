@@ -10,6 +10,7 @@ import game.actors.Farmer;
 import game.positions.area.AreaFactory;
 import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,5 +74,17 @@ class AbstractEnchantableToolTest {
 
         assertEquals(0, first.timesFired(), "the first offered Enchantment was never chosen");
         assertEquals(1, second.timesFired(), "the last offered Enchantment is the one the last action attaches");
+    }
+
+    @Test
+    void changingTheGivenListLaterDoesNotChangeTheOfferedEnchantments() {
+        List<Enchantment> given = new ArrayList<>();
+        given.add(new RecordingEnchantment());
+        Hoe hoe = new Hoe(given, areaFactory);
+        int actionsBefore = hoe.allowableActions(farmer, map).size();
+
+        given.add(new RecordingEnchantment());
+
+        assertEquals(actionsBefore, hoe.allowableActions(farmer, map).size());
     }
 }
