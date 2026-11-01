@@ -13,6 +13,8 @@ import game.random.RandomUtils;
 public interface RandomnessSource {
 
     /**
+     * Returns the randomness of this creature.
+     *
      * @return the randomness this creature uses
      */
     RandomUtils randomUtils();

@@ -68,6 +68,8 @@ public abstract class BreakableGround extends Ground implements Breakable {
     }
 
     /**
+     * Creates the item this ground drops when it is broken.
+     *
      * @return a new instance of the item dropped when this ground is broken
      */
     protected abstract Item createDrop();

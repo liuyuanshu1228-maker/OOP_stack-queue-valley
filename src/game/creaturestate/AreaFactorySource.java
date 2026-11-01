@@ -13,6 +13,8 @@ import game.positions.area.AreaFactory;
 public interface AreaFactorySource {
 
     /**
+     * Returns the AreaFactory of this creature.
+     *
      * @return the AreaFactory this creature uses to build Areas
      */
     AreaFactory areaFactory();

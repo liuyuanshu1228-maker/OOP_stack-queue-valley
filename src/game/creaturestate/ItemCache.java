@@ -10,6 +10,8 @@ import edu.monash.fit2099.engine.items.Item;
 public interface ItemCache {
 
     /**
+     * Checks whether this Actor has hidden the given Item.
+     *
      * @param item the Item to check
      * @return true if this Actor remembers hiding this Item
      */
