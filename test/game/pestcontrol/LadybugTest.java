@@ -44,10 +44,11 @@ class LadybugTest {
         map.at(2, 1).addActor(snail);
 
         Action action = ladybug.playTurn(new ActionList(), null, map, display);
-        action.execute(ladybug, map);
+        String report = action.execute(ladybug, map);
 
         assertInstanceOf(EatPestAction.class, action);
         assertFalse(map.contains(snail));
+        assertTrue(report.contains("(2, 1)"), report);
     }
 
     @Test
