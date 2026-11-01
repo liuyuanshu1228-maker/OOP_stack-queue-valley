@@ -59,20 +59,21 @@ public class FeedAction extends Action {
         actor.getInventory().remove(food);
 
         String feedResult = feedable.get().feed(actor, map.locationOf(actor));
-        applyFoodBonus(actor);
-        return feedResult;
+        return feedResult + applyFoodBonus(actor);
     }
 
     /**
      * Applies the food's bonus effect to the actor, if it has one.
      *
      * @param actor the actor who did the feeding
+     * @return " " followed by a description of the bonus, or an empty string if the food has none
      */
-    private void applyFoodBonus(Actor actor) {
+    private String applyFoodBonus(Actor actor) {
         Optional<Food> foodCapability = food.asCapability(Food.class);
-        if (foodCapability.isPresent()) {
-            foodCapability.get().applyFeedingBonus(actor);
+        if (foodCapability.isEmpty()) {
+            return "";
         }
+        return " " + foodCapability.get().applyFeedingBonus(actor);
     }
 
     /**

@@ -1,5 +1,7 @@
 package game.positions.farm;
 
+import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import game.positions.Chargeable;
@@ -52,7 +54,10 @@ public class Puddle extends Ground implements Chargeable {
     @Override
     public void tick(Location location) {
         if (charged && location.containsAnActor()) {
-            location.getActor().hurt(SHOCK_DAMAGE);
+            Actor shocked = location.getActor();
+            shocked.hurt(SHOCK_DAMAGE);
+            new Display().println(shocked + " is shocked for " + SHOCK_DAMAGE
+                    + " damage by the charged puddle at " + location + ".");
         }
     }
 }

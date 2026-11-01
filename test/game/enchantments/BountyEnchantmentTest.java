@@ -63,6 +63,7 @@ class BountyEnchantmentTest {
         String message = new BountyEnchantment().applyTo(List.of(location), null, map.at(0, 0));
 
         assertTrue(message.contains("(1, 1)"), message);
+        assertTrue(message.contains("grows into a Strawberry Sprout"), "says what the plant grew into: " + message);
     }
 
     @Test

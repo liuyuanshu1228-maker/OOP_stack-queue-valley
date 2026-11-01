@@ -56,6 +56,6 @@ public class Stone extends SellableItem {
         }
         Ground built = groundFactory.create();
         spot.get().setGround(built);
-        return merchantContext.getMerchant() + " builds a " + built + " nearby.";
+        return merchantContext.getMerchant() + " builds a " + built + " at " + spot.get() + ".";
     }
 }

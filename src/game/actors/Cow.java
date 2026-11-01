@@ -1,11 +1,16 @@
 package game.actors;
 
 import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.actors.ActorStatistics;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.Milk;
 import game.positions.area.AreaFactory;
 import game.positions.area.ItemDropper;
 import game.random.RandomUtils;
+import game.statistics.StatisticAdjuster;
+import game.statistics.StatisticChange;
+
+import java.util.Optional;
 
 /**
  * A Cow that wanders the farm and can be fed, producing Milk.
@@ -47,10 +52,14 @@ public class Cow extends Animal {
      */
     @Override
     public String feed(Actor farmer, Location farmerLocation) {
-        this.heal(HEAL_AMOUNT);
+        StatisticChange healed = new StatisticAdjuster(this).increase(ActorStatistics.HEALTH, HEAL_AMOUNT);
 
-        new ItemDropper(areaFactory.adjacentTo(farmerLocation)).dropOnRandomTile(new Milk(randomUtils));
+        Optional<Location> milkTile = new ItemDropper(areaFactory.adjacentTo(farmerLocation))
+                .dropOnRandomTile(new Milk(randomUtils));
+        String milk = milkTile.isPresent()
+                ? " and gives Milk at " + milkTile.get()
+                : ", but there is no room for its Milk";
 
-        return this + " moos contentedly.";
+        return this + " moos contentedly, recovers " + healed.describe("HP") + milk + ".";
     }
 }

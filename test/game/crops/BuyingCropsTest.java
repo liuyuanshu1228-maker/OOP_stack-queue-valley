@@ -45,6 +45,7 @@ class BuyingCropsTest {
         assertEquals(3, TestFarm.countItems(map));
         assertEquals(STARTING_COINS - 250, buyer.getStatistic(FarmerStatistics.COINS));
         assertTrue(report.contains("buys a Parsnip crop"), report);
+        assertTrue(report.contains("3 Parsnips drop at ("), "says where the bonus Parsnips landed: " + report);
     }
 
     @Test

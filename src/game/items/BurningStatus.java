@@ -1,6 +1,7 @@
 package game.items;
 
 import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.positions.Location;
 import game.status.TimedStatus;
 
 /**
@@ -39,6 +40,15 @@ public class BurningStatus extends TimedStatus {
     @Override
     protected void applyEffect() {
         burningActor.hurt(damagePerTurn);
+    }
+
+    /**
+     * @param location the tile the burning actor stands on
+     * @return a description of this turn's burn, naming the actor, the damage and the tile
+     */
+    @Override
+    protected String describeTurn(Location location) {
+        return burningActor + " burns for " + damagePerTurn + " damage at " + location + ".";
     }
 
     /**

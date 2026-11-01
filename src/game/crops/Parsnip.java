@@ -12,11 +12,14 @@ import game.plants.Producing;
 import game.positions.Waterable;
 import game.positions.area.AreaFactory;
 import game.positions.area.ItemDropper;
+import game.positions.area.TileListDescription;
 import game.random.RandomUtils;
 import game.statistics.FarmerStatistics;
 import game.statistics.StatisticAdjuster;
 
 import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A parsnip crop. It can be watered, which heals the farmer but risks
@@ -108,11 +111,16 @@ public class Parsnip extends Crop implements Waterable, Purchasable, Producing {
         actor.getInventory().add(new ParsnipItem());
         removeCrop(location);
 
-        if (randomUtils.rollPercent(BONUS_SPAWN_CHANCE_PERCENT)) {
-            new ItemDropper(areaFactory.adjacentTo(location)).dropOnRandomTile(new ParsnipItem());
+        String report = actor + " harvests the " + this + ".";
+        if (!randomUtils.rollPercent(BONUS_SPAWN_CHANCE_PERCENT)) {
+            return report;
         }
-
-        return actor + " harvests the " + this + ".";
+        Optional<Location> bonus = new ItemDropper(areaFactory.adjacentTo(location))
+                .dropOnRandomTile(new ParsnipItem());
+        if (bonus.isEmpty()) {
+            return report;
+        }
+        return report + " A bonus Parsnip drops at " + bonus.get() + ".";
     }
 
     /**
@@ -187,10 +195,15 @@ public class Parsnip extends Crop implements Waterable, Purchasable, Producing {
         }
         buyer.modifyStatistic(FarmerStatistics.COINS, StatisticOperations.DECREASE, PRICE);
         ItemDropper dropper = new ItemDropper(areaFactory.adjacentTo(planted.get()));
+        List<Location> dropped = new ArrayList<>();
         for (int i = 0; i < PARSNIPS_GIVEN_ON_PURCHASE; i++) {
-            dropper.dropOnRandomTile(new ParsnipItem());
+            Optional<Location> tile = dropper.dropOnRandomTile(new ParsnipItem());
+            if (tile.isPresent()) {
+                dropped.add(tile.get());
+            }
         }
-        return buyer + " buys a " + PRODUCT_NAME + " from " + merchant + ", planted at " + planted.get() + ".";
+        return buyer + " buys a " + PRODUCT_NAME + " from " + merchant + ", planted at " + planted.get()
+                + ". " + dropped.size() + " Parsnips drop at " + new TileListDescription().of(dropped) + ".";
     }
 
 }

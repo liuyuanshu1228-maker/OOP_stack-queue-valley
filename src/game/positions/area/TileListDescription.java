@@ -47,4 +47,16 @@ public class TileListDescription {
         }
         return description.toString();
     }
+
+    /**
+     * Starts a message with the tile it happened on, in the one format every
+     * action uses: "At (x, y) on map: message".
+     *
+     * @param tile the tile the message is about
+     * @param message what happened there
+     * @return the message, prefixed with the tile
+     */
+    public String at(Location tile, String message) {
+        return "At " + tile + ": " + message;
+    }
 }

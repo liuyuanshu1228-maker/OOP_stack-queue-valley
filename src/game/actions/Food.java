@@ -13,6 +13,7 @@ public interface Food {
      * Applies this food's bonus effect to the Actor who used it for feeding.
      *
      * @param farmer the Actor who fed an animal using this food
+     * @return a description of the bonus, to be shown to the player
      */
-    void applyFeedingBonus(Actor farmer);
+    String applyFeedingBonus(Actor farmer);
 }

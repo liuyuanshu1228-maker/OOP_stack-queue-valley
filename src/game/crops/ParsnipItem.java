@@ -44,10 +44,12 @@ public class ParsnipItem extends FoodItem {
      * stamina value.
      *
      * @param farmer the Actor who fed an animal using this Parsnip
+     * @return a description of the bonus
      */
     @Override
-    public void applyFeedingBonus(Actor farmer) {
+    public String applyFeedingBonus(Actor farmer) {
         new StatisticAdjuster(farmer).increaseMaximumWithoutRestoring(
                 ActorStatistics.STAMINA, MAX_STAMINA_INCREASE);
+        return farmer + "'s maximum stamina rises by " + MAX_STAMINA_INCREASE + " for feeding with a Parsnip.";
     }
 }

@@ -66,9 +66,9 @@ public class Egg extends SellableItem {
         }
         try {
             spot.get().addActor(animal);
-            return animal + " appears near " + merchantContext.getMerchant() + ".";
+            return animal + " appears at " + spot.get() + ", near " + merchantContext.getMerchant() + ".";
         } catch (GameEngineException e) {
-            return animal + " tries to appear near " + merchantContext.getMerchant()
+            return animal + " tries to appear at " + spot.get() + ", near " + merchantContext.getMerchant()
                     + ", but there is no room for it.";
         }
     }

@@ -7,6 +7,7 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.tools.EnchantmentTrigger;
 import game.items.tools.HasStaminaCost;
+import game.positions.area.TileListDescription;
 import game.statistics.StatisticAdjuster;
 
 import java.util.List;
@@ -123,7 +124,7 @@ public abstract class CapabilityToolAction<C, T extends HasStaminaCost> extends 
      * @return the message prefixed with this Action's Location
      */
     private String at(String message) {
-        return "At " + location + ": " + message;
+        return new TileListDescription().at(location, message);
     }
 
     /**

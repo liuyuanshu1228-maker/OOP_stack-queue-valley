@@ -4,7 +4,6 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.positions.Location;
 import game.items.tools.Enchantment;
 import game.plants.Plant;
-import game.positions.area.TileListDescription;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +28,12 @@ public class BountyEnchantment implements Enchantment {
      * @param affectedTiles the tiles the host tool's own effect touched
      * @param activator the Actor who triggered the effect
      * @param origin the Location the host tool was used at
-     * @return a description naming exactly which tiles had a plant grow further
+     * @return each plant's own report of what it did (for example, which stage it
+     * grew into), each naming its tile, or a message naming the origin if no plant grew
      */
     @Override
     public String applyTo(List<Location> affectedTiles, Actor activator, Location origin) {
-        List<Location> grownTiles = new ArrayList<>();
+        List<String> growthReports = new ArrayList<>();
         for (Location tile : affectedTiles) {
             Plant plant = tile.getGroundAs(Plant.class);
             if (plant == null) {
@@ -41,13 +41,13 @@ public class BountyEnchantment implements Enchantment {
             }
             String growthReport = plant.attemptGrowth(tile);
             if (!growthReport.isEmpty()) {
-                grownTiles.add(tile);
+                growthReports.add(growthReport);
             }
         }
-        if (grownTiles.isEmpty()) {
+        if (growthReports.isEmpty()) {
             return "The Bounty Enchantment finds no plant ready to grow further near " + origin + ".";
         }
-        return "Plants grow further at " + new TileListDescription().of(grownTiles) + ".";
+        return "The Bounty Enchantment makes the plants grow further: " + String.join(" ", growthReports);
     }
 
     @Override

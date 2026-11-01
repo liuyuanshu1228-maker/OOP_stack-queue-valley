@@ -42,10 +42,12 @@ public class TomatoItem extends FoodItem {
      * (unlike consuming a Tomato directly).
      *
      * @param farmer the Actor who fed an animal using this Tomato
+     * @return a description of the bonus
      */
     @Override
-    public void applyFeedingBonus(Actor farmer) {
+    public String applyFeedingBonus(Actor farmer) {
         new StatisticAdjuster(farmer).increaseMaximumWithoutRestoring(
                 ActorStatistics.HEALTH, MAX_HP_INCREASE);
+        return farmer + "'s maximum HP rises by " + MAX_HP_INCREASE + " for feeding with a Tomato.";
     }
 }
