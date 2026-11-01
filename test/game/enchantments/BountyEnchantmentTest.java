@@ -8,7 +8,6 @@ import game.positions.area.AreaFactory;
 import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -31,12 +30,6 @@ class BountyEnchantmentTest {
     private static final int GROWTH_INTERVAL_TURNS = 5;
 
     private final GameMap map = TestFarm.map("...", "...", "...");
-
-
-    @BeforeEach
-    void setUp() {
-    }
-
 
     /**
      * @return the tile of a StrawberrySeedling that just reached its periodic

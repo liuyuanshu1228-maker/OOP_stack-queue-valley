@@ -8,7 +8,6 @@ import game.positions.mine.CopperNode;
 import game.testsupport.FixedRandom;
 import game.testsupport.TestFarm;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,12 +26,6 @@ class PickaxeTest {
 
     private final GameMap map = TestFarm.map("...", "...", "...");
     private final Farmer farmer = new Farmer("Test");
-
-
-    @BeforeEach
-    void setUp() {
-    }
-
 
     @Test
     void unenchantedPickaxeTriggersNothing() {
@@ -80,5 +73,20 @@ class PickaxeTest {
         String secondResult = pickaxe.triggerEnchantment(farmer, map.at(1, 1));
 
         assertEquals("", secondResult);
+    }
+
+    @Test
+    void whenTheChainRollSucceedsButNoBreakableNeighbourExistsOnlyTheEnchantmentFires() {
+        // No CopperNode (or any other Breakable ground) anywhere on this
+        // map, so even a successful chain roll has nothing to chain to.
+        Pickaxe pickaxe = new Pickaxe(List.of(), random, areaFactory);
+        RecordingEnchantment enchantment = new RecordingEnchantment();
+        pickaxe.enchant(enchantment);
+        random.setRollsSucceed(true);
+
+        String message = pickaxe.triggerEnchantment(farmer, map.at(1, 1));
+
+        assertEquals(1, enchantment.timesFired(), "the enchantment still fires even though the chain found nothing");
+        assertTrue(message.contains("fired"), message);
     }
 }
