@@ -16,6 +16,8 @@ package game.status;
 public abstract class IncapacitatingStatus extends TimedStatus {
 
     /**
+     * Creates an incapacitating status that lasts the given number of turns.
+     *
      * @param durationTurns how many turns this status lasts
      */
     protected IncapacitatingStatus(int durationTurns) {

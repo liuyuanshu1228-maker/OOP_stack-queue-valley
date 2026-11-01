@@ -51,6 +51,8 @@ public class Area {
     }
 
     /**
+     * Returns the tiles of this area.
+     *
      * @return the tiles of this area, as a read-only list
      */
     public List<Location> tiles() {
