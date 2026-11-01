@@ -122,6 +122,8 @@ public class TrapGround extends TemporaryGround {
     }
 
     /**
+     * Checks whether a tile is next to this trap.
+     *
      * @param tile a tile near the trap
      * @param location the tile this trap is on
      * @return true if the tile is next to the trap

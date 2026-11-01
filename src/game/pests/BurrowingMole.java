@@ -73,6 +73,8 @@ public class BurrowingMole extends Pest {
     }
 
     /**
+     * Checks whether a tile is next to this mole in a straight line, not diagonally.
+     *
      * @param here the tile this mole stands on
      * @param tile a tile next to here
      * @return true if the tile is directly above, below, left or right of here

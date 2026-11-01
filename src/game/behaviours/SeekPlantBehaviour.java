@@ -80,6 +80,8 @@ public class SeekPlantBehaviour implements Behaviour<Actor, Action> {
     }
 
     /**
+     * Finds the tiles this pest can land on from where it stands.
+     *
      * @param actor the pest
      * @param from the tile the pest stands on
      * @return the landing tiles that are on the map and that the pest can enter
@@ -101,6 +103,8 @@ public class SeekPlantBehaviour implements Behaviour<Actor, Action> {
     }
 
     /**
+     * Finds the nearest plant this pest can sense.
+     *
      * @param from the tile the pest stands on
      * @return the nearest tile with a plant within sensing range, if any
      */

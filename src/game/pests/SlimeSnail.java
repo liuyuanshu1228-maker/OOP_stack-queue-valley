@@ -75,6 +75,8 @@ public class SlimeSnail extends Pest {
     }
 
     /**
+     * Checks whether slime can cover a tile.
+     *
      * @param tile the tile to test
      * @return true if the tile is bare Soil or Dirt, which slime can cover
      */

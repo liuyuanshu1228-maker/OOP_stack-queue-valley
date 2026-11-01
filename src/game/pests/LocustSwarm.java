@@ -146,6 +146,8 @@ public class LocustSwarm extends Pest {
     }
 
     /**
+     * Finds the tiles on and around this swarm that hold a plant.
+     *
      * @param here the tile this swarm stands on
      * @return the tiles on and around here that hold a plant
      */
