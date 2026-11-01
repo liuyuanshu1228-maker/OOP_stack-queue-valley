@@ -123,6 +123,15 @@ public class StackQueueValleyWorld extends World {
     private record Link(Spot farm, Spot mines) {
     }
 
+    /**
+     * The two maps {@link #createMaps(RandomUtils, AreaFactory)} builds.
+     *
+     * @param farm the Inherited Farm map
+     * @param mines the Mines map
+     */
+    private record Maps(GameMap farm, GameMap mines) {
+    }
+
     /** Each farm ladder and the mines ladder it is paired with. */
     private static final List<Link> LADDER_LINKS = List.of(
             new Link(new Spot(0, 0), new Spot(0, 0)),
@@ -151,6 +160,9 @@ public class StackQueueValleyWorld extends World {
     /**
      * Initializes the game world by creating maps, registering grounds, placing the player,
      * linking travel grounds, and scattering initial crops, stations, items, and actors.
+     * <p>
+     * Each stage is delegated to its own method below, in the order it runs here, so that
+     * this method reads as the single list of stages rather than their combined detail.
      *
      * @throws Exception if an error occurs while placing actors or initializing the world
      */
@@ -158,6 +170,33 @@ public class StackQueueValleyWorld extends World {
         RandomUtils randomUtils = new RandomUtils();
         AreaFactory areaFactory = new AreaFactory(randomUtils);
 
+        Maps maps = createMaps(randomUtils, areaFactory);
+        GameMap inheritedFarmMap = maps.farm();
+        GameMap minesMap = maps.mines();
+
+        Location farmerStart = locate(inheritedFarmMap, FARMER_START);
+        placeFarmerWithEquipment(inheritedFarmMap, farmerStart, randomUtils, areaFactory);
+
+        Set<Location> occupiedLocations = new HashSet<>();
+        occupiedLocations.add(farmerStart);
+        reservePlantsAndSoil(inheritedFarmMap, occupiedLocations, areaFactory);
+        Set<Location> minesOccupiedLocations = new HashSet<>();
+
+        linkFarmAndMines(inheritedFarmMap, minesMap, occupiedLocations, minesOccupiedLocations, randomUtils, areaFactory);
+        populateFarm(inheritedFarmMap, occupiedLocations, randomUtils, areaFactory);
+        setupAlienDevice(inheritedFarmMap, minesMap, occupiedLocations, minesOccupiedLocations, randomUtils, areaFactory);
+        populateMines(minesMap, minesOccupiedLocations, randomUtils, areaFactory);
+    }
+
+    /**
+     * Registers the Dirt/Soil ground types, builds the Inherited Farm map (planting its
+     * starting crops), builds the Mines map, and adds both to this World.
+     *
+     * @param randomUtils the randomness handed to every plant
+     * @param areaFactory the AreaFactory handed to every plant
+     * @return the two created maps, farm first
+     */
+    private Maps createMaps(RandomUtils randomUtils, AreaFactory areaFactory) {
         DefaultGroundCreator groundCreator = new DefaultGroundCreator();
         groundCreator.registerGround('.', Dirt::new);
         groundCreator.registerGround(',', Soil::new);
@@ -180,9 +219,25 @@ public class StackQueueValleyWorld extends World {
                 MINES_WIDTH, MINES_HEIGHT);
         this.addGameMap(minesMap);
 
-        Location farmerStart = locate(inheritedFarmMap, FARMER_START);
+        return new Maps(inheritedFarmMap, minesMap);
+    }
+
+    /**
+     * Creates the Farmer, adds them to the farm as the player at {@code farmerStart}, and
+     * equips their starting inventory: the three farm tools (each offering every
+     * enchantment in the game) and the three pest-control items.
+     *
+     * @param farm the farm map to place the Farmer on
+     * @param farmerStart where on the farm the Farmer starts
+     * @param randomUtils the randomness handed to the Pickaxe and LadybugJar
+     * @param areaFactory the AreaFactory handed to every tool and pest-control item
+     * @throws Exception if the engine cannot place the Farmer on {@code farmerStart}
+     */
+    private void placeFarmerWithEquipment(GameMap farm, Location farmerStart, RandomUtils randomUtils,
+                                          AreaFactory areaFactory) throws Exception {
         Farmer farmer = new Farmer("Bob");
         this.addPlayer(farmer, farmerStart);
+
         List<Enchantment> toolEnchantments =
                 List.of(new BlazeEnchantment(), new BountyEnchantment(), new ShatterEnchantment());
         farmer.getInventory().add(new Hoe(toolEnchantments, areaFactory));
@@ -191,52 +246,99 @@ public class StackQueueValleyWorld extends World {
         farmer.getInventory().add(new PestTrap(areaFactory));
         farmer.getInventory().add(new LadybugJar(randomUtils));
         farmer.getInventory().add(new SaltBarrier(areaFactory));
+    }
 
-        Set<Location> occupiedLocations = new HashSet<>();
-        occupiedLocations.add(farmerStart);
-        reservePlantsAndSoil(inheritedFarmMap, occupiedLocations, areaFactory);
-        Set<Location> minesOccupiedLocations = new HashSet<>();
-
-        linkMaps(inheritedFarmMap, minesMap, occupiedLocations, minesOccupiedLocations,
+    /**
+     * Places the ladder and teleportation-circle pairs linking the farm and the mines.
+     *
+     * @param farmMap the farm map
+     * @param minesMap the mines map
+     * @param occupiedLocations farm locations that must not be used; updated with the newly used ones
+     * @param minesOccupiedLocations mines locations that must not be used; updated with the newly used ones
+     * @param randomUtils the randomness handed to every Ladder built
+     * @param areaFactory the AreaFactory handed to every link
+     */
+    private void linkFarmAndMines(GameMap farmMap, GameMap minesMap, Set<Location> occupiedLocations,
+                                  Set<Location> minesOccupiedLocations, RandomUtils randomUtils,
+                                  AreaFactory areaFactory) {
+        linkMaps(farmMap, minesMap, occupiedLocations, minesOccupiedLocations,
                 List.of(new Ladder(randomUtils), new Ladder(randomUtils)),
                 List.of(new Ladder(randomUtils), new Ladder(randomUtils)),
                 LADDER_LINKS, areaFactory);
-        linkMaps(inheritedFarmMap, minesMap, occupiedLocations, minesOccupiedLocations,
+        linkMaps(farmMap, minesMap, occupiedLocations, minesOccupiedLocations,
                 List.of(new TeleportationCircle(areaFactory), new TeleportationCircle(areaFactory)),
                 List.of(new TeleportationCircle(areaFactory), new TeleportationCircle(areaFactory)),
                 CIRCLE_LINKS, areaFactory);
+    }
 
-        scatterGround(inheritedFarmMap, occupiedLocations, List.of(new DryingRack()), randomUtils);
-        scatterGround(inheritedFarmMap, occupiedLocations, List.of(new PreservesJar()), randomUtils);
+    /**
+     * Scatters the farm facilities (Drying Rack, Preserves Jar) and places every farm
+     * Actor: the Chicken and Cow, the Merchant, the Crow, the three pests, and the Wanderer.
+     *
+     * @param farmMap the farm map to populate
+     * @param occupiedLocations farm locations that must not be used; updated with the newly used ones
+     * @param randomUtils the randomness used to pick each tile and to build each Actor
+     * @param areaFactory the AreaFactory handed to every Actor built
+     * @throws Exception if the engine cannot place an Actor on its chosen tile
+     */
+    private void populateFarm(GameMap farmMap, Set<Location> occupiedLocations, RandomUtils randomUtils,
+                              AreaFactory areaFactory) throws Exception {
+        scatterGround(farmMap, occupiedLocations, List.of(new DryingRack()), randomUtils);
+        scatterGround(farmMap, occupiedLocations, List.of(new PreservesJar()), randomUtils);
 
-        placeActor(inheritedFarmMap, occupiedLocations, new Chicken("Chicken", randomUtils, areaFactory), randomUtils);
-        placeActor(inheritedFarmMap, occupiedLocations, new Cow("Cow", randomUtils, areaFactory), randomUtils);
-        placeActor(inheritedFarmMap, occupiedLocations,
+        placeActor(farmMap, occupiedLocations, new Chicken("Chicken", randomUtils, areaFactory), randomUtils);
+        placeActor(farmMap, occupiedLocations, new Cow("Cow", randomUtils, areaFactory), randomUtils);
+        placeActor(farmMap, occupiedLocations,
                 new Merchant(randomUtils,
                         new Parsnip(randomUtils, areaFactory),
                         new Tomato(randomUtils, areaFactory),
                         new Sword(randomUtils)),
                 randomUtils);
-        placeActor(inheritedFarmMap, occupiedLocations, new Crow("Crow", randomUtils, areaFactory), randomUtils);
-        placeActor(inheritedFarmMap, occupiedLocations, new SlimeSnail(randomUtils, areaFactory), randomUtils);
-        placeActor(inheritedFarmMap, occupiedLocations, new LocustSwarm(randomUtils, areaFactory), randomUtils);
-        placeActor(inheritedFarmMap, occupiedLocations, new BurrowingMole(randomUtils, areaFactory), randomUtils);
-        placeActor(inheritedFarmMap, occupiedLocations, buildWanderer(randomUtils, areaFactory), randomUtils);
+        placeActor(farmMap, occupiedLocations, new Crow("Crow", randomUtils, areaFactory), randomUtils);
+        placeActor(farmMap, occupiedLocations, new SlimeSnail(randomUtils, areaFactory), randomUtils);
+        placeActor(farmMap, occupiedLocations, new LocustSwarm(randomUtils, areaFactory), randomUtils);
+        placeActor(farmMap, occupiedLocations, new BurrowingMole(randomUtils, areaFactory), randomUtils);
+        placeActor(farmMap, occupiedLocations, buildWanderer(randomUtils, areaFactory), randomUtils);
+    }
 
+    /**
+     * Builds the Alien Device, wires its two fixed destinations, reserves its mines-side
+     * destination, and places it on a random farm tile.
+     *
+     * @param farmMap the farm map to place the device on
+     * @param minesMap the mines map the device travels to
+     * @param occupiedLocations farm locations that must not be used; updated with the newly used one
+     * @param minesOccupiedLocations mines locations that must not be used; updated with the device's destination
+     * @param randomUtils the randomness used to pick the device's farm tile
+     * @param areaFactory the AreaFactory handed to the device
+     */
+    private void setupAlienDevice(GameMap farmMap, GameMap minesMap, Set<Location> occupiedLocations,
+                                  Set<Location> minesOccupiedLocations, RandomUtils randomUtils,
+                                  AreaFactory areaFactory) {
         Location alienDeviceFarmDestination =
-                locate(inheritedFarmMap, ALIEN_DEVICE_DESTINATIONS.farm());
+                locate(farmMap, ALIEN_DEVICE_DESTINATIONS.farm());
         Location alienDeviceMinesDestination = locate(minesMap, ALIEN_DEVICE_DESTINATIONS.mines());
         AlienDevice alienDevice = new AlienDevice(randomUtils, areaFactory);
         alienDevice.addDestination(TO_FARM, alienDeviceFarmDestination);
         alienDevice.addDestination(TO_MINES, alienDeviceMinesDestination);
         minesOccupiedLocations.add(alienDeviceMinesDestination);
-        scatterItems(inheritedFarmMap, occupiedLocations, List.of(alienDevice), randomUtils);
+        scatterItems(farmMap, occupiedLocations, List.of(alienDevice), randomUtils);
+    }
 
+    /**
+     * Scatters the mines' rocks, copper nodes, and geodes onto random tiles.
+     *
+     * @param minesMap the mines map to populate
+     * @param minesOccupiedLocations mines locations that must not be used; updated with the newly used ones
+     * @param randomUtils the randomness used to pick each tile and build each Rock/Geode
+     * @param areaFactory the AreaFactory handed to every Rock/CopperNode/Geode built
+     */
+    private void populateMines(GameMap minesMap, Set<Location> minesOccupiedLocations, RandomUtils randomUtils,
+                               AreaFactory areaFactory) {
         scatterGround(minesMap, minesOccupiedLocations, buildRocks(randomUtils, areaFactory, ROCK_COUNT), randomUtils);
         scatterGround(minesMap, minesOccupiedLocations, buildCopperNodes(areaFactory, COPPER_NODE_COUNT), randomUtils);
         scatterItems(minesMap, minesOccupiedLocations, buildGeodes(randomUtils, areaFactory, GEODE_COUNT), randomUtils);
     }
-
 
     /**
      * Puts one of every plant in its fixed place on the farm. Each plant has
