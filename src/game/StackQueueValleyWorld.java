@@ -472,6 +472,8 @@ public class StackQueueValleyWorld extends World {
     }
 
     /**
+     * Picks a random location on a map.
+     *
      * @param map the map to pick a location on
      * @param randomUtils the randomness used to pick the location
      * @return a uniformly random location on the map
@@ -483,6 +485,8 @@ public class StackQueueValleyWorld extends World {
     }
 
     /**
+     * Finds the location at a position on a map.
+     *
      * @param map the map the position is on
      * @param spot the position
      * @return the location at that position on the map
