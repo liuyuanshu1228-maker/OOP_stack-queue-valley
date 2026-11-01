@@ -8,14 +8,8 @@ import game.crops.MelonSprout;
 import game.crops.Strawberry;
 import game.crops.StrawberrySeedling;
 import game.crops.StrawberrySprout;
-import game.testsupport.PlantFactory;
 import game.testsupport.TestFarm;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -27,44 +21,50 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class GrowTest extends PlantTestBase {
 
-    static List<Arguments> growthStages() {
-        return List.of(
-                Arguments.of((PlantFactory) StrawberrySeedling::new, 5, StrawberrySprout.class),
-                Arguments.of((PlantFactory) StrawberrySprout::new, 10, Strawberry.class),
-                Arguments.of((PlantFactory) CauliflowerSprout::new, 15, Cauliflower.class),
-                Arguments.of((PlantFactory) MelonSprout::new, 15, Melon.class));
-    }
-
     private Location plantOnDirt(Plant plant) {
         Location location = TestFarm.map("...", "...", "...").at(1, 1);
         location.setGround(plant);
         return location;
     }
 
-    @ParameterizedTest
-    @MethodSource("growthStages")
-    void growsIntoTheNextStageAtTheRightAge(PlantFactory stage, int turns, Class<?> nextStage) {
-        Plant young = stage.create(random, areaFactory);
-        Location location = plantOnDirt(young);
-
-        TestFarm.tick(location, turns - 1);
-        assertEquals(young.getClass(), location.getGround().getClass(), "not grown one turn early");
-
-        TestFarm.tick(location, 1);
-        assertInstanceOf(nextStage, location.getGround());
-        assertEquals(0, ((Plant) location.getGround()).getAge(), "the new stage starts at age 0");
+    @Test
+    void aStrawberrySeedlingGrowsIntoASproutAfterFiveTurns() {
+        assertGrowsAtTheRightAge(new StrawberrySeedling(random, areaFactory), 5, StrawberrySprout.class);
     }
 
-    @ParameterizedTest
-    @MethodSource("growthStages")
-    void failedGrowthChanceKeepsTheSameStage(PlantFactory stage, int turns, Class<?> nextStage) {
-        Plant young = stage.create(random, areaFactory);
-        Location location = plantOnDirt(young);
-        random.setRollsSucceed(false);
+    @Test
+    void aStrawberrySproutGrowsIntoAStrawberryAfterTenTurns() {
+        assertGrowsAtTheRightAge(new StrawberrySprout(random, areaFactory), 10, Strawberry.class);
+    }
 
-        TestFarm.tick(location, turns * 3);
+    @Test
+    void aCauliflowerSproutGrowsIntoACauliflowerAfterFifteenTurns() {
+        assertGrowsAtTheRightAge(new CauliflowerSprout(random, areaFactory), 15, Cauliflower.class);
+    }
 
-        assertEquals(young.getClass(), location.getGround().getClass());
+    @Test
+    void aMelonSproutGrowsIntoAMelonAfterFifteenTurns() {
+        assertGrowsAtTheRightAge(new MelonSprout(random, areaFactory), 15, Melon.class);
+    }
+
+    @Test
+    void aFailedChanceKeepsTheStrawberrySeedling() {
+        assertStaysWhenTheChanceFails(new StrawberrySeedling(random, areaFactory), 5);
+    }
+
+    @Test
+    void aFailedChanceKeepsTheStrawberrySprout() {
+        assertStaysWhenTheChanceFails(new StrawberrySprout(random, areaFactory), 10);
+    }
+
+    @Test
+    void aFailedChanceKeepsTheCauliflowerSprout() {
+        assertStaysWhenTheChanceFails(new CauliflowerSprout(random, areaFactory), 15);
+    }
+
+    @Test
+    void aFailedChanceKeepsTheMelonSprout() {
+        assertStaysWhenTheChanceFails(new MelonSprout(random, areaFactory), 15);
     }
 
     @Test
@@ -86,5 +86,25 @@ class GrowTest extends PlantTestBase {
         TestFarm.tick(location, 5 + 10);
 
         assertInstanceOf(Strawberry.class, location.getGround());
+    }
+
+    private void assertGrowsAtTheRightAge(Plant young, int turns, Class<?> nextStage) {
+        Location location = plantOnDirt(young);
+
+        TestFarm.tick(location, turns - 1);
+        assertEquals(young.getClass(), location.getGround().getClass(), "not grown one turn early");
+
+        TestFarm.tick(location, 1);
+        assertInstanceOf(nextStage, location.getGround());
+        assertEquals(0, ((Plant) location.getGround()).getAge(), "the new stage starts at age 0");
+    }
+
+    private void assertStaysWhenTheChanceFails(Plant young, int turns) {
+        Location location = plantOnDirt(young);
+        random.setRollsSucceed(false);
+
+        TestFarm.tick(location, turns * 3);
+
+        assertEquals(young.getClass(), location.getGround().getClass());
     }
 }

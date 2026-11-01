@@ -7,10 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests the "every N turns, with a chance" rule that all plant abilities share.
@@ -86,19 +85,21 @@ class PeriodicAbilityTest extends PlantTestBase {
     @ParameterizedTest
     @ValueSource(ints = {0, -1, -20})
     void intervalThatIsNotPositiveIsRejected(int interval) {
-        assertThrows(IllegalArgumentException.class, () -> new CountingAbility(interval, 50, random));
+        assertRejected(interval, 50);
     }
 
     @ParameterizedTest
     @ValueSource(ints = {-1, 101, 1000})
     void chanceOutsideZeroToHundredIsRejected(int chance) {
-        assertThrows(IllegalArgumentException.class, () -> new CountingAbility(5, chance, random));
+        assertRejected(5, chance);
     }
 
     @ParameterizedTest
     @ValueSource(ints = {0, 100})
     void chanceAtEitherLimitIsAccepted(int chance) {
-        assertDoesNotThrow(() -> new CountingAbility(5, chance, random));
+        CountingAbility ability = new CountingAbility(5, chance, random);
+
+        assertEquals(0, ability.performed, "accepted, and nothing has happened yet");
     }
 
     @Test
@@ -108,5 +109,14 @@ class PeriodicAbilityTest extends PlantTestBase {
         TestFarm.tick(location, 3);
 
         assertEquals("performed", takeOutput().trim());
+    }
+
+    private void assertRejected(int interval, int chance) {
+        try {
+            new CountingAbility(interval, chance, random);
+            fail("Expected an interval of " + interval + " and a chance of " + chance + " to be rejected");
+        } catch (IllegalArgumentException expected) {
+            // The settings were rejected, as they should be.
+        }
     }
 }

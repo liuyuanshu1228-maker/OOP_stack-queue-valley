@@ -12,13 +12,8 @@ import game.crops.StrawberrySprout;
 import game.crops.Tomato;
 import game.positions.farm.Dirt;
 import game.status.GrowthPausedStatus;
-import game.testsupport.PlantFactory;
 import game.testsupport.TestFarm;
-import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -28,19 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
  * Tests a plant's age, pausing its growth, and regressing it to an earlier stage.
  */
 class PlantStateTest extends PlantTestBase {
-
-    static List<Arguments> earlierStages() {
-        return List.of(
-                Arguments.of((PlantFactory) StrawberrySeedling::new, Dirt.class),
-                Arguments.of((PlantFactory) StrawberrySprout::new, StrawberrySeedling.class),
-                Arguments.of((PlantFactory) Strawberry::new, StrawberrySprout.class),
-                Arguments.of((PlantFactory) CauliflowerSprout::new, Dirt.class),
-                Arguments.of((PlantFactory) Cauliflower::new, CauliflowerSprout.class),
-                Arguments.of((PlantFactory) MelonSprout::new, Dirt.class),
-                Arguments.of((PlantFactory) Melon::new, MelonSprout.class),
-                Arguments.of((PlantFactory) Tomato::new, Dirt.class),
-                Arguments.of((PlantFactory) Parsnip::new, Dirt.class));
-    }
 
     private Location plantOnDirt(Plant plant) {
         Location location = TestFarm.map("...", "...", "...").at(1, 1);
@@ -85,10 +67,53 @@ class PlantStateTest extends PlantTestBase {
         assertInstanceOf(StrawberrySprout.class, location.getGround());
     }
 
-    @ParameterizedTest
-    @MethodSource("earlierStages")
-    void regressGoesBackToTheEarlierStage(PlantFactory stage, Class<?> earlier) {
-        Location location = plantOnDirt(stage.create(random, areaFactory));
+    @Test
+    void aStrawberrySeedlingDiesAndLeavesDirtWhenRegressed() {
+        assertRegressesTo(new StrawberrySeedling(random, areaFactory), Dirt.class);
+    }
+
+    @Test
+    void aStrawberrySproutGoesBackToASeedlingWhenRegressed() {
+        assertRegressesTo(new StrawberrySprout(random, areaFactory), StrawberrySeedling.class);
+    }
+
+    @Test
+    void aStrawberryGoesBackToASproutWhenRegressed() {
+        assertRegressesTo(new Strawberry(random, areaFactory), StrawberrySprout.class);
+    }
+
+    @Test
+    void aCauliflowerSproutDiesAndLeavesDirtWhenRegressed() {
+        assertRegressesTo(new CauliflowerSprout(random, areaFactory), Dirt.class);
+    }
+
+    @Test
+    void aCauliflowerGoesBackToASproutWhenRegressed() {
+        assertRegressesTo(new Cauliflower(random, areaFactory), CauliflowerSprout.class);
+    }
+
+    @Test
+    void aMelonSproutDiesAndLeavesDirtWhenRegressed() {
+        assertRegressesTo(new MelonSprout(random, areaFactory), Dirt.class);
+    }
+
+    @Test
+    void aMelonGoesBackToASproutWhenRegressed() {
+        assertRegressesTo(new Melon(random, areaFactory), MelonSprout.class);
+    }
+
+    @Test
+    void aTomatoDiesAndLeavesDirtWhenRegressed() {
+        assertRegressesTo(new Tomato(random, areaFactory), Dirt.class);
+    }
+
+    @Test
+    void aParsnipDiesAndLeavesDirtWhenRegressed() {
+        assertRegressesTo(new Parsnip(random, areaFactory), Dirt.class);
+    }
+
+    private void assertRegressesTo(Plant plant, Class<?> earlier) {
+        Location location = plantOnDirt(plant);
 
         location.getGroundAs(Regressible.class).regress(location);
 

@@ -6,13 +6,8 @@ import game.crops.Cauliflower;
 import game.crops.Parsnip;
 import game.crops.Strawberry;
 import game.crops.Tomato;
-import game.testsupport.PlantFactory;
 import game.testsupport.TestFarm;
-import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -23,19 +18,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ProduceTest extends PlantTestBase {
 
-    static List<Arguments> producingCrops() {
-        return List.of(
-                Arguments.of((PlantFactory) Strawberry::new, 5, "Strawberry"),
-                Arguments.of((PlantFactory) Tomato::new, 7, "Tomato"),
-                Arguments.of((PlantFactory) Parsnip::new, 15, "Parsnip"));
+    @Test
+    void aStrawberryDropsAStrawberryEveryFiveTurns() {
+        assertDropsProduceEvery(new Strawberry(random, areaFactory), 5, "Strawberry");
     }
 
-    @ParameterizedTest
-    @MethodSource("producingCrops")
-    void dropsProduceNearbyEveryInterval(PlantFactory crop, int interval, String name) {
+    @Test
+    void aTomatoDropsATomatoEverySevenTurns() {
+        assertDropsProduceEvery(new Tomato(random, areaFactory), 7, "Tomato");
+    }
+
+    @Test
+    void aParsnipDropsAParsnipEveryFifteenTurns() {
+        assertDropsProduceEvery(new Parsnip(random, areaFactory), 15, "Parsnip");
+    }
+
+    private void assertDropsProduceEvery(Plant crop, int interval, String name) {
         GameMap map = TestFarm.map("...", "...", "...");
         Location centre = map.at(1, 1);
-        centre.setGround(crop.create(random, areaFactory));
+        centre.setGround(crop);
 
         TestFarm.tick(centre, interval - 1);
         assertEquals(0, TestFarm.countItems(map), "nothing before the interval");

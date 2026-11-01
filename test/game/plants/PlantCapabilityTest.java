@@ -4,7 +4,6 @@ import edu.monash.fit2099.engine.positions.Location;
 import game.testsupport.TestFarm;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
@@ -46,7 +45,7 @@ class PlantCapabilityTest extends PlantTestBase {
         Plant plant = new BarePlant(new Grow(1, 100, random));
         Location location = plantOnSoil(plant);
 
-        assertDoesNotThrow(() -> TestFarm.tick(location, 5));
+        TestFarm.tick(location, 5);
 
         assertSame(plant, location.getGround());
         assertEquals("", takeOutput());
@@ -57,7 +56,7 @@ class PlantCapabilityTest extends PlantTestBase {
         Plant plant = new BarePlant(new SelfReplicate(1, random, areaFactory));
         Location location = plantOnSoil(plant);
 
-        assertDoesNotThrow(() -> TestFarm.tick(location, 5));
+        TestFarm.tick(location, 5);
 
         assertEquals(1, TestFarm.countGround(location.map(), BarePlant.class));
         assertEquals("", takeOutput());
@@ -68,7 +67,7 @@ class PlantCapabilityTest extends PlantTestBase {
         Plant plant = new BarePlant(new Produce(1, random, areaFactory));
         Location location = plantOnSoil(plant);
 
-        assertDoesNotThrow(() -> TestFarm.tick(location, 5));
+        TestFarm.tick(location, 5);
 
         assertEquals(0, TestFarm.countItems(location.map()));
         assertEquals("", takeOutput());
