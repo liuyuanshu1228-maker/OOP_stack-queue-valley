@@ -37,7 +37,7 @@ class FrostOmenTest {
         StrawberrySeedling plant = new StrawberrySeedling(random, areaFactory);
         map.at(3, 2).setGround(plant);
 
-        new FrostOmen(new WeatherReading("Clear", -1.0, 0, 0), areaFactory).bringUpon(asker, here);
+        new FrostOmen(new WeatherReading("Clear", -1.0, 0, 0), areaFactory, 2.0).bringUpon(asker, here);
 
         assertTrue(plant.hasStatus(GrowthPausedStatus.class));
     }
@@ -48,7 +48,7 @@ class FrostOmenTest {
         StrawberrySeedling farPlant = new StrawberrySeedling(random, areaFactory);
         map.at(3, 0).setGround(farPlant);
 
-        new FrostOmen(new WeatherReading("Clear", -1.0, 0, 0), areaFactory).bringUpon(asker, here);
+        new FrostOmen(new WeatherReading("Clear", -1.0, 0, 0), areaFactory, 2.0).bringUpon(asker, here);
 
         assertFalse(farPlant.hasStatus(GrowthPausedStatus.class));
     }
@@ -60,7 +60,7 @@ class FrostOmenTest {
         Location plantTile = map.at(3, 2);
         plantTile.setGround(plant);
 
-        new FrostOmen(new WeatherReading("Clear", -1.0, 0, 0), areaFactory).bringUpon(asker, here);
+        new FrostOmen(new WeatherReading("Clear", -1.0, 0, 0), areaFactory, 2.0).bringUpon(asker, here);
         // base 2 turns + max(0, 2.0 - (-1.0)) = 2 + 3 = 5 turns
         TestFarm.tick(plantTile, 4);
         assertTrue(plant.hasStatus(GrowthPausedStatus.class), "still paused after 4 of 5 turns");
@@ -75,7 +75,7 @@ class FrostOmenTest {
         map.at(3, 2).setGround(new StrawberrySeedling(random, areaFactory));
         map.at(2, 3).setGround(new StrawberrySeedling(random, areaFactory));
 
-        String report = new FrostOmen(new WeatherReading("Clear", -1.0, 0, 0), areaFactory)
+        String report = new FrostOmen(new WeatherReading("Clear", -1.0, 0, 0), areaFactory, 2.0)
                 .bringUpon(asker, here);
 
         assertTrue(report.contains("(3, 3)"), report);

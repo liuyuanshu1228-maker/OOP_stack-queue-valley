@@ -52,7 +52,9 @@ class AskForecastActionTest {
     void reportsAnUnreadableForecastWhenNoReadingIsAvailable() {
         String report = action.execute(asker, map);
 
-        assertEquals("The Wanderer squints at the sky, but tomorrow's weather is unreadable.", report);
+        assertEquals(
+                "The Wanderer, standing at (3, 3), squints at the sky, but tomorrow's weather is unreadable.",
+                report);
     }
 
     @Test
@@ -61,7 +63,7 @@ class AskForecastActionTest {
 
         String report = action.execute(asker, map);
 
-        assertEquals("The Wanderer shrugs: tomorrow looks like an ordinary day.", report);
+        assertEquals("The Wanderer, standing at (3, 3), shrugs: tomorrow looks like an ordinary day.", report);
     }
 
     @Test

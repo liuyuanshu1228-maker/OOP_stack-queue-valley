@@ -65,7 +65,7 @@ public class WeatherInterpreter {
             return Optional.of(new RainDanceReaction(reading, areaFactory));
         }
         if (reading.getTemperatureCelsius() <= COLD_THRESHOLD_CELSIUS) {
-            return Optional.of(new CampfireReaction(reading, areaFactory));
+            return Optional.of(new CampfireReaction(reading, areaFactory, COLD_THRESHOLD_CELSIUS));
         }
         return Optional.empty();
     }
@@ -91,7 +91,7 @@ public class WeatherInterpreter {
      */
     public Optional<ForecastOmen> omenFor(WeatherReading forecast) {
         if (isFrosty(forecast)) {
-            return Optional.of(new FrostOmen(forecast, areaFactory));
+            return Optional.of(new FrostOmen(forecast, areaFactory, FROST_THRESHOLD_CELSIUS));
         }
         if (isRainy(forecast)) {
             return Optional.of(new SowingOmen(forecast, areaFactory, randomUtils));

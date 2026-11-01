@@ -18,8 +18,6 @@ import game.weather.WeatherReading;
  */
 public class FrostOmen implements ForecastOmen {
 
-    /** The temperature, in Celsius, at or below which this omen is triggered. */
-    private static final double FROST_THRESHOLD_CELSIUS = 2.0;
     /** The minimum number of turns growth is paused for, however mild the frost. */
     private static final int BASE_PAUSE_TURNS = 2;
     /** How many tiles from the Wanderer this omen reaches. */
@@ -29,16 +27,27 @@ public class FrostOmen implements ForecastOmen {
     private final WeatherReading forecast;
     /** Builds the Area of tiles this omen affects. */
     private final AreaFactory areaFactory;
+    /**
+     * The temperature, in Celsius, at or below which this omen is triggered
+     * -- the same value {@link WeatherInterpreter} already checked before
+     * constructing this omen, passed in rather than repeated here as a
+     * second, independent constant.
+     */
+    private final double frostThresholdCelsius;
 
     /**
      * Creates a frost omen.
      *
      * @param forecast tomorrow's forecast reading that triggered this omen
      * @param areaFactory builds the Area of tiles this omen affects
+     * @param frostThresholdCelsius the temperature, in Celsius, at or below
+     *                              which this omen is triggered, as decided
+     *                              by {@link WeatherInterpreter}
      */
-    public FrostOmen(WeatherReading forecast, AreaFactory areaFactory) {
+    public FrostOmen(WeatherReading forecast, AreaFactory areaFactory, double frostThresholdCelsius) {
         this.forecast = forecast;
         this.areaFactory = areaFactory;
+        this.frostThresholdCelsius = frostThresholdCelsius;
     }
 
     /**
@@ -52,7 +61,7 @@ public class FrostOmen implements ForecastOmen {
     @Override
     public String bringUpon(Actor asker, Location here) {
         int pauseDurationTurns = BASE_PAUSE_TURNS
-                + (int) Math.max(0, FROST_THRESHOLD_CELSIUS - forecast.getTemperatureCelsius());
+                + (int) Math.max(0, frostThresholdCelsius - forecast.getTemperatureCelsius());
         int pausedPlants = 0;
         for (Location tile : areaFactory.within(here, RADIUS_TILES).tiles()) {
             Plant plant = tile.getGroundAs(Plant.class);

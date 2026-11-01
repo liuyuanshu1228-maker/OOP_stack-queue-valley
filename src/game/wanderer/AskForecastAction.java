@@ -17,13 +17,6 @@ import java.util.Optional;
  */
 public class AskForecastAction extends Action {
 
-    /** Shown when tomorrow's weather at the Wanderer's Location could not be read. */
-    private static final String UNREADABLE_FORECAST_MESSAGE =
-            "The Wanderer squints at the sky, but tomorrow's weather is unreadable.";
-    /** Shown when a forecast was read but no omen applies to it. */
-    private static final String NOTHING_UNUSUAL_MESSAGE =
-            "The Wanderer shrugs: tomorrow looks like an ordinary day.";
-
     /** The Wanderer being asked; its own Location is where the omen takes effect. */
     private final Wanderer wanderer;
     /** Reports tomorrow's weather at a given latitude and longitude. */
@@ -52,10 +45,13 @@ public class AskForecastAction extends Action {
     /**
      * Looks up tomorrow's weather at the Wanderer's Location and, if an omen
      * applies, brings it upon the asking actor; otherwise reports why not.
+     * Every outcome, including the two where no omen fires, names the
+     * Wanderer's own Location, exactly as every WeatherReaction and
+     * ForecastOmen's own message does.
      *
      * @param actor the actor asking for the forecast
      * @param map the map the actor is on
-     * @return a description of what the forecast revealed
+     * @return a description of what the forecast revealed, including {@code here}
      */
     @Override
     public String execute(Actor actor, GameMap map) {
@@ -63,12 +59,13 @@ public class AskForecastAction extends Action {
         Optional<WeatherReading> forecast = weatherSource.tomorrowWeatherAt(
                 mapGeography.latitudeOf(here), mapGeography.longitudeOf(here));
         if (forecast.isEmpty()) {
-            return UNREADABLE_FORECAST_MESSAGE;
+            return "The Wanderer, standing at " + here
+                    + ", squints at the sky, but tomorrow's weather is unreadable.";
         }
 
         Optional<ForecastOmen> omen = weatherInterpreter.omenFor(forecast.get());
         if (omen.isEmpty()) {
-            return NOTHING_UNUSUAL_MESSAGE;
+            return "The Wanderer, standing at " + here + ", shrugs: tomorrow looks like an ordinary day.";
         }
         return omen.get().bringUpon(actor, here);
     }

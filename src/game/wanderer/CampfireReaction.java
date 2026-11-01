@@ -16,8 +16,6 @@ public class CampfireReaction implements WeatherReaction {
     private static final int MIN_TILES_ALIGHT = 1;
     /** No more than this many adjacent tiles ever catch alight. */
     private static final int MAX_TILES_ALIGHT = 8;
-    /** The temperature, in Celsius, below which this reaction is triggered. */
-    private static final double COLD_THRESHOLD_CELSIUS = 10.0;
     /** How many turns each lit Fire burns before going out. */
     private static final int FIRE_LIFETIME_TURNS = 4;
     /** Damage per turn each lit Fire's burn inflicts. */
@@ -29,16 +27,27 @@ public class CampfireReaction implements WeatherReaction {
     private final WeatherReading reading;
     /** Builds the Area of tiles this reaction affects. */
     private final AreaFactory areaFactory;
+    /**
+     * The temperature, in Celsius, below which this reaction is triggered --
+     * the same value {@link WeatherInterpreter} already checked before
+     * constructing this reaction, passed in rather than repeated here as a
+     * second, independent constant.
+     */
+    private final double coldThresholdCelsius;
 
     /**
      * Creates a campfire reaction.
      *
      * @param reading the weather reading that triggered this reaction
      * @param areaFactory builds the Area of tiles this reaction affects
+     * @param coldThresholdCelsius the temperature, in Celsius, below which
+     *                             this reaction is triggered, as decided by
+     *                             {@link WeatherInterpreter}
      */
-    public CampfireReaction(WeatherReading reading, AreaFactory areaFactory) {
+    public CampfireReaction(WeatherReading reading, AreaFactory areaFactory, double coldThresholdCelsius) {
         this.reading = reading;
         this.areaFactory = areaFactory;
+        this.coldThresholdCelsius = coldThresholdCelsius;
     }
 
     /**
@@ -51,7 +60,7 @@ public class CampfireReaction implements WeatherReaction {
     @Override
     public String reactAround(Location here) {
         int tilesToLight = Math.min(MAX_TILES_ALIGHT,
-                Math.max(MIN_TILES_ALIGHT, (int) (COLD_THRESHOLD_CELSIUS - reading.getTemperatureCelsius())));
+                Math.max(MIN_TILES_ALIGHT, (int) (coldThresholdCelsius - reading.getTemperatureCelsius())));
         int tilesLit = 0;
         for (Location tile : areaFactory.adjacentTo(here).tiles()) {
             if (tilesLit >= tilesToLight) {
