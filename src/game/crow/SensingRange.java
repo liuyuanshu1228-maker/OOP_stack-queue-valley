@@ -8,6 +8,8 @@ package game.crow;
 public interface SensingRange {
 
     /**
+     * Returns how far this creature can sense.
+     *
      * @return how far, in tiles, this creature can sense around itself
      */
     int sensingRadius();

@@ -29,6 +29,8 @@ public class TileListDescription {
     }
 
     /**
+     * Describes a list of tiles as one readable string.
+     *
      * @param tiles the tiles to describe
      * @return the tiles joined together, or "nowhere" if the list is empty
      */

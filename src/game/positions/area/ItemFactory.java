@@ -10,6 +10,8 @@ import edu.monash.fit2099.engine.items.Item;
 public interface ItemFactory {
 
     /**
+     * Creates a new Item.
+     *
      * @return a newly constructed Item
      */
     Item create();
