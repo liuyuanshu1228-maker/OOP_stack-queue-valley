@@ -20,6 +20,12 @@ public class ShatterEnchantment implements Enchantment {
     private static final int STUN_DURATION_TURNS = 2;
 
     /**
+     * Creates a Shatter enchantment, which stuns the actors on the affected tiles.
+     */
+    public ShatterEnchantment() {
+    }
+
+    /**
      * Stuns the Actor standing on each given tile, if any.
      *
      * @param affectedTiles the tiles the host tool's own effect touched

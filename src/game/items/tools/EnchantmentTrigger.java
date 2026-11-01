@@ -21,6 +21,12 @@ import edu.monash.fit2099.engine.positions.Location;
 public final class EnchantmentTrigger {
 
     /**
+     * Creates a trigger that fires the Enchantment of a tool after the tool is used.
+     */
+    public EnchantmentTrigger() {
+    }
+
+    /**
      * Finds the Enchantable view of the given tool and fires it.
      *
      * @param actor the Actor who used the tool

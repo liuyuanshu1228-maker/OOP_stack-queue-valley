@@ -9,6 +9,12 @@ import game.positions.Breakable;
 public class BreakableTile implements TileCondition {
 
     /**
+     * Creates a condition that is met by tiles whose ground can be broken.
+     */
+    public BreakableTile() {
+    }
+
+    /**
      * @param tile the tile to test
      * @return true if the tile's Ground can be broken
      */

@@ -18,6 +18,12 @@ public final class EnchantmentSlot {
     private Enchantment enchantment;
 
     /**
+     * Creates an empty slot with no Enchantment attached.
+     */
+    public EnchantmentSlot() {
+    }
+
+    /**
      * Attaches the given Enchantment, replacing any Enchantment already held.
      *
      * @param enchantment the Enchantment to attach

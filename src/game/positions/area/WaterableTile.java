@@ -9,6 +9,12 @@ import game.positions.Waterable;
 public class WaterableTile implements TileCondition {
 
     /**
+     * Creates a condition that is met by tiles whose ground can be watered.
+     */
+    public WaterableTile() {
+    }
+
+    /**
      * @param tile the tile to test
      * @return true if the tile's Ground can be watered
      */

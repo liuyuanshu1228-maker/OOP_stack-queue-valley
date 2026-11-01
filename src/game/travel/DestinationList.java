@@ -19,6 +19,12 @@ public class DestinationList {
     private final Map<String, Location> destinations = new LinkedHashMap<>();
 
     /**
+     * Creates an empty list of destinations.
+     */
+    public DestinationList() {
+    }
+
+    /**
      * Adds a destination.
      *
      * @param name the name shown to the player in the menu

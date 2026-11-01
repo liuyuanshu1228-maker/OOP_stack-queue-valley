@@ -25,6 +25,12 @@ public class BlazeEnchantment implements Enchantment {
     private static final int BURN_DURATION_TURNS = 3;
 
     /**
+     * Creates a Blaze enchantment, which sets the affected tiles on fire.
+     */
+    public BlazeEnchantment() {
+    }
+
+    /**
      * Ignites a Fire on every given tile.
      *
      * @param affectedTiles the tiles the host tool's own effect touched

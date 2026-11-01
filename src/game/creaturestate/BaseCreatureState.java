@@ -24,6 +24,12 @@ import java.util.Optional;
 public abstract class BaseCreatureState implements CreatureState {
 
     /**
+     * Creates a creature state. Only subclasses create states.
+     */
+    protected BaseCreatureState() {
+    }
+
+    /**
      * Asks the acting creature for the AreaFactory it uses to build Areas.
      *
      * @param creature the creature whose turn it is

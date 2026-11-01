@@ -8,6 +8,12 @@ import edu.monash.fit2099.engine.positions.Location;
 public class BareOfItems implements TileCondition {
 
     /**
+     * Creates a condition that is met by tiles with no items on them.
+     */
+    public BareOfItems() {
+    }
+
+    /**
      * @param tile the tile to test
      * @return true if no item lies on the tile
      */

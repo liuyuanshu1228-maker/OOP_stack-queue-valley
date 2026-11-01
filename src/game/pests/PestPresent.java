@@ -16,6 +16,12 @@ import game.positions.area.TileCondition;
 public class PestPresent implements TileCondition {
 
     /**
+     * Creates a condition that is met by tiles where a pest stands.
+     */
+    public PestPresent() {
+    }
+
+    /**
      * @param tile the tile to test
      * @return true if an actor stands on the tile and that actor is a pest
      */

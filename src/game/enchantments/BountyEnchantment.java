@@ -18,6 +18,12 @@ import java.util.List;
 public class BountyEnchantment implements Enchantment {
 
     /**
+     * Creates a Bounty enchantment, which makes the plants on the affected tiles grow.
+     */
+    public BountyEnchantment() {
+    }
+
+    /**
      * Forces a growth attempt on the Plant occupying each given tile, if any.
      *
      * @param affectedTiles the tiles the host tool's own effect touched

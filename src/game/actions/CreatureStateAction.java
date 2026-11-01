@@ -22,6 +22,12 @@ import java.util.Optional;
 public class CreatureStateAction extends Action {
 
     /**
+     * Creates an action that advances the acting creature's state machine by one turn.
+     */
+    public CreatureStateAction() {
+    }
+
+    /**
      * Advances the creature's state machine by one turn.
      *
      * @param actor the creature acting

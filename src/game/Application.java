@@ -9,6 +9,13 @@ import edu.monash.fit2099.engine.displays.Display;
 public class Application {
 
     /**
+     * Creates the application. The game is started through {@link #main(String[])},
+     * so no instance is needed to play.
+     */
+    public Application() {
+    }
+
+    /**
      * Starts the game.
      *
      * @param args the command line arguments (unused)

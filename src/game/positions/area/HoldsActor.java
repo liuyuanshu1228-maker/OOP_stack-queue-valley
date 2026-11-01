@@ -8,6 +8,12 @@ import edu.monash.fit2099.engine.positions.Location;
 public class HoldsActor implements TileCondition {
 
     /**
+     * Creates a condition that is met by tiles where an actor stands.
+     */
+    public HoldsActor() {
+    }
+
+    /**
      * @param tile the tile to test
      * @return true if an actor is standing on the tile
      */

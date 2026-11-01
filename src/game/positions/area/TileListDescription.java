@@ -23,6 +23,12 @@ public class TileListDescription {
     private static final String SEPARATOR = ", ";
 
     /**
+     * Creates a formatter that joins tile descriptions into one readable list.
+     */
+    public TileListDescription() {
+    }
+
+    /**
      * @param tiles the tiles to describe
      * @return the tiles joined together, or "nowhere" if the list is empty
      */
