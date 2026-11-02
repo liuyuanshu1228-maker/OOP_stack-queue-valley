@@ -15,12 +15,12 @@ public interface ItemCache {
      * @param item the Item to check
      * @return true if this Actor remembers hiding this Item
      */
-    public boolean remembers(Item item);
+    boolean remembers(Item item);
 
     /**
      * Records that this Actor has hidden the given Item.
      *
      * @param item the Item that was hidden
      */
-    public void remember(Item item);
+    void remember(Item item);
 }

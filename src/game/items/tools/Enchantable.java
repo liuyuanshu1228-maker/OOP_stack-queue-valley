@@ -18,7 +18,7 @@ public interface Enchantable {
      *
      * @param enchantment the Enchantment to attach
      */
-    public void enchant(Enchantment enchantment);
+    void enchant(Enchantment enchantment);
 
     /**
      * While this tool is enchanted, applies this tool's own effect and fires
@@ -29,5 +29,5 @@ public interface Enchantable {
      * @param location the Location the tool was used at
      * @return a description of what fired, or "" while unenchanted; never null
      */
-    public String triggerEnchantment(Actor actor, Location location);
+    String triggerEnchantment(Actor actor, Location location);
 }

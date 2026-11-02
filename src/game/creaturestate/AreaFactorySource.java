@@ -17,5 +17,5 @@ public interface AreaFactorySource {
      *
      * @return the AreaFactory this creature uses to build Areas
      */
-    public AreaFactory areaFactory();
+    AreaFactory areaFactory();
 }

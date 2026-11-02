@@ -10,5 +10,5 @@ public interface FreelyWaterable {
     /**
      * Applies the effect of being watered for free.
      */
-    public void receiveFreeWatering();
+    void receiveFreeWatering();
 }

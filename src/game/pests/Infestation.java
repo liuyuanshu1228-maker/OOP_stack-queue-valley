@@ -19,5 +19,5 @@ public interface Infestation {
      * @return a description of what happened, or an empty string if nothing
      * happened
      */
-    public String feedOn(Location here);
+    String feedOn(Location here);
 }

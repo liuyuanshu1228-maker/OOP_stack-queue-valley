@@ -13,7 +13,7 @@ public interface Sellable {
      *
      * @return the selling price in coins
      */
-    public int getSellPrice();
+    int getSellPrice();
 
     /**
      * Completes the sale of this item, including payment and any item-specific side effect.
@@ -26,5 +26,5 @@ public interface Sellable {
      * @param merchantContext the merchant buying it and its current Location
      * @return a description of the outcome
      */
-    public String sell(Actor seller, MerchantContext merchantContext);
+    String sell(Actor seller, MerchantContext merchantContext);
 }

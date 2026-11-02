@@ -13,5 +13,5 @@ public interface Chargeable {
      *
      * @return the charged version of this Ground
      */
-    public Ground getChargedResult();
+    Ground getChargedResult();
 }

@@ -16,5 +16,5 @@ public interface ActorFactory {
      *
      * @return a new Actor
      */
-    public Actor create();
+    Actor create();
 }

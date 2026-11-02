@@ -22,5 +22,5 @@ public interface Enchantment {
      * @param origin the Location the host tool was used at
      * @return a description of what happened, to be displayed to the player; never null
      */
-    public String applyTo(List<Location> affectedTiles, Actor activator, Location origin);
+    String applyTo(List<Location> affectedTiles, Actor activator, Location origin);
 }

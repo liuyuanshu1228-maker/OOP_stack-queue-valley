@@ -21,5 +21,5 @@ public interface Plantable {
      * @param plant the plant to plant
      * @param location the Location this ground currently occupies
      */
-    public void plant(Ground plant, Location location);
+    void plant(Ground plant, Location location);
 }

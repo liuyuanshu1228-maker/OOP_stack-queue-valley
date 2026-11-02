@@ -13,5 +13,5 @@ public interface Spreading {
      *
      * @return a new instance of the plant to plant nearby
      */
-    public Plant offspring();
+    Plant offspring();
 }

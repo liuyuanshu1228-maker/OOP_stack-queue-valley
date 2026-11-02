@@ -17,5 +17,5 @@ public interface TileCondition {
      * @param tile the tile to test
      * @return true if the tile meets the condition
      */
-    public boolean isMetBy(Location tile);
+    boolean isMetBy(Location tile);
 }

@@ -25,7 +25,7 @@ public interface CreatureState {
      * @param map the map the creature is on
      * @return a description of what happened, to be displayed to the player
      */
-    public String act(Actor creature, GameMap map);
+    String act(Actor creature, GameMap map);
 
     /**
      * Decides which state the creature should be in next, based on the
@@ -36,7 +36,7 @@ public interface CreatureState {
      * @param map the map the creature is on
      * @return the state the creature should be in next
      */
-    public CreatureState nextState(Actor creature, GameMap map);
+    CreatureState nextState(Actor creature, GameMap map);
 
     /**
      * Applies this state's one-off effect, triggered at the moment the
@@ -47,5 +47,5 @@ public interface CreatureState {
      * @param map the map the creature is on
      * @return a description of the transition's effect, to be displayed to the player
      */
-    public String onEnter(Actor creature, GameMap map);
+    String onEnter(Actor creature, GameMap map);
 }

@@ -17,7 +17,7 @@ public interface Harvestable {
      *
      * @return the stamina cost
      */
-    public int getHarvestStaminaCost();
+    int getHarvestStaminaCost();
 
     /**
      * Applies the effect of a successful harvest to the given Actor and Location.
@@ -27,7 +27,7 @@ public interface Harvestable {
      * @param location the Location of the crop being harvested
      * @return a description of the outcome, to be displayed to the player
      */
-    public String harvest(Actor actor, Location location);
+    String harvest(Actor actor, Location location);
 
     /**
      * Whether this crop is currently allowed to be harvested. Defaults to
@@ -36,7 +36,7 @@ public interface Harvestable {
      *
      * @return true if the crop can be harvested right now
      */
-    public default boolean canHarvest() {
+    default boolean canHarvest() {
         return true;
     }
 
@@ -47,7 +47,7 @@ public interface Harvestable {
      * @param actor the Actor attempting to harvest the crop
      * @return a description of why the harvest failed
      */
-    public default String cannotHarvestMessage(Actor actor) {
+    default String cannotHarvestMessage(Actor actor) {
         return actor + " cannot harvest the " + this + " yet.";
     }
 }

@@ -15,7 +15,7 @@ public interface Consumable {
      * @return a description of what the effect actually did (e.g. the
      * before/after value of whatever it changed), to be displayed to the player
      */
-    public String consume(Actor actor);
+    String consume(Actor actor);
 
     /**
      * Tells whether the given Actor has what the effect of this Item needs.
@@ -26,7 +26,7 @@ public interface Consumable {
      * @param actor the Actor that would consume this Item
      * @return true if {@link #consume(Actor)} can be called with this Actor
      */
-    public default boolean canBeConsumedBy(Actor actor) {
+    default boolean canBeConsumedBy(Actor actor) {
         return true;
     }
 }

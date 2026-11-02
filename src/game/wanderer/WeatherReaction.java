@@ -19,5 +19,5 @@ public interface WeatherReaction {
      * @return a description of what happened, or an empty string if nothing
      * happened
      */
-    public String reactAround(Location here);
+    String reactAround(Location here);
 }

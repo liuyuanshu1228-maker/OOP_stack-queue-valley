@@ -16,5 +16,5 @@ public interface ProcessingFacility {
      * @param product the Item to be processed (raw or already processed)
      * @return a new Item representing the product with one additional processing layer
      */
-    public Item process(Item product);
+    Item process(Item product);
 }

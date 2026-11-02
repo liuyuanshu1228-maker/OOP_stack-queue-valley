@@ -13,5 +13,5 @@ public interface Growing {
      *
      * @return a new instance of the next growth stage
      */
-    public Plant nextStage();
+    Plant nextStage();
 }

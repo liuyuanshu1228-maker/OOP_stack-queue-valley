@@ -19,5 +19,5 @@ public interface Breakable {
      * @param location the Location of the object being broken
      * @return a description of the outcome, to be displayed to the player
      */
-    public String breakUp(Actor actor, Location location);
+    String breakUp(Actor actor, Location location);
 }

@@ -13,5 +13,5 @@ public interface Tillable {
      *
      * @return the new Ground after tilling
      */
-    public Ground getTillResult();
+    Ground getTillResult();
 }

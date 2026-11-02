@@ -20,5 +20,5 @@ public interface PestDeterrent {
      * @return a description of what happened, or an empty string if nothing
      * happened
      */
-    public String deterAround(Location here, GameMap map);
+    String deterAround(Location here, GameMap map);
 }

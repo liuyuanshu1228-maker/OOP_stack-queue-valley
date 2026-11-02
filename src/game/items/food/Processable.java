@@ -20,5 +20,5 @@ public interface Processable {
      * @param facility the facility that would process this item
      * @return true if this item can be processed by the given facility
      */
-    public boolean canBeProcessedBy(ProcessingFacility facility);
+    boolean canBeProcessedBy(ProcessingFacility facility);
 }

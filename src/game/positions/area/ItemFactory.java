@@ -14,5 +14,5 @@ public interface ItemFactory {
      *
      * @return a newly constructed Item
      */
-    public Item create();
+    Item create();
 }
