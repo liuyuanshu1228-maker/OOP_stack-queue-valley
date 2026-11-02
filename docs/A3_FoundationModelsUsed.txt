@@ -52,4 +52,28 @@ I reviewed and tested the resulting code and take responsibility for the correct
 
 
 ----------------------------------------------------------------------------------------
-Yuanshu Liu - REQ4 & REQ5
+Yuanshu Liu (Law) - REQ4 (Mines & Breakables / Enchanted Tools) and REQ5 (Part B: Wanderer)
+-------------------------------------------------------------------------------
+I used AI in the following ways:
+
+(i) Generate ideas or structure suggestions and assist with understanding core concepts
+
+I used Claude (Anthropic) through the Claude Code desktop app (https://claude.ai/code)
+to audit my REQ4 and REQ5 designs against SOLID, DRY, KISS and YAGNI, to explain the
+assignment specification and marking rubric, and to compare design alternatives with
+their respective trade-offs (for example, a hardcoded enchantment list versus an
+injected enchantment strategy, and static factory methods versus constructor-injected
+factories). I decided which suggestions to adopt; my earlier RuneFormation design for
+REQ4 was abandoned after TA feedback and replaced with the Enchanted Tools design
+submitted.
+
+(ii) Generate and refactor code
+
+I used Claude to refactor my REQ4 and REQ5 classes and shared classes flagged in our
+SOLID audit — removing static methods and marker interfaces, tightening access
+modifiers, replacing Supplier-based factories with named factory interfaces, and
+injecting dependencies (AreaFactory, RandomUtils, cold/frost thresholds) instead of
+duplicating them across classes — and to write unit tests and a manual fuzz-testing
+harness (WandererStressHarness) for REQ5. I reviewed and tested the resulting code
+and take responsibility for the correctness and quality of my submitted work.
+
