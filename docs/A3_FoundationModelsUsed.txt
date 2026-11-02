@@ -6,7 +6,28 @@ Each team member describes their own use of foundation models below.
 
 Poyee Tan (ptan0095) - REQ1 & REQ5
 -------------------------------------------------------------------------------
+I used AI in the following ways:
 
+(i) Generate ideas or structure suggestions and assist with understanding core concepts
+
+I used Claude (Anthropic) through Claude Code (https://claude.ai/code) to review
+my REQ1 code and the team's code against the assignment specification, SOLID, DRY
+and the A2 marker feedback, to explain the marking rules, and to compare design
+options with their advantages and disadvantages (for example, one class per growth
+stage versus a stage field with a switch). I decided which suggestions to adopt
+and agreed any change to a teammate's files with them first.
+
+(ii) Generate and refactor code
+
+I used Claude to check and refactor code and Javadoc in my REQ1 classes and in
+the parts of REQ5 I worked on (GrowthPausedStatus, Plantable, the weather Javadoc),
+and to write unit tests. I reviewed and tested the resulting code and take
+responsibility for the correctness and quality of my submitted work.
+
+(iii) Other documents and checking scripts
+
+I used Claude to check the contribution log against the git history and to draft
+my handover video script, and I reviewed both before using them.
 
 
 
