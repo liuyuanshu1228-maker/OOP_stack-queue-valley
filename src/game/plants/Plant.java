@@ -109,6 +109,31 @@ public abstract class Plant extends Ground implements Regressible {
     }
 
     /**
+     * Tries this plant's abilities immediately, the same way
+     * {@link #attemptGrowth} does, except each ability skips its own gating
+     * (such as an interval or a chance roll) via {@link PlantAbility#forcePerform}.
+     * Still obeys a {@link GrowthPausedStatus}, and still does not age the
+     * plant or display the result, for the same reasons {@link #attemptGrowth}
+     * does not: the caller forcing this (e.g. a magical effect) decides how
+     * to use the description itself.
+     *
+     * @param location the location of this plant
+     * @return a description of what happened, or "" if no ability did anything
+     */
+    public String forceGrowth(Location location) {
+        if (hasStatus(GrowthPausedStatus.class)) {
+            return "";
+        }
+        for (PlantAbility ability : abilities) {
+            String report = ability.forcePerform(this, location);
+            if (!report.isEmpty()) {
+                return report;
+            }
+        }
+        return "";
+    }
+
+    /**
      * The ground this plant falls back to when it is regressed. Defaults to
      * Dirt, meaning the plant dies and its tile must be tilled again before
      * anything can grow there; override for plants that have an earlier

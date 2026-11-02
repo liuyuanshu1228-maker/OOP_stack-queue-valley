@@ -11,9 +11,12 @@ import java.util.List;
 /**
  * An Enchantment that forces an extra growth attempt on any Plant occupying
  * a tile its host tool's own effect touched, by calling the Plant's own
- * {@link Plant#attemptGrowth} directly. The plant does not age, since this
- * growth is magically forced rather than a natural turn, but a plant whose
- * growth is paused (for example by a frost) still does nothing.
+ * {@link Plant#forceGrowth} directly. Unlike a plant's normal turn, this
+ * growth skips whatever interval or chance a plant's own ability would
+ * normally apply, so the attempt is not silently wasted on a turn the
+ * ability was not due. The plant does not age, since this growth is
+ * magically forced rather than a natural turn, but a plant whose growth is
+ * paused (for example by a frost) still does nothing.
  */
 public class BountyEnchantment implements Enchantment {
 
@@ -40,7 +43,7 @@ public class BountyEnchantment implements Enchantment {
             if (plant == null) {
                 continue;
             }
-            String growthReport = plant.attemptGrowth(tile);
+            String growthReport = plant.forceGrowth(tile);
             if (!growthReport.isEmpty()) {
                 growthReports.add(growthReport);
             }

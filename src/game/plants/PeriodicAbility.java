@@ -103,4 +103,20 @@ public abstract class PeriodicAbility implements PlantAbility {
      *         effect could not happen, e.g. because there is no room
      */
     protected abstract String perform(Plant plant, Location location);
+
+    /**
+     * Performs this ability's effect immediately, skipping the interval and
+     * chance checks {@link #tryPerform} normally applies. Final for the same
+     * reason {@link #tryPerform} is: every subclass must skip those checks
+     * the same way, and {@link #perform} remains the only extension point.
+     *
+     * @param plant the plant using this ability
+     * @param location the location of the plant
+     * @return a description of what happened, or an empty string if the
+     *         effect could not happen, e.g. because there is no room
+     */
+    @Override
+    public final String forcePerform(Plant plant, Location location) {
+        return perform(plant, location);
+    }
 }

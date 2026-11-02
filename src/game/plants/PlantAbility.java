@@ -21,4 +21,20 @@ public interface PlantAbility {
      *         empty string if nothing happened
      */
     String tryPerform(Plant plant, Location location);
+
+    /**
+     * Tries this ability immediately, skipping whatever gating a subclass
+     * normally applies before {@link #tryPerform} (such as an interval or a
+     * chance roll). An ability with no such gating behaves exactly like
+     * {@link #tryPerform}; {@link PeriodicAbility} overrides this to go
+     * straight to its effect instead.
+     *
+     * @param plant the plant using this ability
+     * @param location the location of the plant
+     * @return a description of what happened, including coordinates, or an
+     *         empty string if nothing happened
+     */
+    default String forcePerform(Plant plant, Location location) {
+        return tryPerform(plant, location);
+    }
 }
