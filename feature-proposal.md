@@ -1,6 +1,6 @@
 # Feature Proposal
 
-This file lists, for each custom/creative requirement, the Pitch, the Mechanics and the Architecture (the two new abstractions and the six concrete classes that implement them, marked **New** or **Retrofitted**), as required by the REQ3/REQ4 rules and, for REQ5, the additional Request/Schema/Security items required by the REQ5 (HD) rules. AI acknowledgement is recorded separately in `A3_FoundationModelsUsed.txt`.
+This file lists, for each custom/creative requirement, the Pitch, the Mechanics and the Architecture (the two new abstractions and the six concrete classes that implement them, marked **New** or **Retrofitted**), as required by the REQ3/REQ4 rules and, for REQ5, the additional Request/Schema/Security items required by the REQ5 (HD) rules. AI acknowledgement is recorded separately in `docs/A3/A3_FoundationModelsUsed.txt`.
 
 ## REQ3 — Infestation and Pest Control
 
@@ -212,4 +212,4 @@ Forecast endpoint — the shape `parseLastForecast` expects; the **last** entry 
 
 ### CRITICAL SECURITY WARNING
 
-The OpenWeatherMap API key is **never** written in the source code. `OpenWeatherClient` is handed an already-constructed `ApiKeyLoader`, which looks first for an `OPENWEATHER_API_KEY` environment variable and, failing that, for a line `OPENWEATHER_API_KEY=...` in a local `.env` file in the project root. `.env` is listed in `../../.gitignore`, so Git never commits it. Step-by-step instructions for obtaining a free key and installing it (via `.env`, an IntelliJ run configuration, or a shell environment variable) are in `../../README.md`, under "A3 REQ5 — The Wanderer (API, HD)".
+The OpenWeatherMap API key is **never** written in the source code. `OpenWeatherClient` is handed an already-constructed `ApiKeyLoader`, which looks first for an `OPENWEATHER_API_KEY` environment variable and, failing that, for a line `OPENWEATHER_API_KEY=...` in a local `.env` file in the project root. `.env` is listed in `.gitignore`, so Git never commits it. Step-by-step instructions for obtaining a free key and installing it (via `.env`, an IntelliJ run configuration, or a shell environment variable) are in `README.md`, under "A3 REQ5 — The Wanderer (API, HD)".
