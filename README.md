@@ -58,7 +58,7 @@ The tests do not depend on luck. `game.testsupport.FixedRandom` extends the game
 
 ## A3 REQ3 — Infestation and Pest Control
 
-Pests move towards the Farmer's plants and eat them. The Farmer fights back with three defences. The full design is in `feature-proposal.md`, `docs/A3_REQ3_Design_Rationale.md` and `docs/A3 UML/A3_REQ3_Infestation_UML.drawio`.
+Pests move towards the Farmer's plants and eat them. The Farmer fights back with three defences. The full design is in `docs/feature-proposal.md`, the REQ3 part of `docs/A3 Design Rationale/A3_Design_Rationale.pdf`, and `docs/A3_UML/A3_REQ3_Infestation_UML.drawio`.
 
 **Where to find it in the game:** Run `game.Application`. The world places one pest of each kind on a free tile of the farm. The Farmer starts with one of each defence in their inventory.
 
@@ -88,7 +88,7 @@ A pest that eats nothing, and a trap that pulls and captures nothing, print noth
 
 ## A3 REQ4 — Enchanted Tools
 
-The Hoe, Watering Can and Pickaxe can each be enchanted with a magical effect. An Enchantment attaches to one specific tool instance, sits there until that tool is next used for its ordinary purpose, then fires once and is spent. The full design is in `feature-proposal.md` and `docs/A3 Design Rationale/A3_Design_Rationale.pdf`.
+The Hoe, Watering Can and Pickaxe can each be enchanted with a magical effect. An Enchantment attaches to one specific tool instance, sits there until that tool is next used for its ordinary purpose, then fires once and is spent. The full design is in `docs/feature-proposal.md` and `docs/A3 Design Rationale/A3_Design_Rationale.pdf`.
 
 **Where to find it in the game:** Run `game.Application`. The Farmer starts carrying a Hoe, a Watering Can and a Pickaxe. Each one offers an "enchant" action for every Enchantment the game knows about, alongside its ordinary actions.
 
@@ -120,7 +120,7 @@ At (3, 3): Farmer Bob breaks the Rock. The Shatter Enchantment finds no one to s
 
 ## A3 REQ5 — The Wanderer (API, HD)
 
-A Wanderer roams the farm, and what it does depends on the real weather at the place on Earth where it stands. The farm map is laid on the real world, so the Wanderer's own position decides which place the game asks the weather for. The full design, the request and the reply format are in `feature-proposal.md`.
+A Wanderer roams the farm, and what it does depends on the real weather at the place on Earth where it stands. The farm map is laid on the real world, so the Wanderer's own position decides which place the game asks the weather for. The full design, the request and the reply format are in `docs/feature-proposal.md`.
 
 **Where to find it in the game:**
 
