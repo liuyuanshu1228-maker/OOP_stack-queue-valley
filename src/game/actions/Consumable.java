@@ -26,7 +26,7 @@ public interface Consumable {
      * @param actor the Actor that would consume this Item
      * @return true if {@link #consume(Actor)} can be called with this Actor
      */
-    public default boolean canBeConsumedBy(Actor actor) {
+    default boolean canBeConsumedBy(Actor actor) {
         return true;
     }
 }

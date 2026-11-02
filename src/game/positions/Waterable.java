@@ -28,7 +28,7 @@ public interface Waterable {
      * @param toolCost the stamina cost of the watering tool
      * @return the stamina cost of watering this Ground
      */
-    public default int getWateringStaminaCost(int toolCost) {
+    default int getWateringStaminaCost(int toolCost) {
         return toolCost;
     }
 }
