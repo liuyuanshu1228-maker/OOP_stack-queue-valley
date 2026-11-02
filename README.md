@@ -58,7 +58,7 @@ The tests do not depend on luck. `game.testsupport.FixedRandom` extends the game
 
 ## A3 REQ1 — Second Spring
 
-Plants now grow in stages. Every plant ages one turn at a time. Each turn it tries its abilities in order (grow, spread, produce) and does at most one thing. The full design is in `feature-proposal.md` and `docs/A3 Design Rationale/A3_Design_Rationale.pdf`.
+Plants now grow in stages. Every plant ages one turn at a time. Each turn it tries its abilities in order (grow, spread, produce) and does at most one thing. The full design is in `feature-proposal.md` and `docs/A3/A3 Design Rationale/A3_Design_Rationale.pdf`.
 
 **Where to find it in the game:** Run `game.Application`. The farm starts with one plant of every stage already growing: a Strawberry Seedling, Sprout and Strawberry, a Melon Sprout and Melon, a Tomato, a Cauliflower Sprout and Cauliflower, and a Parsnip. End turns and watch them grow, spread and drop produce. New plants appear only on tilled Soil.
 

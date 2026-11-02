@@ -55,7 +55,7 @@ That is 6 entirely-new concrete classes implementing the 2 abstractions; none is
 
 **Classes from REQ1 that REQ3 depends on:** `Plant` and `Regressible` — a pest only ever asks a tile for its `Regressible` view, so it never depends on a concrete crop class.
 
-No `instanceof` is used anywhere in this feature; a pest or a defence is found on a tile purely through `getGroundAs`/`getActor().asCapability(...)`-style capability lookups. Full SOLID/DRY/KISS/YAGNI discussion and alternatives considered are in `docs/A3 Design Rationale/A3_Design_Rationale.pdf`.
+No `instanceof` is used anywhere in this feature; a pest or a defence is found on a tile purely through `getGroundAs`/`getActor().asCapability(...)`-style capability lookups. Full SOLID/DRY/KISS/YAGNI discussion and alternatives considered are in `docs/A3/A3 Design Rationale/A3_Design_Rationale.pdf`.
 
 ### How it meets the complexity rules
 
@@ -118,7 +118,7 @@ That is 3 entirely-new classes (the Enchantments) and 3 retrofitted classes (the
 
 **Existing classes REQ4 changes:** `Plant` and `PeriodicAbility` each gained a method for a forced attempt: `Plant.forceGrowth(Location)` and `PeriodicAbility.forcePerform(...)`. The Bounty Enchantment calls `Plant.forceGrowth(Location)` directly. It skips the interval and chance of a plant's own turn, so the forced attempt is never wasted. A plant whose growth is paused still refuses it. `CapabilityToolAction` and `BreakAction` each gained one line firing the used tool's Enchantment (through `EnchantmentTrigger`) after their own effect has already run; `StackQueueValleyWorld` builds the 3 Enchantments once and gives the Farmer's starting Hoe, Watering Can and Pickaxe all 3 to choose from.
 
-No `instanceof` is used anywhere in this feature; the matching `Enchantable` view is found by reference-identity comparison against the tool already obtained from the inventory (documented in the code as a deliberate, narrow use of Connascence of Identity, not a workaround). Full SOLID/DRY/KISS/YAGNI discussion and alternatives considered are in `docs/A3 Design Rationale/A3_Design_Rationale.pdf`.
+No `instanceof` is used anywhere in this feature; the matching `Enchantable` view is found by reference-identity comparison against the tool already obtained from the inventory (documented in the code as a deliberate, narrow use of Connascence of Identity, not a workaround). Full SOLID/DRY/KISS/YAGNI discussion and alternatives considered are in `docs/A3/A3 Design Rationale/A3_Design_Rationale.pdf`.
 
 ---
 
