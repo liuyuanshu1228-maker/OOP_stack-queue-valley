@@ -59,7 +59,6 @@ import game.weather.MapGeography;
 import game.weather.WeatherSource;
 
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -138,6 +137,19 @@ public class StackQueueValleyWorld extends World {
             new Link(new Spot(9, 0), new Spot(11, 0)),
             new Link(new Spot(0, 6), new Spot(0, 7)));
 
+    /**
+     * The farm's starting grounds: Dirt ('.') and Soil (',') only. {@code plantCrops}
+     * then puts one of every plant on the Soil.
+     */
+    private static final List<String> FARM_LAYOUT = List.of(
+            "..,,,,,,..",
+            ".,,,,,,,,.",
+            ".,,,,,,,,.",
+            ".,,,,.,,,.",
+            ".,,,,,,,,.",
+            ".,,,,,,,,.",
+            "..........");
+
     /** Where the Farmer starts on the farm. */
     private static final Spot FARMER_START = new Spot(5, 3);
 
@@ -197,18 +209,7 @@ public class StackQueueValleyWorld extends World {
         groundCreator.registerGround('.', Dirt::new);
         groundCreator.registerGround(',', Soil::new);
 
-        // Dirt and Soil only; plantCrops then puts one of every plant on the Soil.
-        List<String> inheritedFarm = Arrays.asList(
-                "..,,,,,,..",
-                ".,,,,,,,,.",
-                ".,,,,,,,,.",
-                ".,,,,.,,,.",
-                ".,,,,,,,,.",
-                ".,,,,,,,,.",
-                ".........."
-        );
-
-        GameMap inheritedFarmMap = new GameMap("Inherited Farm", groundCreator, inheritedFarm);
+        GameMap inheritedFarmMap = new GameMap("Inherited Farm", groundCreator, FARM_LAYOUT);
         this.addGameMap(inheritedFarmMap);
         plantCrops(inheritedFarmMap, randomUtils, areaFactory);
         GameMap minesMap = new GameMap(MINES_MAP_NAME, groundCreator, '.',
