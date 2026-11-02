@@ -13,7 +13,7 @@ import game.status.IncapacitatingStatus;
  * <p>
  * Every turn it first checks whether the actor has run out of hit points; if so,
  * the actor falls unconscious and does nothing. It then checks whether the actor
- * is incapacitated by some other means (e.g. Stunned by a Quake Rune), in which
+ * is incapacitated by some other means (e.g. Stunned by a Shatter Enchantment), in which
  * case it also does nothing. Otherwise the turn is handed to
  * {@link #playConsciousTurn}, which each subclass implements with its own way of
  * choosing an action (a menu for the player, a behaviour or a state machine for

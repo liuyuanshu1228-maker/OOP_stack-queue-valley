@@ -3,7 +3,7 @@ package game.status;
 import edu.monash.fit2099.engine.actors.Actor;
 
 /**
- * The daze inflicted by a Quake Rune: for a fixed number of turns, the Actor
+ * The daze inflicted by a Shatter Enchantment: for a fixed number of turns, the Actor
  * carrying it cannot act at all. That part is enforced by ConsciousActor
  * reading {@code hasStatus(IncapacitatingStatus.class)} -- Stunned itself
  * applies no separate per-turn effect, so {@link #applyEffect()} is empty.

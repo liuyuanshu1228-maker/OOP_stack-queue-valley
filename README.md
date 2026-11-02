@@ -56,6 +56,22 @@ The tests do not depend on luck. `game.testsupport.FixedRandom` extends the game
 | Earlier features changed in A3 | `game.actions.TillActionTest` (every tilling message names its location), `game.crops.BuyingCropsTest` and `game.items.SwordTest` (products that sell themselves), `game.random.RandomUtilsTest` (the one source of randomness, checked with seeded and fixed draws), `game.behaviours.WanderBehaviourTest` (the random step shared by the Wanderer, the pests, the ladybugs and the animals), `game.positions.area.FreeTilesTest` (placing things at random when the game starts: never on a taken tile, never on another map's tile, and a clear error when a map is full) |
 | REQ5 The Wanderer (API) | `game.weather.WeatherReadingTest`, `MapGeographyTest`, `ApiKeyLoaderTest`, `OpenWeatherParserTest`, `OpenWeatherClientTest`; `game.wanderer.WandererTest`, `WeatherInterpreterTest`, `ReactToWeatherActionTest`, `UnreadableSkyActionTest`, `AskForecastActionTest`, `CampfireReactionTest`, `RainDanceReactionTest`, `StormShelterReactionTest`, `DroughtOmenTest`, `FrostOmenTest`, `SowingOmenTest`. None of them uses the network or a real API key: the `game.wanderer` tests use the fake `FixedWeatherSource`. `WandererStressHarness` is a manual tool with its own `main`, not part of `mvn test`. |
 
+## A3 REQ1 — Second Spring
+
+Plants now grow in stages. Every plant ages one turn at a time. Each turn it tries its abilities in order (grow, spread, produce) and does at most one thing. The full design is in `feature-proposal.md` and `docs/A3 Design Rationale/A3_Design_Rationale.pdf`.
+
+**Where to find it in the game:** Run `game.Application`. The farm starts with one plant of every stage already growing: a Strawberry Seedling, Sprout and Strawberry, a Melon Sprout and Melon, a Tomato, a Cauliflower Sprout and Cauliflower, and a Parsnip. End turns and watch them grow, spread and drop produce. New plants appear only on tilled Soil.
+
+| Plant | Stages and what it does by itself |
+|---|---|
+| Strawberry | Seedling, then Sprout, then Strawberry. The seedling grows every 5 turns (50% chance). The sprout grows every 10 turns (50% chance) and plants a seedling next to it every 5 turns. The Strawberry drops a strawberry on a nearby tile every 5 turns. |
+| Cauliflower | Sprout, then Cauliflower. The sprout grows every 15 turns (50% chance). The Cauliflower does nothing by itself. |
+| Melon | Sprout, then Melon. The sprout grows every 15 turns (50% chance) and plants another sprout every 10 turns. The Melon plants a sprout every 20 turns. |
+| Tomato | Mature only. It drops a tomato every 7 turns and has a 10% chance every 20 turns to plant another Tomato. |
+| Parsnip | Mature only. It drops a parsnip every 15 turns. |
+
+A young plant (seedling or sprout) cannot be watered or harvested, and the Farmer can walk onto it. When a plant is regressed (for example by a pest), it goes back one stage. A plant with no earlier stage dies and leaves Dirt.
+
 ## A3 REQ3 — Infestation and Pest Control
 
 Pests move towards the Farmer's plants and eat them. The Farmer fights back with three defences. The full design is in `feature-proposal.md` and `docs/A3/A3 Design Rationale/A3_Design_Rationale.pdf`.
@@ -140,6 +156,7 @@ A Wanderer roams the farm, and what it does depends on the real weather at the p
   - **Rain, Drizzle or Thunderstorm:** Strawberry Seedlings take root on the bare Soil around it.
   - **Clear and 25°C or hotter:** the Farmer loses stamina every turn for a few turns.
 - Every message names the weather that caused it and the tiles that changed.
+- **When no rule matches** (for example Clear, 22°C and wind 3 m/s), nothing special happens. The Wanderer takes its normal wandering step. If the Farmer asks for the forecast, it shrugs and says tomorrow looks like an ordinary day.
 
 ### Where on Earth the farm is
 

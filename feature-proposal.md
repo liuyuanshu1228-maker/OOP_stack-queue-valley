@@ -114,9 +114,9 @@ That is 3 entirely-new classes (the Enchantments) and 3 retrofitted classes (the
 - `EnchantAction` (`game.items.tools`, extends the engine's `Action`) — attaches one specific Enchantment to one specific tool; depends only on `Enchantable` and `Enchantment`, never on a concrete tool or Enchantment class.
 - `CapabilityToolAction` (`game.actions`, retrofitted) and `BreakAction` (`game.actions`, retrofitted) — the existing Actions behind tilling/watering and breaking, each now also calling `new EnchantmentTrigger().fire(actor, tool, location)` once their own effect has run, so neither Action needs to know whether the tool it used happens to be enchantable.
 
-**Existing classes REQ4 uses but does not change:** `AreaFactory`, `RandomUtils`, `Fire`, `StunnedStatus`, and `Plant` — the Bounty Enchantment calls `Plant.forceGrowth(Location)` directly, which skips the interval/chance gating of a plant's own ordinary turn so the forced attempt is never silently wasted. All are passed in through constructors or obtained from the tile, never looked up globally.
+**Existing classes REQ4 uses but does not change:** `AreaFactory`, `RandomUtils`, `Fire`, and `StunnedStatus`. All are passed in through constructors or obtained from the tile, never looked up globally.
 
-**Existing classes REQ4 changes:** `CapabilityToolAction` and `BreakAction` each gained one line firing the used tool's Enchantment (through `EnchantmentTrigger`) after their own effect has already run; `StackQueueValleyWorld` builds the 3 Enchantments once and gives the Farmer's starting Hoe, Watering Can and Pickaxe all 3 to choose from.
+**Existing classes REQ4 changes:** `Plant` and `PeriodicAbility` each gained a method for a forced attempt: `Plant.forceGrowth(Location)` and `PeriodicAbility.forcePerform(...)`. The Bounty Enchantment calls `Plant.forceGrowth(Location)` directly. It skips the interval and chance of a plant's own turn, so the forced attempt is never wasted. A plant whose growth is paused still refuses it. `CapabilityToolAction` and `BreakAction` each gained one line firing the used tool's Enchantment (through `EnchantmentTrigger`) after their own effect has already run; `StackQueueValleyWorld` builds the 3 Enchantments once and gives the Farmer's starting Hoe, Watering Can and Pickaxe all 3 to choose from.
 
 No `instanceof` is used anywhere in this feature; the matching `Enchantable` view is found by reference-identity comparison against the tool already obtained from the inventory (documented in the code as a deliberate, narrow use of Connascence of Identity, not a workaround). Full SOLID/DRY/KISS/YAGNI discussion and alternatives considered are in `docs/A3 Design Rationale/A3_Design_Rationale.pdf`.
 
@@ -131,11 +131,11 @@ A Wanderer roams the farm, and what it does depends on the real weather at the r
 ### The Mechanics
 
 - Every 5 turns, the Wanderer converts its own `Location` into a latitude/longitude (`MapGeography`, 2 degrees per tile, anchored at Melbourne: -37.81, 144.96) and asks `OpenWeatherClient` for the real current weather there.
-- `WeatherInterpreter` picks exactly one `WeatherReaction`, in a fixed priority order, and the Wanderer performs it that turn:
+- `WeatherInterpreter` picks at most one `WeatherReaction`, in a fixed priority order, and the Wanderer performs it that turn. If no rule below matches (for example Clear, 22°C and wind 3 m/s), it picks none and the Wanderer takes its normal wandering step:
   - wind ≥ 10 m/s → **Storm Shelter** — blocks the free tiles around it for a duration that grows with the wind speed;
   - Rain, Drizzle or Thunderstorm → **Rain Dance** — tills the bare ground and freely waters the crops in a radius that grows with the rainfall;
   - temperature ≤ 10°C → **Campfire** — lights 1–8 adjacent tiles on fire, more the colder it is.
-- When an actor stands next to the Wanderer, it is offered an "ask about tomorrow's weather" action. Choosing it asks for tomorrow's forecast at the Wanderer's own position, and `WeatherInterpreter` picks exactly one `ForecastOmen`:
+- When an actor stands next to the Wanderer, it is offered an "ask about tomorrow's weather" action. Choosing it asks for tomorrow's forecast at the Wanderer's own position, and `WeatherInterpreter` picks at most one `ForecastOmen`. If no rule below matches, the Wanderer shrugs and says tomorrow looks like an ordinary day:
   - Snow, or forecast ≤ 2°C → **Frost Omen** — pauses the growth of every Plant in a 2-tile radius for a duration that grows the colder it is;
   - Rain, Drizzle or Thunderstorm → **Sowing Omen** — a new Strawberry Seedling takes root on every bare Soil tile in a 2-tile radius;
   - Clear and forecast ≥ 25°C → **Drought Omen** — drains the asking actor's stamina over the following turns.
