@@ -17,11 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests that the Bounty Enchantment forces an extra growth attempt on every
- * Plant occupying an affected tile. The meaningful case is a plant whose
- * natural growth roll just failed on its periodic turn: Bounty gives it one
- * more, immediate attempt instead of making it wait for the next periodic
- * turn. Also checks that every message it returns, including the "nothing to
- * grow" fallback, names coordinates.
+ * Plant occupying an affected tile. Bounty skips the plant's own interval and
+ * chance, so it works on a turn the plant is not due to grow (ages 2 and 4 of
+ * a 5-turn interval) and right after a natural roll failed. A paused plant
+ * still does not grow. Also checks that every message it returns, including
+ * the "nothing to grow" fallback, names coordinates.
  */
 class BountyEnchantmentTest {
 
@@ -51,6 +51,32 @@ class BountyEnchantmentTest {
         assertInstanceOf(StrawberrySeedling.class, location.getGround(),
                 "test setup: the natural growth roll should have failed");
         random.setRollsSucceed(true);
+
+        new BountyEnchantment().applyTo(List.of(location), null, map.at(0, 0));
+
+        assertInstanceOf(StrawberrySprout.class, location.getGround());
+    }
+
+    @Test
+    void forcesGrowthOnATurnTheSeedlingIsNotDueToGrow() {
+        Location location = map.at(1, 1);
+        location.setGround(new StrawberrySeedling(random, areaFactory));
+        TestFarm.tick(location, 2);
+        assertInstanceOf(StrawberrySeedling.class, location.getGround(),
+                "test setup: at age 2 the seedling is not due to grow until age 5");
+
+        new BountyEnchantment().applyTo(List.of(location), null, map.at(0, 0));
+
+        assertInstanceOf(StrawberrySprout.class, location.getGround());
+    }
+
+    @Test
+    void forcesGrowthOneTurnBeforeTheSeedlingIsDue() {
+        Location location = map.at(1, 1);
+        location.setGround(new StrawberrySeedling(random, areaFactory));
+        TestFarm.tick(location, GROWTH_INTERVAL_TURNS - 1);
+        assertInstanceOf(StrawberrySeedling.class, location.getGround(),
+                "test setup: at age 4 the seedling is one turn short of its natural growth");
 
         new BountyEnchantment().applyTo(List.of(location), null, map.at(0, 0));
 
