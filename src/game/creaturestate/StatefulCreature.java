@@ -11,12 +11,12 @@ public interface StatefulCreature {
      *
      * @return the current state
      */
-    CreatureState getState();
+    public CreatureState getState();
 
     /**
      * Switches this creature to a new state.
      *
      * @param state the state to switch to
      */
-    void setState(CreatureState state);
+    public void setState(CreatureState state);
 }

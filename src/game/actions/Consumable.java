@@ -15,7 +15,7 @@ public interface Consumable {
      * @return a description of what the effect actually did (e.g. the
      * before/after value of whatever it changed), to be displayed to the player
      */
-    String consume(Actor actor);
+    public String consume(Actor actor);
 
     /**
      * Tells whether the given Actor has what the effect of this Item needs.

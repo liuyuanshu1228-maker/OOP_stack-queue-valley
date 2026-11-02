@@ -10,5 +10,5 @@ public interface HasStaminaCost {
      *
      * @return the stamina cost
      */
-    int getStaminaCost();
+    public int getStaminaCost();
 }

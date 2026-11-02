@@ -18,5 +18,5 @@ public interface Regressible {
      * @param location the Location this ground currently occupies
      * @return a description of what happened, to be displayed to the player
      */
-    String regress(Location location);
+    public String regress(Location location);
 }

@@ -12,5 +12,5 @@ public interface SensingRange {
      *
      * @return how far, in tiles, this creature can sense around itself
      */
-    int sensingRadius();
+    public int sensingRadius();
 }

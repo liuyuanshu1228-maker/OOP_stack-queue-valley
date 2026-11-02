@@ -15,5 +15,5 @@ public interface Food {
      * @param farmer the Actor who fed an animal using this food
      * @return a description of the bonus, to be shown to the player
      */
-    String applyFeedingBonus(Actor farmer);
+    public String applyFeedingBonus(Actor farmer);
 }

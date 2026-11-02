@@ -16,5 +16,5 @@ public interface BreakingTool {
      * @param target the thing the carrier wants to break
      * @return true if this tool can break the target
      */
-    boolean canBreak(Breakable target);
+    public boolean canBreak(Breakable target);
 }

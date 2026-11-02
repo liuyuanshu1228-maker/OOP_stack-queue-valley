@@ -16,5 +16,5 @@ public interface GroundFactory {
      *
      * @return a new Ground
      */
-    Ground create();
+    public Ground create();
 }

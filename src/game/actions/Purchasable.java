@@ -12,14 +12,14 @@ public interface Purchasable {
      *
      * @return a short display name, e.g. "Tomato crop"
      */
-    String getProductName();
+    public String getProductName();
 
     /**
      * Returns the base purchase price in coins.
      *
      * @return the price in coins
      */
-    int getPrice();
+    public int getPrice();
 
     /**
      * Applies the effect of a successful purchase: charges the buyer
@@ -33,5 +33,5 @@ public interface Purchasable {
      * @param merchantContext the Merchant selling it and its current Location
      * @return a description of the outcome
      */
-    String purchase(Actor buyer, MerchantContext merchantContext);
+    public String purchase(Actor buyer, MerchantContext merchantContext);
 }

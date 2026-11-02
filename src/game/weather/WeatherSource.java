@@ -19,7 +19,7 @@ public interface WeatherSource {
      * @return the current weather, or empty if it could not be found, for
      * example because there is no network or no API key
      */
-    Optional<WeatherReading> currentWeatherAt(double latitude, double longitude);
+    public Optional<WeatherReading> currentWeatherAt(double latitude, double longitude);
 
     /**
      * Finds the weather forecast for a place at about this time tomorrow.
@@ -29,5 +29,5 @@ public interface WeatherSource {
      * @return tomorrow's forecast, or empty if it could not be found, for
      * example because there is no network or no API key
      */
-    Optional<WeatherReading> tomorrowWeatherAt(double latitude, double longitude);
+    public Optional<WeatherReading> tomorrowWeatherAt(double latitude, double longitude);
 }

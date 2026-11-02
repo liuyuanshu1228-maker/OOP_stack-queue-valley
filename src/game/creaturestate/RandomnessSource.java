@@ -17,5 +17,5 @@ public interface RandomnessSource {
      *
      * @return the randomness this creature uses
      */
-    RandomUtils randomUtils();
+    public RandomUtils randomUtils();
 }

@@ -18,5 +18,5 @@ public interface Feedable {
      * @param farmerLocation the Location of the Farmer (where drops appear nearby)
      * @return a description of the outcome, to be displayed to the player
      */
-    String feed(Actor farmer, Location farmerLocation);
+    public String feed(Actor farmer, Location farmerLocation);
 }

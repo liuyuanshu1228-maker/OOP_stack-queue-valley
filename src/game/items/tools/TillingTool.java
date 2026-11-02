@@ -17,5 +17,5 @@ public interface TillingTool extends HasStaminaCost {
      * @param target the Tillable the carrier wants to till
      * @return true if this tool can till the target
      */
-    boolean canTill(Tillable target);
+    public boolean canTill(Tillable target);
 }

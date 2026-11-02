@@ -21,5 +21,5 @@ public interface ForecastOmen {
      * @return a description of what happened, or an empty string if nothing
      * happened
      */
-    String bringUpon(Actor asker, Location here);
+    public String bringUpon(Actor asker, Location here);
 }

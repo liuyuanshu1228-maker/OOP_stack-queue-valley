@@ -14,15 +14,15 @@ public interface Composure {
      *
      * @return the number of consecutive safe turns
      */
-    int getSafeTurns();
+    public int getSafeTurns();
 
     /**
      * Records one more consecutive turn in which this Actor felt safe.
      */
-    void recordSafeTurn();
+    public void recordSafeTurn();
 
     /**
      * Resets the count of consecutive safe turns back to zero.
      */
-    void resetComposure();
+    public void resetComposure();
 }

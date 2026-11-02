@@ -17,5 +17,5 @@ public interface WateringTool extends HasStaminaCost {
      * @param target the Waterable the carrier wants to water
      * @return true if this tool can water the target
      */
-    boolean canWater(Waterable target);
+    public boolean canWater(Waterable target);
 }

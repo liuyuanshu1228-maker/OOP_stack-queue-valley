@@ -15,5 +15,5 @@ public interface Producing {
      *
      * @return a new instance of the item produced
      */
-    Item produce();
+    public Item produce();
 }

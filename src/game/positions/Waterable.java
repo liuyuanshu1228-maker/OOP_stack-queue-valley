@@ -19,7 +19,7 @@ public interface Waterable {
      * @param location the Location of the Ground being watered
      * @return a description of the outcome, to be displayed to the player
      */
-    String water(Actor actor, Location location);
+    public String water(Actor actor, Location location);
 
     /**
      * Returns the stamina cost of watering this Ground. The default is the cost of the tool
