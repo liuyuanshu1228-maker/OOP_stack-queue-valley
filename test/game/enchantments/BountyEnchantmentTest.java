@@ -2,6 +2,7 @@ package game.enchantments;
 
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.Location;
+import game.crops.Strawberry;
 import game.crops.StrawberrySeedling;
 import game.crops.StrawberrySprout;
 import game.plants.Plant;
@@ -12,6 +13,7 @@ import game.testsupport.TestFarm;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -19,7 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Tests that the Bounty Enchantment forces an extra growth attempt on every
  * Plant occupying an affected tile. Bounty skips the plant's own interval and
  * chance, so it works on a turn the plant is not due to grow (ages 2 and 4 of
- * a 5-turn interval) and right after a natural roll failed. A paused plant
+ * a 5-turn interval), for growing and for dropping fruit, and right after a
+ * natural roll failed. A paused plant
  * still does not grow. Also checks that every message it returns, including
  * the "nothing to grow" fallback, names coordinates.
  */
@@ -81,6 +84,19 @@ class BountyEnchantmentTest {
         new BountyEnchantment().applyTo(List.of(location), null, map.at(0, 0));
 
         assertInstanceOf(StrawberrySprout.class, location.getGround());
+    }
+
+    @Test
+    void forcesAStrawberryToDropFruitOnATurnItIsNotDue() {
+        Location location = map.at(1, 1);
+        location.setGround(new Strawberry(random, areaFactory));
+        TestFarm.tick(location, 2);
+        assertEquals(0, TestFarm.countItems(map), "test setup: at age 2 the strawberry is not due to drop fruit");
+
+        String message = new BountyEnchantment().applyTo(List.of(location), null, map.at(0, 0));
+
+        assertEquals(1, TestFarm.countItems(map), "Bounty forced one strawberry to drop");
+        assertTrue(message.contains("drops a"), message);
     }
 
     @Test
