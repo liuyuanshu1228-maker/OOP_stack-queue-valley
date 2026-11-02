@@ -20,7 +20,7 @@ public interface PlantAbility {
      * @return a description of what happened, including coordinates, or an
      *         empty string if nothing happened
      */
-    String tryPerform(Plant plant, Location location);
+    public String tryPerform(Plant plant, Location location);
 
     /**
      * Tries this ability immediately, skipping whatever gating a subclass
@@ -34,7 +34,7 @@ public interface PlantAbility {
      * @return a description of what happened, including coordinates, or an
      *         empty string if nothing happened
      */
-    default String forcePerform(Plant plant, Location location) {
+    public default String forcePerform(Plant plant, Location location) {
         return tryPerform(plant, location);
     }
 }
