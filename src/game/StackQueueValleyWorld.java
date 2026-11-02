@@ -226,10 +226,10 @@ public class StackQueueValleyWorld extends World {
      * @param farmerStart where on the farm the Farmer starts
      * @param randomUtils the randomness handed to the Pickaxe and LadybugJar
      * @param areaFactory the AreaFactory handed to every tool and pest-control item
-     * @throws Exception if the engine cannot place the Farmer on {@code farmerStart}
+     * @throws GameEngineException if the engine cannot place the Farmer on {@code farmerStart}
      */
     private void placeFarmerWithEquipment(Location farmerStart, RandomUtils randomUtils,
-                                          AreaFactory areaFactory) throws Exception {
+                                          AreaFactory areaFactory) throws GameEngineException {
         Farmer farmer = new Farmer("Bob");
         this.addPlayer(farmer, farmerStart);
 

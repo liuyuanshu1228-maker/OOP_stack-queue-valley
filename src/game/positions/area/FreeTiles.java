@@ -20,8 +20,10 @@ import java.util.Set;
  * the RandomUtils and the AreaFactory together through every set-up method
  * (a Data Clump), and any of those methods could change the set directly.
  * The taken tiles are now private to this class and change only through its
- * methods, and each map has its own FreeTiles, so the farm's taken tiles
- * cannot be mixed up with the mines'.
+ * methods. Each map has its own FreeTiles, which rejects a tile from any
+ * other map, so the farm's taken tiles cannot be mixed up with the mines'.
+ * When no free tile is left, placing fails with an exception instead of
+ * searching forever.
  */
 public class FreeTiles {
 
@@ -51,8 +53,10 @@ public class FreeTiles {
      * Marks a tile as taken, so nothing is placed on it at random.
      *
      * @param tile the tile to keep clear
+     * @throws IllegalArgumentException if the tile is not on this map
      */
     public void reserve(Location tile) {
+        requireOnThisMap(tile);
         takenTiles.add(tile);
     }
 
@@ -60,8 +64,10 @@ public class FreeTiles {
      * Marks a tile and every tile next to it as taken.
      *
      * @param centre the tile to keep clear, together with its neighbours
+     * @throws IllegalArgumentException if the tile is not on this map
      */
     public void reserveAround(Location centre) {
+        requireOnThisMap(centre);
         takenTiles.addAll(areaFactory.centredOn(centre).tiles());
     }
 
@@ -69,6 +75,7 @@ public class FreeTiles {
      * Puts a ground on a random free tile, which is then taken.
      *
      * @param ground the ground to place
+     * @throws IllegalStateException if no free tile is left
      */
     public void placeGround(Ground ground) {
         claimRandomFreeTile().setGround(ground);
@@ -78,6 +85,7 @@ public class FreeTiles {
      * Puts an item on a random free tile, which is then taken.
      *
      * @param item the item to place
+     * @throws IllegalStateException if no free tile is left
      */
     public void placeItem(Item item) {
         claimRandomFreeTile().addItem(item);
@@ -88,6 +96,7 @@ public class FreeTiles {
      *
      * @param actor the actor to place
      * @throws GameEngineException if the engine cannot add the actor to the chosen tile
+     * @throws IllegalStateException if no free tile is left
      */
     public void placeActor(Actor actor) throws GameEngineException {
         claimRandomFreeTile().addActor(actor);
@@ -97,14 +106,42 @@ public class FreeTiles {
      * Picks a random tile that is not taken, and marks it as taken.
      *
      * @return the chosen tile
+     * @throws IllegalStateException if every tile of the map is already taken
      */
     private Location claimRandomFreeTile() {
+        if (takenTiles.size() >= tileCount()) {
+            throw new IllegalStateException("No free tile is left to place something on");
+        }
         Location tile;
         do {
             tile = randomTile();
         } while (takenTiles.contains(tile));
         takenTiles.add(tile);
         return tile;
+    }
+
+    /**
+     * Rejects a tile that belongs to a different map, so the taken tiles only
+     * ever hold tiles of this map.
+     *
+     * @param tile the tile to check
+     * @throws IllegalArgumentException if the tile is not on this map
+     */
+    private void requireOnThisMap(Location tile) {
+        if (tile.map() != map) {
+            throw new IllegalArgumentException("The tile " + tile + " is not on this map");
+        }
+    }
+
+    /**
+     * Counts every tile of the map.
+     *
+     * @return the number of tiles on the map
+     */
+    private int tileCount() {
+        int width = map.getXRange().max() - map.getXRange().min() + 1;
+        int height = map.getYRange().max() - map.getYRange().min() + 1;
+        return width * height;
     }
 
     /**
