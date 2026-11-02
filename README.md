@@ -58,7 +58,7 @@ The tests do not depend on luck. `game.testsupport.FixedRandom` extends the game
 
 ## A3 REQ1 — Second Spring
 
-Plants now grow in stages. Every plant ages one turn at a time. Each turn it tries its abilities in order (grow, spread, produce) and does at most one thing. The full design is in `feature-proposal.md` and `docs/A3/A3 Design Rationale/A3_Design_Rationale.pdf`.
+Plants now grow in stages. Every plant ages one turn at a time. Each turn it tries its abilities in order (grow, spread, produce) and does at most one thing. The full design is in `docs/A3/feature-proposal.md` and `docs/A3/A3 Design Rationale/A3_Design_Rationale.pdf`.
 
 **Where to find it in the game:** Run `game.Application`. The farm starts with one plant of every stage already growing: a Strawberry Seedling, Sprout and Strawberry, a Melon Sprout and Melon, a Tomato, a Cauliflower Sprout and Cauliflower, and a Parsnip. End turns and watch them grow, spread and drop produce. New plants appear only on tilled Soil.
 
@@ -74,7 +74,7 @@ A young plant (seedling or sprout) cannot be watered or harvested, and the Farme
 
 ## A3 REQ3 — Infestation and Pest Control
 
-Pests move towards the Farmer's plants and eat them. The Farmer fights back with three defences. The full design is in `feature-proposal.md` and `docs/A3/A3 Design Rationale/A3_Design_Rationale.pdf`.
+Pests move towards the Farmer's plants and eat them. The Farmer fights back with three defences. The full design is in `docs/A3/feature-proposal.md` and `docs/A3/A3 Design Rationale/A3_Design_Rationale.pdf`.
 
 **Where to find it in the game:** Run `game.Application`. The world places one pest of each kind on a free tile of the farm. The Farmer starts with one of each defence in their inventory.
 
@@ -104,7 +104,7 @@ A pest that eats nothing, and a trap that pulls and captures nothing, print noth
 
 ## A3 REQ4 — Enchanted Tools
 
-The Hoe, Watering Can and Pickaxe can each be enchanted with a magical effect. An Enchantment attaches to one specific tool instance, sits there until that tool is next used for its ordinary purpose, then fires once and is spent. The full design is in `feature-proposal.md` and `docs/A3/A3 Design Rationale/A3_Design_Rationale.pdf`.
+The Hoe, Watering Can and Pickaxe can each be enchanted with a magical effect. An Enchantment attaches to one specific tool instance, sits there until that tool is next used for its ordinary purpose, then fires once and is spent. The full design is in `docs/A3/feature-proposal.md` and `docs/A3/A3 Design Rationale/A3_Design_Rationale.pdf`.
 
 **Where to find it in the game:** Run `game.Application`. The Farmer starts carrying a Hoe, a Watering Can and a Pickaxe. Each one offers an "enchant" action for every Enchantment the game knows about, alongside its ordinary actions.
 
@@ -136,7 +136,7 @@ At (3, 3): Farmer Bob breaks the Rock. The Shatter Enchantment finds no one to s
 
 ## A3 REQ5 — The Wanderer (API, HD)
 
-A Wanderer roams the farm, and what it does depends on the real weather at the place on Earth where it stands. The farm map is laid on the real world, so the Wanderer's own position decides which place the game asks the weather for. The full design, the request and the reply format are in `feature-proposal.md`.
+A Wanderer roams the farm, and what it does depends on the real weather at the place on Earth where it stands. The farm map is laid on the real world, so the Wanderer's own position decides which place the game asks the weather for. The full design, the request and the reply format are in `docs/A3/feature-proposal.md`.
 
 **Where to find it in the game:**
 
