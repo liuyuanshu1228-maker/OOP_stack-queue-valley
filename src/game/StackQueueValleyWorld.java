@@ -1,12 +1,9 @@
 package game;
 
 import edu.monash.fit2099.engine.GameEngineException;
-import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.displays.Display;
-import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.DefaultGroundCreator;
 import edu.monash.fit2099.engine.positions.GameMap;
-import edu.monash.fit2099.engine.positions.Ground;
 import edu.monash.fit2099.engine.positions.Location;
 import edu.monash.fit2099.engine.positions.World;
 import game.actors.Chicken;
@@ -41,6 +38,7 @@ import game.pests.SlimeSnail;
 import game.plants.Plant;
 import game.positions.Plantable;
 import game.positions.area.AreaFactory;
+import game.positions.area.FreeTiles;
 import game.positions.facilities.DryingRack;
 import game.positions.facilities.PreservesJar;
 import game.positions.farm.Dirt;
@@ -61,11 +59,8 @@ import game.weather.MapGeography;
 import game.weather.WeatherSource;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Represents the game world of StackQueue Valley, responsible for initializing
@@ -164,6 +159,8 @@ public class StackQueueValleyWorld extends World {
      * <p>
      * Each stage is delegated to its own method below, in the order it runs here, so that
      * this method reads as the single list of stages rather than their combined detail.
+     * Each map has its own {@link FreeTiles}, which records the tiles already used so that
+     * nothing placed at random lands on them.
      *
      * @throws Exception if an error occurs while placing actors or initializing the world
      */
@@ -172,21 +169,18 @@ public class StackQueueValleyWorld extends World {
         AreaFactory areaFactory = new AreaFactory(randomUtils);
 
         Maps maps = createMaps(randomUtils, areaFactory);
-        GameMap inheritedFarmMap = maps.farm();
-        GameMap minesMap = maps.mines();
+        FreeTiles freeFarmTiles = new FreeTiles(maps.farm(), randomUtils, areaFactory);
+        FreeTiles freeMinesTiles = new FreeTiles(maps.mines(), randomUtils, areaFactory);
 
-        Location farmerStart = locate(inheritedFarmMap, FARMER_START);
+        Location farmerStart = locate(maps.farm(), FARMER_START);
         placeFarmerWithEquipment(farmerStart, randomUtils, areaFactory);
+        freeFarmTiles.reserve(farmerStart);
+        reservePlantsAndSoil(maps.farm(), freeFarmTiles, areaFactory);
 
-        Set<Location> occupiedLocations = new HashSet<>();
-        occupiedLocations.add(farmerStart);
-        reservePlantsAndSoil(inheritedFarmMap, occupiedLocations, areaFactory);
-        Set<Location> minesOccupiedLocations = new HashSet<>();
-
-        linkFarmAndMines(inheritedFarmMap, minesMap, occupiedLocations, minesOccupiedLocations, randomUtils, areaFactory);
-        populateFarm(inheritedFarmMap, occupiedLocations, randomUtils, areaFactory);
-        setupAlienDevice(inheritedFarmMap, minesMap, occupiedLocations, minesOccupiedLocations, randomUtils, areaFactory);
-        populateMines(minesMap, minesOccupiedLocations, randomUtils, areaFactory);
+        linkFarmAndMines(maps, freeFarmTiles, freeMinesTiles, randomUtils, areaFactory);
+        populateFarm(freeFarmTiles, randomUtils, areaFactory);
+        setupAlienDevice(maps, freeFarmTiles, freeMinesTiles, randomUtils, areaFactory);
+        populateMines(freeMinesTiles, randomUtils, areaFactory);
     }
 
     /**
@@ -252,123 +246,117 @@ public class StackQueueValleyWorld extends World {
     /**
      * Places the ladder and teleportation-circle pairs linking the farm and the mines.
      *
-     * @param farmMap the farm map
-     * @param minesMap the mines map
-     * @param occupiedLocations farm locations that must not be used; updated with the newly used ones
-     * @param minesOccupiedLocations mines locations that must not be used; updated with the newly used ones
+     * @param maps the farm and mines maps
+     * @param freeFarmTiles the farm's free tiles; each link and its neighbours are reserved
+     * @param freeMinesTiles the mines' free tiles; each link and its neighbours are reserved
      * @param randomUtils the randomness handed to every Ladder built
-     * @param areaFactory the AreaFactory handed to every link
+     * @param areaFactory the AreaFactory handed to every TeleportationCircle built
      */
-    private void linkFarmAndMines(GameMap farmMap, GameMap minesMap, Set<Location> occupiedLocations,
-                                  Set<Location> minesOccupiedLocations, RandomUtils randomUtils,
-                                  AreaFactory areaFactory) {
-        linkMaps(farmMap, minesMap, occupiedLocations, minesOccupiedLocations,
+    private void linkFarmAndMines(Maps maps, FreeTiles freeFarmTiles, FreeTiles freeMinesTiles,
+                                  RandomUtils randomUtils, AreaFactory areaFactory) {
+        linkMaps(maps, freeFarmTiles, freeMinesTiles,
                 List.of(new Ladder(randomUtils), new Ladder(randomUtils)),
                 List.of(new Ladder(randomUtils), new Ladder(randomUtils)),
-                LADDER_LINKS, areaFactory);
-        linkMaps(farmMap, minesMap, occupiedLocations, minesOccupiedLocations,
+                LADDER_LINKS);
+        linkMaps(maps, freeFarmTiles, freeMinesTiles,
                 List.of(new TeleportationCircle(areaFactory), new TeleportationCircle(areaFactory)),
                 List.of(new TeleportationCircle(areaFactory), new TeleportationCircle(areaFactory)),
-                CIRCLE_LINKS, areaFactory);
+                CIRCLE_LINKS);
     }
 
     /**
      * Scatters the farm facilities (Drying Rack, Preserves Jar) and places every farm
      * Actor: the Chicken and Cow, the Merchant, the Crow, the three pests, and the Wanderer.
      *
-     * @param farmMap the farm map to populate
-     * @param occupiedLocations farm locations that must not be used; updated with the newly used ones
-     * @param randomUtils the randomness used to pick each tile and to build each Actor
+     * @param freeFarmTiles the farm's free tiles, on which everything is placed
+     * @param randomUtils the randomness handed to each Actor built
      * @param areaFactory the AreaFactory handed to every Actor built
-     * @throws Exception if the engine cannot place an Actor on its chosen tile
+     * @throws GameEngineException if the engine cannot place an Actor on its chosen tile
      */
-    private void populateFarm(GameMap farmMap, Set<Location> occupiedLocations, RandomUtils randomUtils,
-                              AreaFactory areaFactory) throws Exception {
-        scatterGround(farmMap, occupiedLocations, List.of(new DryingRack()), randomUtils);
-        scatterGround(farmMap, occupiedLocations, List.of(new PreservesJar()), randomUtils);
+    private void populateFarm(FreeTiles freeFarmTiles, RandomUtils randomUtils, AreaFactory areaFactory)
+            throws GameEngineException {
+        freeFarmTiles.placeGround(new DryingRack());
+        freeFarmTiles.placeGround(new PreservesJar());
 
-        placeFarmAnimalsAndMerchant(farmMap, occupiedLocations, randomUtils, areaFactory);
-        placeFarmPestsAndWanderer(farmMap, occupiedLocations, randomUtils, areaFactory);
+        placeFarmAnimalsAndMerchant(freeFarmTiles, randomUtils, areaFactory);
+        placeFarmPestsAndWanderer(freeFarmTiles, randomUtils, areaFactory);
     }
 
     /**
      * Places the farm's animals and the Merchant: the Chicken, the Cow, the
      * Merchant (stocked with a Parsnip, a Tomato, and a Sword), and the Crow.
      *
-     * @param farmMap the farm map to place them on
-     * @param occupiedLocations farm locations that must not be used; updated with the newly used ones
-     * @param randomUtils the randomness used to pick each tile and to build each Actor
+     * @param freeFarmTiles the farm's free tiles, on which they are placed
+     * @param randomUtils the randomness handed to each Actor built
      * @param areaFactory the AreaFactory handed to every Actor built
-     * @throws Exception if the engine cannot place an Actor on its chosen tile
+     * @throws GameEngineException if the engine cannot place an Actor on its chosen tile
      */
-    private void placeFarmAnimalsAndMerchant(GameMap farmMap, Set<Location> occupiedLocations,
-                                             RandomUtils randomUtils, AreaFactory areaFactory) throws Exception {
-        placeActor(farmMap, occupiedLocations, new Chicken("Chicken", randomUtils, areaFactory), randomUtils);
-        placeActor(farmMap, occupiedLocations, new Cow("Cow", randomUtils, areaFactory), randomUtils);
-        placeActor(farmMap, occupiedLocations,
-                new Merchant(randomUtils,
-                        new Parsnip(randomUtils, areaFactory),
-                        new Tomato(randomUtils, areaFactory),
-                        new Sword(randomUtils)),
-                randomUtils);
-        placeActor(farmMap, occupiedLocations, new Crow("Crow", randomUtils, areaFactory), randomUtils);
+    private void placeFarmAnimalsAndMerchant(FreeTiles freeFarmTiles, RandomUtils randomUtils,
+                                             AreaFactory areaFactory) throws GameEngineException {
+        freeFarmTiles.placeActor(new Chicken("Chicken", randomUtils, areaFactory));
+        freeFarmTiles.placeActor(new Cow("Cow", randomUtils, areaFactory));
+        freeFarmTiles.placeActor(new Merchant(randomUtils,
+                new Parsnip(randomUtils, areaFactory),
+                new Tomato(randomUtils, areaFactory),
+                new Sword(randomUtils)));
+        freeFarmTiles.placeActor(new Crow("Crow", randomUtils, areaFactory));
     }
 
     /**
      * Places the farm's three pests (the Slime Snail, the Locust Swarm, and
      * the Burrowing Mole) and the Wanderer.
      *
-     * @param farmMap the farm map to place them on
-     * @param occupiedLocations farm locations that must not be used; updated with the newly used ones
-     * @param randomUtils the randomness used to pick each tile and to build each Actor
+     * @param freeFarmTiles the farm's free tiles, on which they are placed
+     * @param randomUtils the randomness handed to each Actor built
      * @param areaFactory the AreaFactory handed to every Actor built
-     * @throws Exception if the engine cannot place an Actor on its chosen tile
+     * @throws GameEngineException if the engine cannot place an Actor on its chosen tile
      */
-    private void placeFarmPestsAndWanderer(GameMap farmMap, Set<Location> occupiedLocations,
-                                           RandomUtils randomUtils, AreaFactory areaFactory) throws Exception {
-        placeActor(farmMap, occupiedLocations, new SlimeSnail(randomUtils, areaFactory), randomUtils);
-        placeActor(farmMap, occupiedLocations, new LocustSwarm(randomUtils, areaFactory), randomUtils);
-        placeActor(farmMap, occupiedLocations, new BurrowingMole(randomUtils, areaFactory), randomUtils);
-        placeActor(farmMap, occupiedLocations, buildWanderer(randomUtils, areaFactory), randomUtils);
+    private void placeFarmPestsAndWanderer(FreeTiles freeFarmTiles, RandomUtils randomUtils,
+                                           AreaFactory areaFactory) throws GameEngineException {
+        freeFarmTiles.placeActor(new SlimeSnail(randomUtils, areaFactory));
+        freeFarmTiles.placeActor(new LocustSwarm(randomUtils, areaFactory));
+        freeFarmTiles.placeActor(new BurrowingMole(randomUtils, areaFactory));
+        freeFarmTiles.placeActor(buildWanderer(randomUtils, areaFactory));
     }
 
     /**
      * Builds the Alien Device, wires its two fixed destinations, reserves its mines-side
      * destination, and places it on a random farm tile.
      *
-     * @param farmMap the farm map to place the device on
-     * @param minesMap the mines map the device travels to
-     * @param occupiedLocations farm locations that must not be used; updated with the newly used one
-     * @param minesOccupiedLocations mines locations that must not be used; updated with the device's destination
-     * @param randomUtils the randomness used to pick the device's farm tile
+     * @param maps the farm and mines maps the device travels between
+     * @param freeFarmTiles the farm's free tiles, on which the device is placed
+     * @param freeMinesTiles the mines' free tiles; the device's destination there is reserved
+     * @param randomUtils the randomness handed to the device
      * @param areaFactory the AreaFactory handed to the device
      */
-    private void setupAlienDevice(GameMap farmMap, GameMap minesMap, Set<Location> occupiedLocations,
-                                  Set<Location> minesOccupiedLocations, RandomUtils randomUtils,
-                                  AreaFactory areaFactory) {
-        Location alienDeviceFarmDestination =
-                locate(farmMap, ALIEN_DEVICE_DESTINATIONS.farm());
-        Location alienDeviceMinesDestination = locate(minesMap, ALIEN_DEVICE_DESTINATIONS.mines());
+    private void setupAlienDevice(Maps maps, FreeTiles freeFarmTiles, FreeTiles freeMinesTiles,
+                                  RandomUtils randomUtils, AreaFactory areaFactory) {
+        Location farmDestination = locate(maps.farm(), ALIEN_DEVICE_DESTINATIONS.farm());
+        Location minesDestination = locate(maps.mines(), ALIEN_DEVICE_DESTINATIONS.mines());
         AlienDevice alienDevice = new AlienDevice(randomUtils, areaFactory);
-        alienDevice.addDestination(TO_FARM, alienDeviceFarmDestination);
-        alienDevice.addDestination(TO_MINES, alienDeviceMinesDestination);
-        minesOccupiedLocations.add(alienDeviceMinesDestination);
-        scatterItems(farmMap, occupiedLocations, List.of(alienDevice), randomUtils);
+        alienDevice.addDestination(TO_FARM, farmDestination);
+        alienDevice.addDestination(TO_MINES, minesDestination);
+        freeMinesTiles.reserve(minesDestination);
+        freeFarmTiles.placeItem(alienDevice);
     }
 
     /**
-     * Scatters the mines' rocks, copper nodes, and geodes onto random tiles.
+     * Scatters the mines' rocks, copper nodes, and geodes onto random free tiles.
      *
-     * @param minesMap the mines map to populate
-     * @param minesOccupiedLocations mines locations that must not be used; updated with the newly used ones
-     * @param randomUtils the randomness used to pick each tile and build each Rock/Geode
-     * @param areaFactory the AreaFactory handed to every Rock/CopperNode/Geode built
+     * @param freeMinesTiles the mines' free tiles, on which everything is placed
+     * @param randomUtils the randomness handed to every Rock and Geode built
+     * @param areaFactory the AreaFactory handed to every Rock, CopperNode and Geode built
      */
-    private void populateMines(GameMap minesMap, Set<Location> minesOccupiedLocations, RandomUtils randomUtils,
-                               AreaFactory areaFactory) {
-        scatterGround(minesMap, minesOccupiedLocations, buildRocks(randomUtils, areaFactory, ROCK_COUNT), randomUtils);
-        scatterGround(minesMap, minesOccupiedLocations, buildCopperNodes(areaFactory, COPPER_NODE_COUNT), randomUtils);
-        scatterItems(minesMap, minesOccupiedLocations, buildGeodes(randomUtils, areaFactory, GEODE_COUNT), randomUtils);
+    private void populateMines(FreeTiles freeMinesTiles, RandomUtils randomUtils, AreaFactory areaFactory) {
+        for (int i = 0; i < ROCK_COUNT; i++) {
+            freeMinesTiles.placeGround(new Rock(randomUtils, areaFactory));
+        }
+        for (int i = 0; i < COPPER_NODE_COUNT; i++) {
+            freeMinesTiles.placeGround(new CopperNode(areaFactory));
+        }
+        for (int i = 0; i < GEODE_COUNT; i++) {
+            freeMinesTiles.placeItem(new Geode(randomUtils, areaFactory));
+        }
     }
 
     /**
@@ -419,55 +407,6 @@ public class StackQueueValleyWorld extends World {
     }
 
     /**
-     * Builds a list of brand-new Rocks, each wired with the given dependencies.
-     * A fresh instance is built for every tile, exactly as a fresh instance
-     * was built for every tile when this scattered a Supplier.
-     *
-     * @param randomUtils the randomness handed to every Rock built
-     * @param areaFactory the AreaFactory handed to every Rock built
-     * @param count how many Rocks to build
-     * @return a list of {@code count} distinct new Rocks
-     */
-    private List<Ground> buildRocks(RandomUtils randomUtils, AreaFactory areaFactory, int count) {
-        List<Ground> rocks = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            rocks.add(new Rock(randomUtils, areaFactory));
-        }
-        return rocks;
-    }
-
-    /**
-     * Builds a list of brand-new CopperNodes, each wired with the given AreaFactory.
-     *
-     * @param areaFactory the AreaFactory handed to every CopperNode built
-     * @param count how many CopperNodes to build
-     * @return a list of {@code count} distinct new CopperNodes
-     */
-    private List<Ground> buildCopperNodes(AreaFactory areaFactory, int count) {
-        List<Ground> copperNodes = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            copperNodes.add(new CopperNode(areaFactory));
-        }
-        return copperNodes;
-    }
-
-    /**
-     * Builds a list of brand-new Geodes, each wired with the given dependencies.
-     *
-     * @param randomUtils the randomness handed to every Geode built
-     * @param areaFactory the AreaFactory handed to every Geode built
-     * @param count how many Geodes to build
-     * @return a list of {@code count} distinct new Geodes
-     */
-    private List<Item> buildGeodes(RandomUtils randomUtils, AreaFactory areaFactory, int count) {
-        List<Item> geodes = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            geodes.add(new Geode(randomUtils, areaFactory));
-        }
-        return geodes;
-    }
-
-    /**
      * Places a pair of two-way travel grounds (such as ladders) for each link:
      * one on the farm and one in the mines, each leading to the other. The
      * tiles around every placed ground are reserved as well, so that nothing
@@ -476,145 +415,46 @@ public class StackQueueValleyWorld extends World {
      * out a nearby ladder or circle; in the mines it also keeps rocks from
      * walling in an arrival point.)
      *
-     * @param farmMap the farm map
-     * @param minesMap the mines map
-     * @param farmOccupiedLocations farm locations that must not be used; updated with
-     *                              the newly used ones
-     * @param minesOccupiedLocations mines locations that must not be used; updated with
-     *                               the newly used ones
+     * @param maps the farm and mines maps
+     * @param freeFarmTiles the farm's free tiles; each placed ground and its neighbours are reserved
+     * @param freeMinesTiles the mines' free tiles; each placed ground and its neighbours are reserved
      * @param farmSides a brand-new travel ground for the farm side of each link, in order
      * @param minesSides a brand-new travel ground for the mines side of each link, in order
      * @param links the positions of each pair
-     * @param areaFactory builds the Area reserved around each placed ground
      */
-    private void linkMaps(GameMap farmMap, GameMap minesMap, Set<Location> farmOccupiedLocations,
-                          Set<Location> minesOccupiedLocations,
-                          List<TravelGround> farmSides, List<TravelGround> minesSides,
-                          List<Link> links, AreaFactory areaFactory) {
+    private void linkMaps(Maps maps, FreeTiles freeFarmTiles, FreeTiles freeMinesTiles,
+                          List<TravelGround> farmSides, List<TravelGround> minesSides, List<Link> links) {
         for (int i = 0; i < links.size(); i++) {
             Link link = links.get(i);
-            Location farmLocation = locate(farmMap, link.farm());
-            Location minesLocation = locate(minesMap, link.mines());
+            Location farmLocation = locate(maps.farm(), link.farm());
+            Location minesLocation = locate(maps.mines(), link.mines());
             TravelGround farmSide = farmSides.get(i);
             TravelGround minesSide = minesSides.get(i);
             farmLocation.setGround(farmSide);
             minesLocation.setGround(minesSide);
             farmSide.addDestination(TO_MINES, minesLocation);
             minesSide.addDestination(TO_FARM, farmLocation);
-            reserveWithNeighbours(farmOccupiedLocations, farmLocation, areaFactory);
-            reserveWithNeighbours(minesOccupiedLocations, minesLocation, areaFactory);
+            freeFarmTiles.reserveAround(farmLocation);
+            freeMinesTiles.reserveAround(minesLocation);
         }
     }
 
     /**
-     * Records every location of the map that holds a plant or Soil as used,
-     * so that the grounds, items and actors placed at random afterwards
-     * never cover a plant or the Soil it needs to spread onto.
+     * Reserves every tile of the map that holds a plant or Soil, so that the
+     * grounds, items and actors placed at random afterwards never cover a
+     * plant or the Soil it needs to spread onto.
      *
      * @param map the map whose plants and Soil to reserve
-     * @param occupiedLocations the set of used locations to update
+     * @param freeTiles the free tiles of that map
      * @param areaFactory builds the Area of the whole map
      */
-    private void reservePlantsAndSoil(GameMap map, Set<Location> occupiedLocations, AreaFactory areaFactory) {
+    private void reservePlantsAndSoil(GameMap map, FreeTiles freeTiles, AreaFactory areaFactory) {
         for (Location location : areaFactory.wholeMap(map).tiles()) {
             if (location.getGroundAs(Plant.class) != null
                     || location.getGroundAs(Plantable.class) != null) {
-                occupiedLocations.add(location);
+                freeTiles.reserve(location);
             }
         }
-    }
-
-    /**
-     * Records the given location, and every location adjacent to it, as used.
-     *
-     * @param occupiedLocations the set of used locations to update
-     * @param location the location to reserve together with its neighbours
-     * @param areaFactory builds the Area of the location and its neighbours
-     */
-    private void reserveWithNeighbours(Set<Location> occupiedLocations, Location location, AreaFactory areaFactory) {
-        occupiedLocations.addAll(areaFactory.centredOn(location).tiles());
-    }
-
-    /**
-     * Places each of the given Grounds on a random, distinct tile of the given
-     * map, avoiding any location already recorded in {@code occupiedLocations}.
-     * Every newly used location is added to {@code occupiedLocations}, so
-     * repeated calls for different Grounds (or Actors, via {@link #placeActor})
-     * never overlap.
-     *
-     * @param map the map to place Grounds on
-     * @param occupiedLocations locations that must not be used; updated with the newly used ones
-     * @param grounds the brand-new Ground instances to place, one tile each
-     * @param randomUtils the randomness used to pick each tile
-     */
-    private void scatterGround(GameMap map, Set<Location> occupiedLocations, List<Ground> grounds,
-                               RandomUtils randomUtils) {
-        for (Ground ground : grounds) {
-            claimRandomFreeLocation(map, occupiedLocations, randomUtils).setGround(ground);
-        }
-    }
-
-    /**
-     * Places each of the given Items on a random, distinct tile of the given
-     * map, avoiding any location already recorded in {@code occupiedLocations}.
-     * Every newly used location is added to {@code occupiedLocations}.
-     *
-     * @param map the map to place Items on
-     * @param occupiedLocations locations that must not be used; updated with the newly used ones
-     * @param items the Item instances to place, one tile each
-     * @param randomUtils the randomness used to pick each tile
-     */
-    private void scatterItems(GameMap map, Set<Location> occupiedLocations, List<Item> items,
-                              RandomUtils randomUtils) {
-        for (Item item : items) {
-            claimRandomFreeLocation(map, occupiedLocations, randomUtils).addItem(item);
-        }
-    }
-
-    /**
-     * Places a single Actor on a random tile of the given map, avoiding any
-     * location already recorded in {@code occupiedLocations}.
-     *
-     * @param map the map to place the Actor on
-     * @param occupiedLocations locations that must not be used; updated with the newly used one
-     * @param actor the Actor to place
-     * @param randomUtils the randomness used to pick the tile
-     * @throws Exception if the engine cannot place the Actor on the chosen tile
-     */
-    private void placeActor(GameMap map, Set<Location> occupiedLocations, Actor actor, RandomUtils randomUtils)
-            throws Exception {
-        claimRandomFreeLocation(map, occupiedLocations, randomUtils).addActor(actor);
-    }
-
-    /**
-     * Picks a random location on the map that is not already recorded in
-     * {@code occupiedLocations}, and records it there.
-     *
-     * @param map the map to pick a location on
-     * @param occupiedLocations locations that must not be used; updated with the chosen one
-     * @param randomUtils the randomness used to pick the location
-     * @return the chosen location
-     */
-    private Location claimRandomFreeLocation(GameMap map, Set<Location> occupiedLocations, RandomUtils randomUtils) {
-        Location location;
-        do {
-            location = randomLocation(map, randomUtils);
-        } while (occupiedLocations.contains(location));
-        occupiedLocations.add(location);
-        return location;
-    }
-
-    /**
-     * Picks a random location on a map.
-     *
-     * @param map the map to pick a location on
-     * @param randomUtils the randomness used to pick the location
-     * @return a uniformly random location on the map
-     */
-    private Location randomLocation(GameMap map, RandomUtils randomUtils) {
-        int x = randomUtils.randomInt(map.getXRange().max() + 1);
-        int y = randomUtils.randomInt(map.getYRange().max() + 1);
-        return map.at(x, y);
     }
 
     /**
