@@ -1,0 +1,34 @@
+FIT2099 Assignment 3 - Foundation Models Used
+=============================================
+
+Each team member describes their own use of foundation models below.
+
+
+Poyee Tan (ptan0095) - REQ1 & REQ5
+-------------------------------------------------------------------------------
+
+
+
+
+Jingyu Zhang (jzha0797) - REQ3 & REQ5
+-------------------------------------------------------------------------------
+I used AI in the following ways:
+
+(i) Generate ideas or structure suggestions and assist with understanding core concepts
+
+I used Claude (Anthropic) through the Claude Code desktop app (https://claude.ai/code)
+to review my code against SOLID, DRY and KISS principles, explain the marking rubric,
+and explore alternative designs with their respective advantages and disadvantages.
+I evaluated the suggestions and decided which changes to adopt.
+
+(ii) Generate and refactor code
+
+I used Claude to generate and refactor code in my REQ3 and REQ5 classes and shared classes.
+
+I also used Claude to generate simulation scripts to check program behaviour.
+These scripts are not submitted as part of the assessment.
+I reviewed and tested the resulting code and take responsibility for the correctness and quality of my submitted work.
+
+
+----------------------------------------------------------------------------------------
+Yuanshu Liu - REQ4 & REQ5
