@@ -1,6 +1,6 @@
 # Feature Proposal
 
-This file lists, for each custom/creative requirement, the Pitch, the Mechanics and the Architecture (the two new abstractions and the six concrete classes that implement them, marked **New** or **Retrofitted**), as required by the REQ3/REQ4 rules and, for REQ5, the additional Request/Schema/Security items required by the REQ5 (HD) rules. AI acknowledgement is recorded separately in `docs/FoundationModelsUsed.txt`.
+This file lists, for each custom/creative requirement, the Pitch, the Mechanics and the Architecture (the two new abstractions and the six concrete classes that implement them, marked **New** or **Retrofitted**), as required by the REQ3/REQ4 rules and, for REQ5, the additional Request/Schema/Security items required by the REQ5 (HD) rules. AI acknowledgement is recorded separately in `docs/A2/FoundationModelsUsed.txt`.
 
 ## REQ3 — Infestation and Pest Control
 
